@@ -47,7 +47,7 @@
 
 + (void)loginWithFacebookId:(NSString *)fbId accessToken:(NSString *)accessToken userClass:(Class)userClass url:(NSString *)url
 {
-    [self loginWithFacebookId:fbId accessToken:accessToken userClass:userClass completion:nil];
+    [self loginWithFacebookId:fbId accessToken:accessToken userClass:userClass url:url completion:nil];
 }
 
 + (void)loginWithFacebookId:(NSString *)fbId accessToken:(NSString *)accessToken userClass:(Class)userClass url:(NSString *)url completion:(void (^)(id object, BOOL success))completion
