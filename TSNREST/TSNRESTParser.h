@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "TSNRESTObjectMap.h"
+#import "TSNRESTManager.h"
 
 @interface TSNRESTParser : NSObject
 
