@@ -103,7 +103,8 @@
                     user = [userClass findFirst];
                 
                 NSLog(@"Login succeeded for user: %@", [user valueForKey:@"systemId"]);
-                [[NSNotificationCenter defaultCenter] postNotificationName:@"LoginSucceeded" object:Nil userInfo:@{@"class":NSStringFromClass(userClass), @"object":user, @"response":response}];
+                if (userClass)
+                    [[NSNotificationCenter defaultCenter] postNotificationName:@"LoginSucceeded" object:Nil userInfo:@{@"class":NSStringFromClass(userClass), @"object":user, @"response":response}];
                 completion(user, YES);
             }];
 
