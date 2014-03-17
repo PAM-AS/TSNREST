@@ -112,7 +112,7 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         [[NSNotificationCenter defaultCenter] postNotificationName:@"startLoadingAnimation" object:nil];
     });
-    dispatch_async(kBgQueue, ^{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         for (id object in self)
         {
             if (![object isKindOfClass:[NSManagedObject class]])
