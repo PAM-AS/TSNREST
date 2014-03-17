@@ -66,7 +66,6 @@
     NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         
         NSLog(@"Login result: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
-        NSLog(@"Login length: %lu", [data length]);
         if ([(NSHTTPURLResponse *)response statusCode] < 200 || [(NSHTTPURLResponse *)response statusCode] > 204 || [data length] == 0)
         {
             NSLog(@"Login failed. %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
