@@ -9,6 +9,6 @@ Pod::Spec.new do |s|
   s.platform = :ios, '7.0'
   s.requires_arc = true
   s.frameworks = 'UIKit', 'CoreGraphics'
-  s.source_files = 'SAMTextView'
+  s.source_files = 'TSNREST/*.{h,m}'
   spec.dependency 'MagicalRecord', '~> 2.2'
 end
