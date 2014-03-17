@@ -6,6 +6,9 @@
 //  Copyright (c) 2014 PAM. All rights reserved.
 //
 
+#define MR_ENABLE_ACTIVE_RECORD_LOGGING 0
+#define MR_SHORTHAND 1
+
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 #import "CoreData+MagicalRecord.h"
