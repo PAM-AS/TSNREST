@@ -47,9 +47,14 @@
 
 + (void)loginWithFacebookId:(NSString *)fbId accessToken:(NSString *)accessToken userClass:(Class)userClass url:(NSString *)url
 {
+    [self loginWithFacebookId:fbId accessToken:accessToken userClass:userClass completion:nil];
+}
+
++ (void)loginWithFacebookId:(NSString *)fbId accessToken:(NSString *)accessToken userClass:(Class)userClass url:(NSString *)url completion:(void (^)(id object, BOOL success))completion
+{
     NSString *postData = [NSString stringWithFormat:@"fb_user_id=%@&fb_access_token=%@&grant_type=facebook_token", fbId, accessToken];
     
-    [TSNRESTLogin loginWithPostData:postData userClass:userClass url:url completion:nil];
+    [TSNRESTLogin loginWithPostData:postData userClass:userClass url:url completion:completion];
 }
 
 + (void)loginWithPostData:(NSString *)postData userClass:(Class)userClass url:(NSString *)url completion:(void (^)(id object, BOOL success))completion
