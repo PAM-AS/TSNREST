@@ -10,5 +10,5 @@ Pod::Spec.new do |s|
   s.requires_arc = true
   s.frameworks = 'UIKit', 'CoreGraphics'
   s.source_files = 'TSNREST/*.{h,m}'
-  s.dependency 'MagicalRecord', '~> 2.2'
+  s.dependency 'MagicalRecord/Shorthand', '~> 2.2'
 end
