@@ -200,6 +200,7 @@
         // We get the value of the object (the actual data), and set the web key from the objectToWeb dictionary value.
         
         Class classType = [object classOfPropertyNamed:key];
+        NSLog(@"Checking %@ (class: %@)", key, NSStringFromClass(classType));
         
         if (objectMap.reverseMappingBlock) // Check for custom mapping block and run it.
         {
@@ -233,6 +234,7 @@
         else if ([classType isSubclassOfClass:[NSManagedObject class]] && [[object valueForKey:key] respondsToSelector:NSSelectorFromString(@"systemId")] && [[object valueForKey:key] valueForKey:@"systemId"])
         {
             NSNumber *systemId = [[object valueForKey:key] valueForKey:@"systemId"];
+            NSLog(@"Found a %@ with id %@", NSStringFromClass(classType), systemId);
             if (systemId)
                 [dataDict setObject:systemId forKey:obj];
         }
