@@ -247,6 +247,16 @@
                     [dataDict setObject:objectForKey forKey:string];
             }
         }
+        else
+        {
+            NSLog(@"No matches for key %@, class %@.", key, NSStringFromClass(classType));
+            if ([classType isSubclassOfClass:[NSManagedObject class]])
+                NSLog(@"It is an NSManagedObject");
+            if ([[object valueForKey:key] respondsToSelector:NSSelectorFromString(@"systemId")])
+                NSLog(@"It responds to systemId");
+            if ([[object valueForKey:key] valueForKey:@"systemId"])
+                NSLog(@"And it has a systemId");
+        }
         
         NSLog(@"Adding %@:%@ to dict (class: %@)", key, obj, NSStringFromClass(classType));
         
