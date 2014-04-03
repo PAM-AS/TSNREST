@@ -250,6 +250,7 @@
         else
         {
             NSLog(@"No matches for key %@, class %@.", key, NSStringFromClass(classType));
+            NSLog(@"The object: %@", [object valueForKey:key]);
             if ([classType isSubclassOfClass:[NSManagedObject class]])
                 NSLog(@"It is an NSManagedObject");
             if ([[object valueForKey:key] respondsToSelector:NSSelectorFromString(@"systemId")])
