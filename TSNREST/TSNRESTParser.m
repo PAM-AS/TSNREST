@@ -19,6 +19,23 @@
 
 + (BOOL)parseAndPersistDictionary:(NSDictionary *)dict withCompletion:(void (^)())completion
 {
+    return [self parseAndPersistDictionary:dict withCompletion:completion forObject:nil];
+}
+
++ (BOOL)parseAndPersistDictionary:(NSDictionary *)dict withCompletion:(void (^)())completion forObject:(id)object
+{
+    if (object && [object valueForKey:@"systemId"] == nil && [[dict allKeys] count] == 1)
+    {
+        NSLog(@"We're creating an object. Set ID from web, so that we can update it correctly");
+        for (NSString *dictKey in dict)
+        {
+            NSArray *jsonData = [dict objectForKey:dictKey];
+            [object setValue:[[jsonData objectAtIndex:0] valueForKey@"id"] forKey:@"systemId"];
+            NSError *error = [[NSError alloc] init];
+            [[object managedObjectContext] save:&error];
+        }
+    }
+    
     for (NSString *dictKey in dict)
     {
         TSNRESTObjectMap *map = [[TSNRESTManager sharedManager] objectMapForServerPath:dictKey];
