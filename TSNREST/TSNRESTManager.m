@@ -172,7 +172,7 @@
         [TSNRESTParser parseAndPersistDictionary:responseDict withCompletion:^{
             id newObject = nil;
             
-            if (object && objectClass)
+            if (object && objectClass && systemId)
             {
                 newObject = [objectClass findFirstByAttribute:@"systemId" withValue:systemId];
                 if ([newObject respondsToSelector:NSSelectorFromString(@"name")])
