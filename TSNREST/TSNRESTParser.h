@@ -14,6 +14,7 @@
 
 + (BOOL)parseAndPersistDictionary:(NSDictionary *)dict;
 + (BOOL)parseAndPersistDictionary:(NSDictionary *)dict withCompletion:(void (^)())completion;
++ (BOOL)parseAndPersistDictionary:(NSDictionary *)dict withCompletion:(void (^)())completion forObject:(id)object;
 + (BOOL)parseAndPersistArray:(NSArray *)array withObjectMap:(TSNRESTObjectMap *)map;
 
 @end

@@ -189,7 +189,7 @@
                 });
             }
             [[NSNotificationCenter defaultCenter] postNotificationName:@"modelUpdated" object:nil];
-        }];
+        } forObject:object];
     }
 }
 
