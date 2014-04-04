@@ -30,7 +30,7 @@
         for (NSString *dictKey in dict)
         {
             NSArray *jsonData = [dict objectForKey:dictKey];
-            [object setValue:[[jsonData objectAtIndex:0] valueForKey@"id"] forKey:@"systemId"];
+            [object setValue:[[jsonData objectAtIndex:0] valueForKey:@"id"] forKey:@"systemId"];
             NSError *error = [[NSError alloc] init];
             [[object managedObjectContext] save:&error];
         }
