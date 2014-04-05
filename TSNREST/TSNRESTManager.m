@@ -78,6 +78,11 @@
 
 - (void)deleteObjectFromServer:(id)object
 {
+    [self deleteObjectFromServer:object completion:nil];
+}
+
+- (void)deleteObjectFromServer:(id)object completion:(void (^)(id object, BOOL success))completion
+{
     TSNRESTObjectMap *objectMap = [self objectMapForClass:[object class]];
     
     NSURLSession *session = [NSURLSession sharedSession];
@@ -99,10 +104,15 @@
             NSLog(@"Creation/updated of object failed (Status code %li).", (long)[(NSHTTPURLResponse *)response statusCode]);
             if (error)
                 NSLog(@"Error: %@", [error localizedDescription]);
+            if (completion)
+                completion(object, NO);
         }
         else
         {
             NSLog(@"Object successfully deleted.");
+            [object deleteEntity];
+            if (completion)
+                completion(object, YES);
         }
     }];
     [dataTask resume];

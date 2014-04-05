@@ -40,7 +40,8 @@
 - (TSNRESTObjectMap *)objectMapForPushKey:(NSString *)path;
 - (void)setGlobalHeader:(NSString *)header forKey:(NSString *)key;
 
-- (void)deleteObjectFromServer:(id)object DEPRECATED_ATTRIBUTE;
+- (void)deleteObjectFromServer:(id)object;
+- (void)deleteObjectFromServer:(id)object completion:(void (^)(id object, BOOL success))completion;
 
 // Common helpers for other TSNREST components
 - (NSURLRequest *)requestForObject:(id)object;

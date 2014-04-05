@@ -41,6 +41,11 @@
     [[TSNRESTManager sharedManager] deleteObjectFromServer:self];
 }
 
+- (void)deleteFromServerWithCompletion:(void (^)(id object, BOOL success))completion
+{
+    [[TSNRESTManager sharedManager] deleteObjectFromServer:self completion:completion];
+}
+
 - (void)faultIfNeeded
 {
     NSLog(@"Testing fault on %@ %@", NSStringFromClass(self.class), [self valueForKey:@"systemId"]);

@@ -19,6 +19,7 @@
 - (void)persistWithCompletion:(void (^)(id object, BOOL success))completion session:(NSURLSession *)session;
 
 - (void)deleteFromServer;
+- (void)deleteFromServerWithCompletion:(void (^)(id object, BOOL success))completion;
 
 - (void)faultIfNeeded;
 - (void)refresh;
