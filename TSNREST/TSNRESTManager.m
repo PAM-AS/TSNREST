@@ -90,18 +90,29 @@
     [request addValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     if (self.customHeaders)
         [self.customHeaders enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-            [request addValue:object forHTTPHeaderField:key];
+            [request addValue:obj forHTTPHeaderField:key];
         }];
     [request setHTTPMethod:@"DELETE"];
     
     NSNumber *systemId = [object valueForKey:@"systemId"];
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@/%@", self.baseURL, objectMap.serverPath, systemId]];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@/%@", self.baseURL, objectMap.serverPath, systemId]];
     [request setURL:url];
     
+    NSLog(@"Sending delete action for %@ to %@", systemId, [url absoluteString]);
+    
     NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        if ([(NSHTTPURLResponse *)response statusCode] < 200 || [(NSHTTPURLResponse *)response statusCode] > 204)
+        if ([(NSHTTPURLResponse *)response statusCode] == 404) // Assume object isn't on server yet. Delete locally.
         {
-            NSLog(@"Creation/updated of object failed (Status code %li).", (long)[(NSHTTPURLResponse *)response statusCode]);
+            NSLog(@"Object attempted deleted, assume success (404).");
+            [object deleteEntity];
+            NSError *aerror = [[NSError alloc] init];
+            [[object managedObjectContext] save:&aerror];
+            if (completion)
+                completion(object, YES);
+        }
+        else if ([(NSHTTPURLResponse *)response statusCode] < 200 || [(NSHTTPURLResponse *)response statusCode] > 204)
+        {
+            NSLog(@"Deletion of object failed (Status code %li).", (long)[(NSHTTPURLResponse *)response statusCode]);
             if (error)
                 NSLog(@"Error: %@", [error localizedDescription]);
             if (completion)
@@ -111,6 +122,8 @@
         {
             NSLog(@"Object successfully deleted.");
             [object deleteEntity];
+            NSError *aerror = [[NSError alloc] init];
+            [[object managedObjectContext] save:&aerror];
             if (completion)
                 completion(object, YES);
         }
