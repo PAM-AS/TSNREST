@@ -8,6 +8,7 @@
 
 #import "TSNRESTLogin.h"
 #import "TSNRESTParser.h"
+#import "Reachability.h"
 
 @implementation TSNRESTLogin
 
@@ -59,6 +60,18 @@
 
 + (void)loginWithPostData:(NSString *)postData userClass:(Class)userClass url:(NSString *)url completion:(void (^)(id object, BOOL success))completion
 {
+    Reachability *rb = [Reachability reachabilityForInternetConnection];
+    if (![rb isReachable])
+    {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Nettverksproblem" message:@"Du ser ikke ut til å være tilkoblet et nettverk. Koble til et trådløst nettverk og prøv igjen" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+            [alert show];
+        });
+        completion(nil, NO);
+        return;
+    }
+    
+    
     NSURLSession *session = [NSURLSession sharedSession];
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
     [request addValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];

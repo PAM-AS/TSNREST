@@ -137,7 +137,15 @@
     NSNumber *systemId = [object valueForKey:@"systemId"];
     Class objectClass = [object class];
     
-    NSDictionary *responseDict = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
+    NSDictionary *responseDict = nil;
+    if (data)
+        responseDict = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
+    else
+    {
+        if (completion)
+            completion(object, NO);
+        return;
+    }
 #if DEBUG
     NSLog(@"Response: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
 #endif
