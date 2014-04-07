@@ -23,19 +23,7 @@
 }
 
 + (BOOL)parseAndPersistDictionary:(NSDictionary *)dict withCompletion:(void (^)())completion forObject:(id)object
-{
-    if (object && [object valueForKey:@"systemId"] == nil && [[dict allKeys] count] == 1)
-    {
-        NSLog(@"We're creating an object. Set ID from web, so that we can update it correctly");
-        for (NSString *dictKey in dict)
-        {
-            NSArray *jsonData = [dict objectForKey:dictKey];
-            [object setValue:[[jsonData objectAtIndex:0] valueForKey:@"id"] forKey:@"systemId"];
-            NSError *error = [[NSError alloc] init];
-            [[object managedObjectContext] save:&error];
-        }
-    }
-    
+{    
     for (NSString *dictKey in dict)
     {
         TSNRESTObjectMap *map = [[TSNRESTManager sharedManager] objectMapForServerPath:dictKey];
@@ -45,6 +33,13 @@
             NSLog(@"Found map for %@", dictKey);
 #endif
             NSArray *jsonData = [dict objectForKey:dictKey];
+            
+            if (object && [object valueForKey:@"systemId"] == nil && [map classToMap] == [object class] && jsonData.count == 1)
+            {
+                [object setValue:[[jsonData objectAtIndex:0] valueForKey:@"id"] forKey:@"systemId"];
+                NSError *error = [[NSError alloc] init];
+                [[object managedObjectContext] save:&error];
+            }
             
             [self parseAndPersistArray:jsonData withObjectMap:map];
             
