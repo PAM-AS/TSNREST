@@ -32,6 +32,10 @@
     NSURLRequest *request = [[TSNRESTManager sharedManager] requestForObject:self];
     NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         [[TSNRESTManager sharedManager] handleResponse:response withData:data error:error object:self completion:completion];
+        NSLog(@"Data: %@", data);
+        NSLog(@"Response: %@", response);
+        if (error)
+            NSLog(@"Error: %@", [error userInfo]);
     }];
     [dataTask resume];
 }
