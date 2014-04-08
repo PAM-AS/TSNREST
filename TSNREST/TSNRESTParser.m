@@ -180,10 +180,14 @@
                 [object setValue:date forKey:key];
             }
             // Assume NSString or NSNumber for everything else.
-            else if ([dict valueForKey:webKey] != [NSNull null])
+            else if ([dict valueForKey:webKey] != [NSNull null] && [[dict valueForKey:webKey] isKindOfClass:[object classOfPropertyNamed:key]])
             {
               //  NSLog(@"Adding %@ (String/Number) to %@ %@", key, NSStringFromClass([map classToMap]), [dict objectForKey:@"id"]);
                 [object setValue:[dict objectForKey:webKey] forKey:key];
+            }
+            else
+            {
+                NSLog(@"class missmatch, not saving: %@ != %@", NSStringFromClass([[dict valueForKey:webKey] class]), NSStringFromClass([object classOfPropertyNamed:key]));
             }
             
             if (map.mappingBlock)
