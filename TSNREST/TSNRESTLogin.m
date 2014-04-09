@@ -117,7 +117,15 @@
                 
                 NSLog(@"Login succeeded for user: %@", [user valueForKey:@"systemId"]);
                 if (userClass)
-                    [[NSNotificationCenter defaultCenter] postNotificationName:@"LoginSucceeded" object:Nil userInfo:@{@"class":NSStringFromClass(userClass), @"object":user, @"response":response}];
+                {
+                    NSMutableDictionary *userDict = [[NSMutableDictionary alloc] init];
+                    [userDict setObject:NSStringFromClass(userClass) forKey:@"class"];
+                    if (user)
+                        [userDict setObject:user forKey:@"object"];
+                    if (response)
+                        [userDict setObject:response forKey:@"response"];
+                    [[NSNotificationCenter defaultCenter] postNotificationName:@"LoginSucceeded" object:Nil userInfo:userDict];
+                }
                 completion(user, YES);
             }];
 

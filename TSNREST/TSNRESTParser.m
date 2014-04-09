@@ -66,7 +66,7 @@
 + (BOOL)parseAndPersistArray:(NSArray *)array withObjectMap:(TSNRESTObjectMap *)map
 {
     NSLog(@"Starting Magic block in parseAndPersistArray for map %@", NSStringFromClass([map classToMap]));
-    dispatch_async([[TSNRESTManager sharedManager] serialQueue], ^{
+    dispatch_sync([[TSNRESTManager sharedManager] serialQueue], ^{
         [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
             [self parseAndPersistArray:array withObjectMap:map inContext:localContext];
         }];
