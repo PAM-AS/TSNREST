@@ -31,6 +31,15 @@
     return _sharedObject;
 }
 
+#pragma mark - Getters & setters
+- (dispatch_queue_t)serialQueue
+{
+    if (!_serialQueue)
+        _serialQueue = dispatch_queue_create("as.pam.pam.serialQueue", DISPATCH_QUEUE_SERIAL);
+    return _serialQueue;
+}
+
+#pragma mark - Functions
 - (void)addObjectMap:(TSNRESTObjectMap *)objectMap
 {
     if (!self.objectMaps)
