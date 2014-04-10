@@ -24,6 +24,8 @@
 - (void)faultIfNeeded;
 - (void)refresh;
 
+- (NSString *)JSONRepresentation;
+
 + (void)refresh;
 + (void)refreshWithCompletion:(void (^)())completion;
 

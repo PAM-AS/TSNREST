@@ -48,6 +48,8 @@
 - (NSURLRequest *)requestForObject:(id)object;
 - (void)handleResponse:(NSURLResponse *)response withData:(NSData *)data error:(NSError *)error object:(id)object completion:(void (^)(id object, BOOL success))completion;
 
+- (NSDictionary *)dictionaryFromObject:(id)object withObjectMap:(TSNRESTObjectMap *)objectMap;
+
 - (void)resetDataStore;
 
 @end

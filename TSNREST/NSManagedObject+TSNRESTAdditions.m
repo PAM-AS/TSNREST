@@ -80,6 +80,15 @@
     [task resume];
 }
 
+- (NSString *)JSONRepresentation
+{
+    NSDictionary *dict = [[TSNRESTManager sharedManager] dictionaryFromObject:self withObjectMap:[[TSNRESTManager sharedManager] objectMapForClass:[self class]]];
+    NSError *error = [[NSError alloc] init];
+    NSData *JSONData = [NSJSONSerialization dataWithJSONObject:dict options:0 error:&error];
+    NSString *JSONString = [[NSString alloc] initWithData:JSONData encoding:NSUTF8StringEncoding];
+    return JSONString;
+}
+
 + (void)refresh
 {
     [self refreshWithCompletion:nil];
