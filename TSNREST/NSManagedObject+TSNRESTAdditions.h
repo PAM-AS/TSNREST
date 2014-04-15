@@ -22,7 +22,9 @@
 - (void)deleteFromServerWithCompletion:(void (^)(id object, BOOL success))completion;
 
 - (void)faultIfNeeded;
+- (void)faultIfNeededWithCompletion:(void (^)(id object, BOOL success))completion;
 - (void)refresh;
+- (void)refreshWithCompletion:(void (^)(id object, BOOL success))completion;
 
 - (NSString *)JSONRepresentation;
 

@@ -52,16 +52,26 @@
 
 - (void)faultIfNeeded
 {
+    [self faultIfNeededWithCompletion:nil];
+}
+
+- (void)faultIfNeededWithCompletion:(void (^)(id object, BOOL success))completion
+{
     NSLog(@"Testing fault on %@ %@", NSStringFromClass(self.class), [self valueForKey:@"systemId"]);
     SEL dirtyIdSelector = sel_registerName("dirty");
     if ([self respondsToSelector:dirtyIdSelector] && [[self valueForKey:@"dirty"] isEqualToNumber:@2])
     {
         NSLog(@"Triggering fault on %@ %@ (dirty is %@)", NSStringFromClass(self.class), [self valueForKey:@"systemId"], [self valueForKey:@"dirty"]);
-        [self refresh];
+        [self refreshWithCompletion:completion];
     }
 }
 
 - (void)refresh
+{
+    [self refreshWithCompletion:nil];
+}
+
+- (void)refreshWithCompletion:(void (^)(id object, BOOL success))completion
 {
     NSLog(@"Refreshing %@ %@", NSStringFromClass(self.class), [self valueForKey:@"systemId"]);
     TSNRESTObjectMap *map = [[TSNRESTManager sharedManager] objectMapForClass:self.class];
@@ -74,7 +84,8 @@
     
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         [[TSNRESTManager sharedManager] handleResponse:response withData:data error:error object:self completion:^(id object, BOOL success) {
-            
+            if (completion)
+                completion(nil, YES);
         }];
     }];
     [task resume];

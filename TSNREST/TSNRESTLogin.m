@@ -126,7 +126,10 @@
                         [userDict setObject:response forKey:@"response"];
                     [[NSNotificationCenter defaultCenter] postNotificationName:@"LoginSucceeded" object:Nil userInfo:userDict];
                 }
-                completion(user, YES);
+                if (user)
+                    completion(user, YES);
+                else
+                    completion(dataDict, YES);
             }];
 
             /*
