@@ -85,7 +85,7 @@
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         [[TSNRESTManager sharedManager] handleResponse:response withData:data error:error object:self completion:^(id object, BOOL success) {
             if (completion)
-                completion(nil, YES);
+                completion(nil, success);
         }];
     }];
     [task resume];

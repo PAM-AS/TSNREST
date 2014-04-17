@@ -158,7 +158,7 @@
                 
                 if (!classObject) // Create a new, empty object and set system id
                 {
-                    // NSLog(@"Created new %@ with id %@ and added it to %@ %@", [object classOfPropertyNamed:key], [dict valueForKey:webKey], NSStringFromClass([object class]), [object valueForKey:@"systemId"]);
+                    NSLog(@"Created new %@ with id %@ and added it to %@ %@", [object classOfPropertyNamed:key], [dict valueForKey:webKey], NSStringFromClass([object class]), [object valueForKey:@"systemId"]);
                     classObject = [[object classOfPropertyNamed:key] createInContext:localContext];
                     if ([classObject respondsToSelector:NSSelectorFromString(@"systemId")])
                         [classObject setValue:[dict valueForKey:webKey] forKey:@"systemId"];
