@@ -112,12 +112,14 @@
     NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         if ([(NSHTTPURLResponse *)response statusCode] == 404) // Assume object isn't on server yet. Delete locally.
         {
-            NSLog(@"Object attempted deleted, assume success (404).");
-            [object deleteEntity];
-            NSError *aerror = [[NSError alloc] init];
-            [[object managedObjectContext] save:&aerror];
-            if (completion)
-                completion(object, YES);
+            dispatch_async([[TSNRESTManager sharedManager] serialQueue], ^{
+                NSLog(@"Object attempted deleted, assume success (404).");
+                [object deleteEntity];
+                NSError *aerror = [[NSError alloc] init];
+                [[object managedObjectContext] save:&aerror];
+                if (completion)
+                    completion(object, YES);
+            });
         }
         else if ([(NSHTTPURLResponse *)response statusCode] < 200 || [(NSHTTPURLResponse *)response statusCode] > 204)
         {
@@ -129,12 +131,14 @@
         }
         else
         {
-            NSLog(@"Object successfully deleted.");
-            [object deleteEntity];
-            NSError *aerror = [[NSError alloc] init];
-            [[object managedObjectContext] save:&aerror];
-            if (completion)
-                completion(object, YES);
+            dispatch_async([[TSNRESTManager sharedManager] serialQueue], ^{
+                NSLog(@"Object successfully deleted.");
+                [object deleteEntity];
+                NSError *aerror = [[NSError alloc] init];
+                [[object managedObjectContext] save:&aerror];
+                if (completion)
+                    completion(object, YES);
+            });
         }
     }];
     [dataTask resume];
@@ -178,13 +182,14 @@
             NSLog(@"Error: %@", [error localizedDescription]);
         if (object)
         {
-            [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
-                id contextObject = [object inContext:localContext];
-                if ([contextObject respondsToSelector:NSSelectorFromString(@"dirty")])
-                    [contextObject setValue:@1 forKey:@"dirty"];
-            } completion:^(BOOL success, NSError *error) {
+            dispatch_async([[TSNRESTManager sharedManager] serialQueue], ^{
+                [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+                    id contextObject = [object inContext:localContext];
+                    if ([contextObject respondsToSelector:NSSelectorFromString(@"dirty")])
+                        [contextObject setValue:@1 forKey:@"dirty"];
+                }];
                 [[NSNotificationCenter defaultCenter] postNotificationName:@"modelUpdated" object:nil];
-            }];
+            });
         }
         
         NSMutableDictionary *failDict = [[NSMutableDictionary alloc] init];
@@ -203,10 +208,12 @@
     {
         if (object && [object respondsToSelector:NSSelectorFromString(@"dirty")])
         {
-            [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
-                id contextObject = [object inContext:localContext];
-                [contextObject setValue:@0 forKey:@"dirty"];
-            }];
+            dispatch_async([[TSNRESTManager sharedManager] serialQueue], ^{
+                [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+                    id contextObject = [object inContext:localContext];
+                    [contextObject setValue:@0 forKey:@"dirty"];
+                }];
+            });
         }
         
         [TSNRESTParser parseAndPersistDictionary:responseDict withCompletion:^{
