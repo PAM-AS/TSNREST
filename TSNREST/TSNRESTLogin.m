@@ -101,7 +101,17 @@
                 [[NSUserDefaults standardUserDefaults] setObject:[dataDict objectForKey:@"access_token"] forKey:@"access_token"];
             }
             if ([dataDict objectForKey:@"refresh_token"])
+            {
                 [[NSUserDefaults standardUserDefaults] setObject:[dataDict objectForKey:@"refresh_token"] forKey:@"refresh_token"];
+                if ([dataDict objectForKey:@"expires_in"])
+                {
+                    NSInteger expiry = [[dataDict objectForKey:@"expires_in"] integerValue] * 0.9+1;
+                    UILocalNotification *notification = [[UILocalNotification alloc] init];
+                    notification.userInfo = @{@"refreshToken":@1};
+                    notification.fireDate = [NSDate dateWithTimeIntervalSinceNow:expiry];
+                    [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+                }
+            }
             
             NSNumber *userId = nil;
             if ([dataDict objectForKey:@"user_id"])
@@ -126,9 +136,9 @@
                         [userDict setObject:response forKey:@"response"];
                     [[NSNotificationCenter defaultCenter] postNotificationName:@"LoginSucceeded" object:Nil userInfo:userDict];
                 }
-                if (user)
+                if (completion && user)
                     completion(user, YES);
-                else
+                else if (completion)
                     completion(dataDict, YES);
             }];
 

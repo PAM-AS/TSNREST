@@ -134,6 +134,7 @@
     [request addValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     if ([[TSNRESTManager sharedManager] customHeaders])
         [[[TSNRESTManager sharedManager] customHeaders] enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+            NSLog(@"Added header %@ for %@", obj, key);
             [request addValue:obj forHTTPHeaderField:key];
         }];
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
