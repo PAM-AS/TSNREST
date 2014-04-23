@@ -105,6 +105,7 @@
                 [[NSUserDefaults standardUserDefaults] setObject:[dataDict objectForKey:@"refresh_token"] forKey:@"refresh_token"];
                 if ([dataDict objectForKey:@"expires_in"])
                 {
+                    [[UIApplication sharedApplication] cancelAllLocalNotifications];
                     NSInteger expiry = [[dataDict objectForKey:@"expires_in"] integerValue] * 0.9+1;
                     UILocalNotification *notification = [[UILocalNotification alloc] init];
                     notification.userInfo = @{@"refreshToken":@1};
