@@ -168,12 +168,17 @@
     
     if (statusCode == 401 || (headerUserId != nil && headerUserId.intValue != myUserId.intValue))
     {
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"prev401"] timeIntervalSince1970] > [[NSDate date] timeIntervalSince1970] - 30) // Limit 401 trigger to once every 30 seconds
+            return;
         if (self.delegate && [self.delegate loginCompleteBlock])
             [TSNRESTLogin loginWithDefaultRefreshTokenAndUserClass:[self.delegate userClass] url:[self.delegate authURL] completion:[self.delegate loginCompleteBlock]];
         else
             [TSNRESTLogin loginWithDefaultRefreshTokenAndUserClass:[self.delegate userClass] url:[self.delegate authURL]];
         if (completion)
             completion(object, NO);
+        [[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:@"prev401"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
     }
     else if ([(NSHTTPURLResponse *)response statusCode] < 200 || [(NSHTTPURLResponse *)response statusCode] > 204)
     {
