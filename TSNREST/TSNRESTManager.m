@@ -69,6 +69,11 @@
     return _serialQueue;
 }
 
+- (BOOL)isLoading
+{
+    return (self.loadingRetainCount > 0);
+}
+
 #pragma mark - Functions
 - (void)addObjectMap:(TSNRESTObjectMap *)objectMap
 {

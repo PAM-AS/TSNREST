@@ -37,6 +37,7 @@
 
 - (void)startLoading:(NSString *)identifier;
 - (void)endLoading:(NSString *)identifier;
+- (BOOL)isLoading;
 
 - (void)addObjectMap:(TSNRESTObjectMap *)objectMap;
 - (TSNRESTObjectMap *)objectMapForClass:(Class)classToFind;
