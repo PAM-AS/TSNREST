@@ -12,6 +12,12 @@
 #import "NSDate+SAMAdditions.h"
 #import "NSString+TSNRESTAdditions.h"
 
+@interface TSNRESTManager ()
+
+@property (nonatomic) int loadingRetainCount;
+
+@end
+
 @implementation TSNRESTManager
 
 + (id)sharedManager
@@ -29,6 +35,24 @@
     
     // returns the same object each time
     return _sharedObject;
+}
+
+- (void)startLoading
+{
+    if (self.loadingRetainCount == 0)
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"startLoadingAnimation" object:nil];
+        });
+    self.loadingRetainCount++;
+}
+
+- (void)endLoading
+{
+    self.loadingRetainCount--;
+    if (self.loadingRetainCount == 0)
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"stopLoadingAnimation" object:nil];
+        });
 }
 
 #pragma mark - Getters & setters
@@ -236,9 +260,7 @@
                 completion(newObject, YES);
             else
             {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [[NSNotificationCenter defaultCenter] postNotificationName:@"stopLoadingAnimation" object:nil];
-                });
+                [[TSNRESTManager sharedManager] endLoading];
             }
             [[NSNotificationCenter defaultCenter] postNotificationName:@"modelUpdated" object:nil];
         } forObject:object];

@@ -35,6 +35,9 @@
 
 + (id)sharedManager;
 
+- (void)startLoading;
+- (void)endLoading;
+
 - (void)addObjectMap:(TSNRESTObjectMap *)objectMap;
 - (TSNRESTObjectMap *)objectMapForClass:(Class)classToFind;
 - (TSNRESTObjectMap *)objectMapForServerPath:(NSString *)path;

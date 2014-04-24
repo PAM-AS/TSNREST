@@ -26,12 +26,13 @@
 
 - (void)persistWithCompletion:(void (^)(id object, BOOL success))completion session:(NSURLSession *)session
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"startLoadingAnimation" object:nil];
-    });
+    [[TSNRESTManager sharedManager] startLoading];
     NSURLRequest *request = [[TSNRESTManager sharedManager] requestForObject:self];
     NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        [[TSNRESTManager sharedManager] handleResponse:response withData:data error:error object:self completion:completion];
+        [[TSNRESTManager sharedManager] handleResponse:response withData:data error:error object:self completion:^(id object, BOOL success) {
+            [[TSNRESTManager sharedManager] endLoading];
+            completion(object, success);
+        }];
         NSLog(@"Data: %@", data);
         NSLog(@"Response: %@", response);
         if (error)
@@ -108,11 +109,10 @@
 + (void)refreshWithCompletion:(void (^)())completion
 {
     // Send NSNotificationCenter push that model will be updated. Send model class as user data.
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"startLoadingAnimation" object:nil];
-    });
     
     TSNRESTManager *manager = [TSNRESTManager sharedManager];
+    [manager startLoading];
+    
     TSNRESTObjectMap *objectMap = [manager objectMapForClass:[self class]];
     if (!objectMap)
     {
@@ -142,9 +142,7 @@
         [[TSNRESTManager sharedManager] handleResponse:response withData:data error:error object:nil completion:^(id object, BOOL success) {
             if (completion)
                 completion();
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [[NSNotificationCenter defaultCenter] postNotificationName:@"stopLoadingAnimation" object:nil];
-            });
+            [[TSNRESTManager sharedManager] endLoading];
         }];
     }];
     [task resume];
