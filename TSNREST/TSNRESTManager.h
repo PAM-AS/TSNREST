@@ -35,8 +35,8 @@
 
 + (id)sharedManager;
 
-- (void)startLoading;
-- (void)endLoading;
+- (void)startLoading:(NSString *)identifier;
+- (void)endLoading:(NSString *)identifier;
 
 - (void)addObjectMap:(TSNRESTObjectMap *)objectMap;
 - (TSNRESTObjectMap *)objectMapForClass:(Class)classToFind;

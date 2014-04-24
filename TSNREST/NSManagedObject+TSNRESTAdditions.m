@@ -26,12 +26,13 @@
 
 - (void)persistWithCompletion:(void (^)(id object, BOOL success))completion session:(NSURLSession *)session
 {
-    [[TSNRESTManager sharedManager] startLoading];
+    [[TSNRESTManager sharedManager] startLoading:@"persistWithCompletion:session:"];
     NSURLRequest *request = [[TSNRESTManager sharedManager] requestForObject:self];
     NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         [[TSNRESTManager sharedManager] handleResponse:response withData:data error:error object:self completion:^(id object, BOOL success) {
-            [[TSNRESTManager sharedManager] endLoading];
-            completion(object, success);
+            [[TSNRESTManager sharedManager] endLoading:@"persistWithCompletion:session:"];
+            if (completion)
+                completion(object, success);
         }];
         NSLog(@"Data: %@", data);
         NSLog(@"Response: %@", response);
@@ -64,6 +65,10 @@
     {
         NSLog(@"Triggering fault on %@ %@ (dirty is %@)", NSStringFromClass(self.class), [self valueForKey:@"systemId"], [self valueForKey:@"dirty"]);
         [self refreshWithCompletion:completion];
+    }
+    else if (completion)
+    {
+        completion(self, YES);
     }
 }
 
@@ -111,7 +116,7 @@
     // Send NSNotificationCenter push that model will be updated. Send model class as user data.
     
     TSNRESTManager *manager = [TSNRESTManager sharedManager];
-    [manager startLoading];
+    [manager startLoading:@"refreshWithCompletion"];
     
     TSNRESTObjectMap *objectMap = [manager objectMapForClass:[self class]];
     if (!objectMap)
@@ -142,7 +147,7 @@
         [[TSNRESTManager sharedManager] handleResponse:response withData:data error:error object:nil completion:^(id object, BOOL success) {
             if (completion)
                 completion();
-            [[TSNRESTManager sharedManager] endLoading];
+            [[TSNRESTManager sharedManager] endLoading:@"refreshWithCompletion"];
         }];
     }];
     [task resume];

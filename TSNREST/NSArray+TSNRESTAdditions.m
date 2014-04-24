@@ -109,7 +109,7 @@
 
 - (void)persistContainedNSManagedObjects
 {
-    [[TSNRESTManager sharedManager] startLoading];
+    [[TSNRESTManager sharedManager] startLoading:@"persistContainedNSManagedObjects"];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         for (id object in self)
         {
@@ -125,7 +125,7 @@
                 [[TSNRESTManager sharedManager] handleResponse:response withData:result error:error object:object completion:nil];
             else
                 [[TSNRESTManager sharedManager] handleResponse:response withData:result error:error object:object completion:^(id object, BOOL success) {
-                    [[TSNRESTManager sharedManager] endLoading];
+                    [[TSNRESTManager sharedManager] endLoading:@"persistContainedNSManagedObjects"];
                 }];
             NSLog(@"Still got %@", [object valueForKey:@"systemId"]);
         }

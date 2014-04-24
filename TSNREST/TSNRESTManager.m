@@ -37,22 +37,28 @@
     return _sharedObject;
 }
 
-- (void)startLoading
+- (void)startLoading:(NSString *)identifier
 {
     if (self.loadingRetainCount == 0)
         dispatch_async(dispatch_get_main_queue(), ^{
             [[NSNotificationCenter defaultCenter] postNotificationName:@"startLoadingAnimation" object:nil];
         });
     self.loadingRetainCount++;
+#if DEBUG
+    NSLog(@"LoadingRetain: %i New loading starts: %@", self.loadingRetainCount, identifier);
+#endif
 }
 
-- (void)endLoading
+- (void)endLoading:(NSString *)identifier
 {
     self.loadingRetainCount--;
     if (self.loadingRetainCount == 0)
         dispatch_async(dispatch_get_main_queue(), ^{
             [[NSNotificationCenter defaultCenter] postNotificationName:@"stopLoadingAnimation" object:nil];
         });
+#if DEBUG
+    NSLog(@"LoadingRetain: %i Loading done: %@", self.loadingRetainCount, identifier);
+#endif
 }
 
 #pragma mark - Getters & setters
@@ -260,7 +266,7 @@
                 completion(newObject, YES);
             else
             {
-                [[TSNRESTManager sharedManager] endLoading];
+                [[TSNRESTManager sharedManager] endLoading:@"handleResponse generic (no completion block provided)"];
             }
             [[NSNotificationCenter defaultCenter] postNotificationName:@"modelUpdated" object:nil];
         } forObject:object];
