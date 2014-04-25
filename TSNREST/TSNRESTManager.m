@@ -212,6 +212,11 @@
             [TSNRESTLogin loginWithDefaultRefreshTokenAndUserClass:[self.delegate userClass] url:[self.delegate authURL]];
         if (completion)
             completion(object, NO);
+        else
+        {
+            [[TSNRESTManager sharedManager] endLoading:@"handleResponse generic (no completion block provided)"];
+        }
+        
         [[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:@"prev401"];
         [[NSUserDefaults standardUserDefaults] synchronize];
     }
@@ -243,6 +248,10 @@
         [[NSNotificationCenter defaultCenter] postNotificationName:@"APIRequestFailed" object:Nil userInfo:failDict];
         if (completion)
             completion(nil, NO);
+        else
+        {
+            [[TSNRESTManager sharedManager] endLoading:@"handleResponse generic (no completion block provided)"];
+        }
     }
     else
     {
