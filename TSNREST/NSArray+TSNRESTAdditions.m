@@ -21,9 +21,8 @@
     NSMutableArray *tempArray = [NSMutableArray arrayWithArray:self];
     SEL dirtyIdSelector = sel_registerName("dirty");
     
-    if ([tempArray count] <= 0)
+    if ([tempArray count] <= 0) // No objects to fault, array empty.
     {
-        NSLog(@"Array is empty. Can't fault nothin'. Returning.");
         return;
     }
     
@@ -31,24 +30,32 @@
     {
         if (![[object class] isSubclassOfClass:[NSManagedObject class]])
         {
-            NSLog(@"%@ is not a subclass of NSManagedObject. Removing.", NSStringFromClass([object class]));
+#if DEBUG
+            NSLog(@"%@ is not a subclass of NSManagedObject. Removing from faulting array.", NSStringFromClass([object class]));
+#endif
             [tempArray removeObject:object];
         }
         else if (![object respondsToSelector:dirtyIdSelector])
         {
-            NSLog(@"%@ is missing dirty key. Removing.", NSStringFromClass([object class]));
+#if DEBUG
+            NSLog(@"%@ is missing dirty key. Removing from faulting array.", NSStringFromClass([object class]));
+#endif
             [tempArray removeObject:object];
         }
         else if (![[object valueForKey:@"dirty"] isEqualToNumber:@2])
         {
-            NSLog(@"%@ doesn't need faulting (dirty is not 2). Removing.", [object valueForKey:@"systemId"]);
+#if DEBUG
+            NSLog(@"%@ doesn't need faulting (dirty is not 2). Removing from faulting array.", [object valueForKey:@"systemId"]);
+#endif
             [tempArray removeObject:object];
         }
     }
     
     if ([tempArray count] <= 0)
     {
+#if DEBUG
         NSLog(@"No faultable NSManagedObjects in array. Returning.");
+#endif
         return;
     }
     
@@ -86,7 +93,9 @@
     TSNRESTObjectMap *map = [[TSNRESTManager sharedManager] objectMapForClass:[[self objectAtIndex:0] class]];
     if (!map)
     {
+#if DEBUG
         NSLog(@"No map for %@, can't fault.", NSStringFromClass([[self objectAtIndex:0] class]));
+#endif
         return;
     }
     
@@ -94,7 +103,9 @@
     if (sideloads)
         url = [url stringByAppendingString:sideloadString];
     
-    NSLog(@"Refreshing group with URL: %@", url);
+#if DEBUG
+    NSLog(@"Refreshing group of %@ with URL: %@", NSStringFromClass([map classToMap]), url);
+#endif
     
     NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
