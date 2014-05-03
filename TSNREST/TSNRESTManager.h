@@ -50,7 +50,11 @@
 
 // Common helpers for other TSNREST components
 - (NSURLRequest *)requestForObject:(id)object;
+
+- (void)runQueuedRequests;
+// If no request dict is supplied, function will not retry after a potential reauthentication (401)
 - (void)handleResponse:(NSURLResponse *)response withData:(NSData *)data error:(NSError *)error object:(id)object completion:(void (^)(id object, BOOL success))completion;
+- (void)handleResponse:(NSURLResponse *)response withData:(NSData *)data error:(NSError *)error object:(id)object completion:(void (^)(id object, BOOL success))completion requestDict:(NSDictionary *)requestDict;
 
 - (NSDictionary *)dictionaryFromObject:(id)object withObjectMap:(TSNRESTObjectMap *)objectMap;
 

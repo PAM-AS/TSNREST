@@ -93,6 +93,7 @@
         else
         {
             NSLog(@"Login Succeeded. Proceeding to create user object. %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+            [[TSNRESTManager sharedManager] runQueuedRequests];
             NSDictionary *dataDict = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
             
             if ([dataDict objectForKey:@"access_token"])

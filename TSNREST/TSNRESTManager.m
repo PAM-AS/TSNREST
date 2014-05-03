@@ -16,6 +16,9 @@
 
 @property (nonatomic) int loadingRetainCount;
 
+@property (atomic) BOOL isAuthenticating;
+@property (nonatomic, strong) NSMutableArray *requestQueue;
+
 @end
 
 @implementation TSNRESTManager
@@ -120,6 +123,7 @@
 }
 
 
+#pragma mark - Deletion
 - (void)deleteObjectFromServer:(id)object
 {
     [self deleteObjectFromServer:object completion:nil];
@@ -179,8 +183,56 @@
     [dataTask resume];
 }
 
+#pragma mark - Network helpers
+- (void)dataTaskWithRequest:(NSURLRequest *)request completionHandler:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completion
+{
+    [self dataTaskWithRequest:request completionHandler:completion session:nil];
+}
+
+- (void)dataTaskWithRequest:(NSURLRequest *)request completionHandler:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completion session:(NSURLSession *)session
+{
+    NSLog(@"Requesting datatask for request %@", request.URL.absoluteString);
+    @synchronized([TSNRESTManager class]) {
+        if (self.isAuthenticating)
+        {
+            NSDictionary *dictionary = @{@"request":request,@"completion":completion,@"session":session};
+            [self.requestQueue addObject:dictionary];
+            
+            NSLog(@"Authentication is in progress. Datatask added to queue: %@", request.URL.absoluteString);
+            
+            return;
+        }
+    }
+    
+    NSURLSessionDataTask *task = nil;
+    if (!session)
+        task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:completion];
+    else
+        task = [session dataTaskWithRequest:request completionHandler:completion];
+    
+    NSLog(@"Running datatask for request %@ (%@)", request.URL.absoluteString, task);
+    
+    [task resume];
+}
+
+- (void)runQueuedRequests
+{
+    NSLog(@"Running %u requests from queue", self.requestQueue.count);
+    for (NSDictionary *dictionary in self.requestQueue)
+    {
+        if ([[dictionary objectForKey:@"request"] isKindOfClass:[NSURLRequest class]])
+            NSLog(@"Running queued request: %@", [[(NSURLRequest *)[dictionary objectForKey:@"request"] URL] absoluteString]);
+        [self dataTaskWithRequest:[dictionary objectForKey:@"request"] completionHandler:[dictionary objectForKey:@"completion"] session:[dictionary objectForKey:@"session"]];
+    }
+}
+
 #pragma mark - helpers
 - (void)handleResponse:(NSURLResponse *)response withData:(NSData *)data error:(NSError *)error object:(id)object completion:(void (^)(id object, BOOL success))completion
+{
+    [self handleResponse:response withData:data error:error object:object completion:completion requestDict:nil];
+}
+
+- (void)handleResponse:(NSURLResponse *)response withData:(NSData *)data error:(NSError *)error object:(id)object completion:(void (^)(id object, BOOL success))completion requestDict:(NSDictionary *)requestDict
 {
     NSNumber *systemId = [object valueForKey:@"systemId"];
     Class objectClass = [object class];
@@ -203,13 +255,23 @@
     
     if (statusCode == 401 || (headerUserId != nil && headerUserId.intValue != myUserId.intValue))
     {
+        @synchronized ([TSNRESTManager class]) {
+            self.isAuthenticating = YES;
+            if (requestDict)
+            {
+                [self.requestQueue addObject:requestDict];
+            }
+        }
+        
         [[NSUserDefaults standardUserDefaults] synchronize];
         if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"prev401"] timeIntervalSince1970] > [[NSDate date] timeIntervalSince1970] - 30) // Limit 401 trigger to once every 30 seconds
             return;
-        if (self.delegate && [self.delegate loginCompleteBlock])
+        if (self.delegate && [self.delegate respondsToSelector:@selector(userClass)] && [self.delegate respondsToSelector:@selector(loginCompleteBlock)])
             [TSNRESTLogin loginWithDefaultRefreshTokenAndUserClass:[self.delegate userClass] url:[self.delegate authURL] completion:[self.delegate loginCompleteBlock]];
-        else
+        else if ([self.delegate respondsToSelector:@selector(userClass)])
             [TSNRESTLogin loginWithDefaultRefreshTokenAndUserClass:[self.delegate userClass] url:[self.delegate authURL]];
+        else
+            [TSNRESTLogin loginWithDefaultRefreshTokenAndUserClass:nil url:[self.delegate authURL]];
         if (completion)
             completion(object, NO);
         else
