@@ -16,8 +16,10 @@
 @protocol TSNRESTManagerDelegate <NSObject>
 
 @required
-- (Class)userClass;
 - (NSString *)authURL;
+
+@optional
+- (Class)userClass;
 
 @optional
 - (void (^)(id object, BOOL success))loginCompleteBlock;
