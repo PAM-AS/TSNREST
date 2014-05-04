@@ -184,6 +184,24 @@
 }
 
 #pragma mark - Network helpers
+- (void)runAutoAuthenticatingRequest:(NSURLRequest *)request completion:(void (^)(BOOL success, BOOL newData))completion
+{
+    [self dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        if (data)
+        {
+            [self handleResponse:response withData:data error:error object:nil completion:^(id object, BOOL success) {
+                completion(success, YES);
+            } requestDict:@{@"request":request, @"completion":completion}];
+        }
+        else
+        {
+            [self handleResponse:response withData:data error:error object:nil completion:^(id object, BOOL success) {
+                completion(success, NO);
+            } requestDict:@{@"request":request, @"completion":completion}];
+        }
+    }];
+}
+
 - (void)dataTaskWithRequest:(NSURLRequest *)request completionHandler:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completion
 {
     [self dataTaskWithRequest:request completionHandler:completion session:nil];

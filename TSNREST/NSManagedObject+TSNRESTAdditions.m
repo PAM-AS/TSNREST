@@ -142,6 +142,14 @@
             NSLog(@"Added header %@ for %@", obj, key);
             [request addValue:obj forHTTPHeaderField:key];
         }];
+    
+    [[TSNRESTManager sharedManager] runAutoAuthenticatingRequest:request completion:^(BOOL success, BOOL newData) {
+        if (completion)
+            completion();
+        [[TSNRESTManager sharedManager] endLoading:@"refreshWithCompletion"];
+    }];
+    
+    /*
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         NSLog(@"Sending response to handler: (Status code %li).", (long)[(NSHTTPURLResponse *)response statusCode]);
         [[TSNRESTManager sharedManager] handleResponse:response withData:data error:error object:nil completion:^(id object, BOOL success) {
@@ -151,6 +159,7 @@
         }];
     }];
     [task resume];
+     */
 
 }
 
