@@ -213,7 +213,11 @@
     @synchronized([TSNRESTManager class]) {
         if (self.isAuthenticating)
         {
-            NSDictionary *dictionary = @{@"request":request,@"completion":completion,@"session":session};
+            NSDictionary *dictionary = nil;
+            if (session)
+                dictionary = @{@"request":request,@"completion":completion,@"session":session};
+            else
+                dictionary = @{@"request":request,@"completion":completion};
             [self.requestQueue addObject:dictionary];
             
             NSLog(@"Authentication is in progress. Datatask added to queue: %@", request.URL.absoluteString);
@@ -273,6 +277,10 @@
     
     if (statusCode == 401 || (headerUserId != nil && headerUserId.intValue != myUserId.intValue))
     {
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"prev401"] timeIntervalSince1970] > [[NSDate date] timeIntervalSince1970] - 30) // Limit 401 trigger to once every 30 seconds
+            return;
+        
         @synchronized ([TSNRESTManager class]) {
             self.isAuthenticating = YES;
             if (requestDict)
@@ -281,9 +289,6 @@
             }
         }
         
-        [[NSUserDefaults standardUserDefaults] synchronize];
-        if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"prev401"] timeIntervalSince1970] > [[NSDate date] timeIntervalSince1970] - 30) // Limit 401 trigger to once every 30 seconds
-            return;
         if (self.delegate && [self.delegate respondsToSelector:@selector(userClass)] && [self.delegate respondsToSelector:@selector(loginCompleteBlock)])
             [TSNRESTLogin loginWithDefaultRefreshTokenAndUserClass:[self.delegate userClass] url:[self.delegate authURL] completion:[self.delegate loginCompleteBlock]];
         else if ([self.delegate respondsToSelector:@selector(userClass)])
