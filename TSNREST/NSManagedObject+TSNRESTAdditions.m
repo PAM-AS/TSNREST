@@ -26,14 +26,19 @@
 
 - (void)persistWithCompletion:(void (^)(id object, BOOL success))completion session:(NSURLSession *)session
 {
-    NSObject *object = self;
     [[TSNRESTManager sharedManager] startLoading:@"persistWithCompletion:session:"];
     NSURLRequest *request = [[TSNRESTManager sharedManager] requestForObject:self];
-    [[TSNRESTManager sharedManager] runAutoAuthenticatingRequest:request completion:^(BOOL success, BOOL newData) {
-        completion(object, success);
-    }];
     
     /*
+    [[TSNRESTManager sharedManager] runAutoAuthenticatingRequest:request completion:^(BOOL success, BOOL newData) {
+        [object.managedObjectContext refreshObject:object mergeChanges:YES];
+        if (completion)
+            completion(object, success);
+        [[TSNRESTManager sharedManager] endLoading:@"persistWithCompletion:session:"];
+    }];
+     
+     */
+    
     NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         [[TSNRESTManager sharedManager] handleResponse:response withData:data error:error object:self completion:^(id object, BOOL success) {
             [[TSNRESTManager sharedManager] endLoading:@"persistWithCompletion:session:"];
@@ -44,9 +49,9 @@
         NSLog(@"Response: %@", response);
         if (error)
             NSLog(@"Error: %@", [error userInfo]);
+        [[TSNRESTManager sharedManager] endLoading:@"persistWithCompletion:session:"];
     }];
     [dataTask resume];
-     */
 }
 
 - (void)deleteFromServer
