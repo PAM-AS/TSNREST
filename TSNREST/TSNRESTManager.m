@@ -16,7 +16,6 @@
 
 @property (atomic) int loadingRetainCount;
 
-@property (atomic) BOOL isAuthenticating;
 @property (nonatomic, strong) NSMutableArray *requestQueue;
 
 @end

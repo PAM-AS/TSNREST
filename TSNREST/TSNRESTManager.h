@@ -30,6 +30,7 @@
 
 @property (nonatomic) id <TSNRESTManagerDelegate> delegate;
 
+@property (atomic) BOOL isAuthenticating;
 @property (nonatomic) dispatch_queue_t serialQueue;
 @property (nonatomic, strong) NSString *baseURL;
 @property (nonatomic, strong) NSMutableDictionary *objectMaps;

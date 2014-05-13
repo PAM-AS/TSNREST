@@ -89,6 +89,10 @@
             NSLog(@"Login failed. %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
             if (completion)
                 completion(nil, NO);
+            
+            [[TSNRESTManager sharedManager] setIsAuthenticating:NO];
+            [[TSNRESTManager sharedManager] runQueuedRequests];
+#warning flush all login-data and force manual reload
         }
         else
         {
@@ -142,6 +146,8 @@
                     completion(user, YES);
                 else if (completion)
                     completion(dataDict, YES);
+                [[TSNRESTManager sharedManager] setIsAuthenticating:NO];
+                [[TSNRESTManager sharedManager] runQueuedRequests];
             }];
 
             /*
