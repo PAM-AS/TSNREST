@@ -56,7 +56,9 @@
         completion();
     
     dispatch_async(dispatch_get_main_queue(), ^{
+#if DEBUG
         NSLog(@"Notifying everyone that new data is here, Praise TFSM");
+#endif
         [[NSNotificationCenter defaultCenter] postNotificationName:@"newData" object:nil];
     });
     return YES;
