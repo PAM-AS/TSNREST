@@ -23,7 +23,11 @@
 }
 
 + (BOOL)parseAndPersistDictionary:(NSDictionary *)dict withCompletion:(void (^)())completion forObject:(id)object
-{    
+{
+#if DEBUG
+    NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
+#endif
+    
     for (NSString *dictKey in dict)
     {
         TSNRESTObjectMap *map = [[TSNRESTManager sharedManager] objectMapForServerPath:dictKey];
@@ -51,6 +55,11 @@
 #endif
         }
     }
+    
+#if DEBUG
+    NSLog(@"Parsing took %f", [NSDate timeIntervalSinceReferenceDate] - start);
+#endif
+    
     
     if (completion)
         completion();
@@ -83,7 +92,6 @@
     
     for (NSDictionary *dict in array)
     {
-        
         NSLog(@"Adding %@ %@", NSStringFromClass([map classToMap]), [dict objectForKey:@"id"]);
         
         // Check if systemId exists
@@ -107,6 +115,18 @@
         {
             NSLog(@"Created new %@: %@", NSStringFromClass([map classToMap]), [dict objectForKey:@"id"]);
             object = [[map classToMap] createInContext:localContext];
+        }
+        
+        if ([object respondsToSelector:NSSelectorFromString(@"updatedAt")])
+        {
+            NSDate *objectDate = [object valueForKey:@"updatedAt"];
+            NSDate *webDate = [NSDate sam_dateFromISO8601String:[dict objectForKey:[[map objectToWeb] valueForKey:@"updatedAt"]]];
+            NSLog(@"Testing if object can be skipped");
+            if (([objectDate isKindOfClass:[NSDate class]] && [webDate isKindOfClass:[NSDate class]]) && [objectDate isEqualToDate:webDate])
+            {
+                NSLog(@"Nothing new here, move along");
+                continue;
+            }
         }
         
         if ([object respondsToSelector:NSSelectorFromString(@"systemId")])
