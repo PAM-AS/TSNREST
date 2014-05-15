@@ -67,7 +67,8 @@
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Nettverksproblem" message:@"Du ser ikke ut til å være tilkoblet et nettverk. Koble til et trådløst nettverk og prøv igjen" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
             [alert show];
         });
-        completion(nil, NO);
+        if (completion)
+            completion(nil, NO);
         return;
     }
     
