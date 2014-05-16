@@ -145,10 +145,10 @@
     NSLog(@"Checking for new %@ at %@", NSStringFromClass([self class]), [url absoluteString]);
     
     // Fetch array of dicts from JSON
-    NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+    //NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
     
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
-    [request addValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    //[request addValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     if ([[TSNRESTManager sharedManager] customHeaders])
         [[[TSNRESTManager sharedManager] customHeaders] enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
             NSLog(@"Added header %@ for %@", obj, key);

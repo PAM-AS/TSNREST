@@ -121,10 +121,9 @@
         {
             NSDate *objectDate = [object valueForKey:@"updatedAt"];
             NSDate *webDate = [NSDate sam_dateFromISO8601String:[dict objectForKey:[[map objectToWeb] valueForKey:@"updatedAt"]]];
-            NSLog(@"Testing if object can be skipped");
             if (([objectDate isKindOfClass:[NSDate class]] && [webDate isKindOfClass:[NSDate class]]) && [objectDate isEqualToDate:webDate])
             {
-                NSLog(@"Nothing new here, move along");
+                NSLog(@"Updated timestamp hasn't changed. Moving on.");
                 continue;
             }
         }
@@ -180,14 +179,18 @@
                 
                 if (!classObject) // Create a new, empty object and set system id
                 {
+#if DEBUG
                     NSLog(@"Created new %@ with id %@ and added it to %@ %@", [object classOfPropertyNamed:key], [dict valueForKey:webKey], NSStringFromClass([object class]), [object valueForKey:@"systemId"]);
+#endif
                     classObject = [[object classOfPropertyNamed:key] createInContext:localContext];
                     if ([classObject respondsToSelector:NSSelectorFromString(@"systemId")])
                         [classObject setValue:[dict valueForKey:webKey] forKey:@"systemId"];
                     if ([classObject respondsToSelector:NSSelectorFromString(@"dirty")]) // Object needs to load fault
                         [classObject setValue:@2 forKey:@"dirty"];
+#if DEBUG
                     else
                         NSLog(@"Warning: %@ is not faultable ('dirty' key missing)", NSStringFromClass([classObject class]));
+#endif
                 }
                 else
                 {
@@ -200,24 +203,26 @@
             else if ([object classOfPropertyNamed:key] == [NSDate class])
             {
                 // NSLog(@"Adding %@ (Date) to %@ %@", key, NSStringFromClass([map classToMap]), [dict objectForKey:@"id"]);
-                NSDate *date = [NSDate sam_dateFromISO8601String:[dict objectForKey:webKey]];
+                NSDate *date = [NSDate sam_dateFromISO8601String:[dict objectForKey:webKey]]; // This method also supports epoch timestamps.
                 [object setValue:date forKey:key];
             }
             // Assume NSString or NSNumber for everything else.
             else if ([dict valueForKey:webKey] != [NSNull null] && [[dict valueForKey:webKey] isKindOfClass:[object classOfPropertyNamed:key]])
             {
-                //  NSLog(@"Adding %@ (String/Number) to %@ %@", key, NSStringFromClass([map classToMap]), [dict objectForKey:@"id"]);
+                //  NSLog(@"Adding %@ (String/Number) to %@ %@", key, NSStringFromClass([map classToMap]), [dict objectForKey:@"id"]);])
                 [object setValue:[dict objectForKey:webKey] forKey:key];
             }
+#if DEBUG
             else
             {
                 NSLog(@"class missmatch, not saving: %@ != %@", NSStringFromClass([[dict valueForKey:webKey] class]), NSStringFromClass([object classOfPropertyNamed:key]));
             }
+#endif
             
             if (map.mappingBlock)
                 map.mappingBlock(object, localContext, dict);
         }
-        NSLog(@"Complete object: %@", object);
+        // NSLog(@"Complete object: %@", object);
     }
 }
 
