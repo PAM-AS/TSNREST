@@ -49,7 +49,7 @@
         NSLog(@"Response: %@", response);
         if (error)
             NSLog(@"Error: %@", [error userInfo]);
-        [[TSNRESTManager sharedManager] endLoading:@"persistWithCompletion:session:"];
+//        [[TSNRESTManager sharedManager] endLoading:@"persistWithCompletion:session:"];
     }];
     [dataTask resume];
 }
