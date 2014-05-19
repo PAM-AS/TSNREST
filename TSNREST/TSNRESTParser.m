@@ -120,7 +120,7 @@
         if ([object respondsToSelector:NSSelectorFromString(@"updatedAt")])
         {
             NSDate *objectDate = [object valueForKey:@"updatedAt"];
-            NSDate *webDate = [NSDate sam_dateFromISO8601String:[dict objectForKey:[[map objectToWeb] valueForKey:@"updatedAt"]]];
+            NSDate *webDate = [[[TSNRESTManager sharedManager] ISO8601Formatter] dateFromString:[dict objectForKey:[[map objectToWeb] valueForKey:@"updatedAt"]]];
             if (([objectDate isKindOfClass:[NSDate class]] && [webDate isKindOfClass:[NSDate class]]) && [objectDate isEqualToDate:webDate])
             {
                 NSLog(@"Updated timestamp hasn't changed. Moving on.");
@@ -203,7 +203,7 @@
             else if ([object classOfPropertyNamed:key] == [NSDate class])
             {
                 // NSLog(@"Adding %@ (Date) to %@ %@", key, NSStringFromClass([map classToMap]), [dict objectForKey:@"id"]);
-                NSDate *date = [NSDate sam_dateFromISO8601String:[dict objectForKey:webKey]]; // This method also supports epoch timestamps.
+                NSDate *date = [[[TSNRESTManager sharedManager] ISO8601Formatter] dateFromString:[dict objectForKey:webKey]]; // This method also supports epoch timestamps.
                 [object setValue:date forKey:key];
             }
             // Assume NSString or NSNumber for everything else.
