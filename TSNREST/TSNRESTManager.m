@@ -76,6 +76,13 @@
     return (self.loadingRetainCount > 0);
 }
 
+- (NJISO8601Formatter *)ISO8601Formatter
+{
+    if (!_ISO8601Formatter)
+        _ISO8601Formatter = [[NJISO8601Formatter alloc] init];
+    return _ISO8601Formatter;
+}
+
 #pragma mark - Functions
 - (void)addObjectMap:(TSNRESTObjectMap *)objectMap
 {
@@ -105,7 +112,7 @@
         if ([map.serverPath isEqualToString:path])
             return map;
     }
-        
+    
     return nil;
 }
 
@@ -408,7 +415,7 @@
         else if (classType == [NSDate class] && [object valueForKey:key])
         {
             NSDate *date = [object valueForKey:key];
-            [dataDict setObject:[date sam_ISO8601String] forKey:obj];
+            [dataDict setObject:[self.ISO8601Formatter stringFromDate:date] forKey:obj];
         }
         else if ([classType isSubclassOfClass:[NSManagedObject class]] && [[object valueForKey:key] respondsToSelector:NSSelectorFromString(@"systemId")] && [[object valueForKey:key] valueForKey:@"systemId"])
         {

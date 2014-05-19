@@ -12,6 +12,7 @@
 #import "NSArray+TSNRESTAdditions.h"
 #import "TSNRESTLogin.h"
 #import "NSURL+TSNRESTAdditions.h"
+#import "NJISO8601Formatter.h"
 
 @protocol TSNRESTManagerDelegate <NSObject>
 
@@ -29,6 +30,8 @@
 @interface TSNRESTManager : NSObject
 
 @property (nonatomic) id <TSNRESTManagerDelegate> delegate;
+
+@property (nonatomic, strong) NJISO8601Formatter *ISO8601Formatter;
 
 @property (atomic) BOOL isAuthenticating;
 @property (nonatomic) dispatch_queue_t serialQueue;
@@ -54,7 +57,7 @@
 // Common helpers for other TSNREST components
 - (NSURLRequest *)requestForObject:(id)object;
 
-/* 
+/*
  Run a request that will automatically attempt to reauthenticate if it receives a 401 status.
  The completion block will currently return unsuccessful on the first request if this happens.
  */
