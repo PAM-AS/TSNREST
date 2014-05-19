@@ -133,7 +133,9 @@
             NSData *result = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
             // Only stop animating on last object.
             if (object != [self lastObject])
-                [[TSNRESTManager sharedManager] handleResponse:response withData:result error:error object:object completion:nil];
+                [[TSNRESTManager sharedManager] handleResponse:response withData:result error:error object:object completion:^(id object, BOOL success) {
+                    // Do nothing, especially not reducing the loading retain count, which will happen if we don't have a completion block.
+                }];
             else
                 [[TSNRESTManager sharedManager] handleResponse:response withData:result error:error object:object completion:^(id object, BOOL success) {
                     [[TSNRESTManager sharedManager] endLoading:@"persistContainedNSManagedObjects"];
