@@ -116,6 +116,8 @@
             NSLog(@"Created new %@: %@", NSStringFromClass([map classToMap]), [dict objectForKey:@"id"]);
             object = [[map classToMap] createInContext:localContext];
         }
+        else if (map.shouldIgnoreUpdates)
+            return;
         
         if ([object respondsToSelector:NSSelectorFromString(@"updatedAt")])
         {

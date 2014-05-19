@@ -23,6 +23,8 @@
 @property (nonatomic,strong) NSMutableDictionary *enumMaps;
 @property (nonatomic,strong) NSArray *readOnlyKeys;
 
+@property (nonatomic) BOOL shouldIgnoreUpdates;
+
 - (id)initWithClass:(Class)classToInit;
 
 - (void)mapClass:(Class)classToMap toWebKey:(NSString *)webKey;
