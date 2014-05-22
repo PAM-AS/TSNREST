@@ -88,42 +88,84 @@
 
 + (void)parseAndPersistArray:(NSArray *)array withObjectMap:(TSNRESTObjectMap *)map inContext:(NSManagedObjectContext *)localContext
 {
+    
+#if DEBUG
+    NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
+#endif
+    
     NSArray *existingObjects = [[map classToMap] findAll];
+    NSArray *existingIds = [existingObjects valueForKey:@"systemId"];
+    NSSet *newSet = [NSSet setWithArray:[array valueForKey:@"id"]?:@[]];
+    NSMutableSet *existingSet = [NSMutableSet setWithArray:existingIds?:@[]];
+    [existingSet intersectSet:newSet];
+    
+    /*
+     Shortcut if we have no dirty items, no new items, and the object map says shouldIgnoreUpdates.
+     
+     Checking logic:
+     If all objects are found locally, newSet.count and existingSet.count
+     should be equal (intersect of local and new items, equal to new items).
+     
+     */
+    if (map.shouldIgnoreUpdates && newSet.count == existingSet.count && [[existingObjects lastObject] respondsToSelector:NSSelectorFromString(@"dirty")])
+    {
+        NSSet *dirtyKeys = [NSSet setWithArray:[existingObjects valueForKey:@"dirty"]];
+        NSLog(@"Checking dirty keys: %@", dirtyKeys);
+        if (![dirtyKeys member:@1] && ![dirtyKeys member:@2])
+        {
+#if DEBUG
+            NSLog(@"No objects of type %@ has been updated. Skipping %i objects.", NSStringFromClass([map classToMap]), array.count);
+#endif
+            return;
+        }
+    }
     
     for (NSDictionary *dict in array)
     {
+#if DEBUG
+        /*
+         Start the loop by logging what object we are adding.
+         */
         NSLog(@"Adding %@ %@", NSStringFromClass([map classToMap]), [dict objectForKey:@"id"]);
+#endif
         
         // Check if systemId exists
         NSNumber *systemId = [dict objectForKey:@"id"];
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"systemId = %@", systemId];
         
-        // http://www.bricewilson.net/blog/2012/12/30/searching-nsarray-using-nspredicate/
-        NSUInteger index = [existingObjects indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
-            *stop = [predicate evaluateWithObject:obj] ? YES : NO;
-            return *stop;
-        }];
         
-        // Update existing or create new
+        
+        // Check if existing object is saved locally
         id object = nil;
-        if (index != NSNotFound)
+        id existingId = [existingSet member:systemId];
+        if (existingId) // Object exists
         {
             NSLog(@"Found existing %@ %@", NSStringFromClass([map classToMap]), [dict objectForKey:@"id"]);
+            NSUInteger index = [existingIds indexOfObjectIdenticalTo:existingId];
             object = [[existingObjects objectAtIndex:index] inContext:localContext];
         }
+        
+        
+        
+        // If there is no object, create one.
         if (!object)
         {
             NSLog(@"Created new %@: %@", NSStringFromClass([map classToMap]), [dict objectForKey:@"id"]);
             object = [[map classToMap] createInContext:localContext];
         }
-        else if (map.shouldIgnoreUpdates)
+        // If we have an object, and this mapping should ignore updates, keep calm and carry on.
+        else if (map.shouldIgnoreUpdates && [object respondsToSelector:NSSelectorFromString(@"dirty")] && [[object valueForKey:@"dirty"] isEqualToNumber:@0])
+        {
+            NSLog(@"Object exists, and should be immutable. Ignore.");
             return;
+        }
+        
+        
         
         if ([object respondsToSelector:NSSelectorFromString(@"updatedAt")])
         {
             NSDate *objectDate = [object valueForKey:@"updatedAt"];
             NSDate *webDate = [[[TSNRESTManager sharedManager] ISO8601Formatter] dateFromString:[dict objectForKey:[[map objectToWeb] valueForKey:@"updatedAt"]]];
-            if (([objectDate isKindOfClass:[NSDate class]] && [webDate isKindOfClass:[NSDate class]]) && [objectDate isEqualToDate:webDate])
+            if (webDate && [objectDate isKindOfClass:[NSDate class]] && [objectDate isEqualToDate:webDate])
             {
                 NSLog(@"Updated timestamp hasn't changed. Moving on.");
                 continue;
@@ -194,11 +236,7 @@
                         NSLog(@"Warning: %@ is not faultable ('dirty' key missing)", NSStringFromClass([classObject class]));
 #endif
                 }
-                else
-                {
-                    // NSLog(@"Adding %@ %@ to %@ %@", [classObject class], [classObject valueForKey:@"systemId"], NSStringFromClass([object class]), [object valueForKey:@"systemId"]);
-                }
-                
+
                 [object setValue:classObject forKey:key];
             }
             // Special case for dates: Need to be converted from a string containing ISO8601
@@ -214,18 +252,16 @@
                 //  NSLog(@"Adding %@ (String/Number) to %@ %@", key, NSStringFromClass([map classToMap]), [dict objectForKey:@"id"]);])
                 [object setValue:[dict objectForKey:webKey] forKey:key];
             }
-#if DEBUG
-            else
-            {
-                NSLog(@"class missmatch, not saving: %@ != %@", NSStringFromClass([[dict valueForKey:webKey] class]), NSStringFromClass([object classOfPropertyNamed:key]));
-            }
-#endif
             
             if (map.mappingBlock)
                 map.mappingBlock(object, localContext, dict);
         }
         // NSLog(@"Complete object: %@", object);
     }
+    
+#if DEBUG
+    NSLog(@"Parsing %i objects of type %@ took %f seconds", array.count, NSStringFromClass([map classToMap]), [NSDate timeIntervalSinceReferenceDate] - start);
+#endif
 }
 
 @end
