@@ -252,10 +252,9 @@
                 //  NSLog(@"Adding %@ (String/Number) to %@ %@", key, NSStringFromClass([map classToMap]), [dict objectForKey:@"id"]);])
                 [object setValue:[dict objectForKey:webKey] forKey:key];
             }
-            
-            if (map.mappingBlock)
-                map.mappingBlock(object, localContext, dict);
         }
+        if (map.mappingBlock)
+            map.mappingBlock(object, localContext, dict);
         // NSLog(@"Complete object: %@", object);
     }
     
