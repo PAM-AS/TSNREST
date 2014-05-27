@@ -193,7 +193,7 @@
 - (void)runAutoAuthenticatingRequest:(NSURLRequest *)request completion:(void (^)(BOOL success, BOOL newData))completion
 {
     [self dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        if (data)
+        if ([(NSHTTPURLResponse *)response statusCode] < 200 || [(NSHTTPURLResponse *)response statusCode] > 204)
         {
             [self handleResponse:response withData:data error:error object:nil completion:^(id object, BOOL success) {
                 completion(success, YES);
