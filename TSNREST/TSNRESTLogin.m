@@ -63,10 +63,12 @@
     Reachability *rb = [Reachability reachabilityForInternetConnection];
     if (![rb isReachable])
     {
+#if TARGET_OS_IPHONE
         dispatch_async(dispatch_get_main_queue(), ^{
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Nettverksproblem" message:@"Du ser ikke ut til å være tilkoblet et nettverk. Koble til et trådløst nettverk og prøv igjen" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
             [alert show];
         });
+#endif
         if (completion)
             completion(nil, NO);
         return;
@@ -109,6 +111,7 @@
             if ([dataDict objectForKey:@"refresh_token"])
             {
                 [[NSUserDefaults standardUserDefaults] setObject:[dataDict objectForKey:@"refresh_token"] forKey:@"refresh_token"];
+#if TARGET_OS_IPHONE
                 if ([dataDict objectForKey:@"expires_in"])
                 {
                     [[UIApplication sharedApplication] cancelAllLocalNotifications];
@@ -118,6 +121,7 @@
                     notification.fireDate = [NSDate dateWithTimeIntervalSinceNow:expiry];
                     [[UIApplication sharedApplication] scheduleLocalNotification:notification];
                 }
+#endif
             }
             
             NSNumber *userId = nil;
