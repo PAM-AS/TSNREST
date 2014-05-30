@@ -45,7 +45,7 @@
             if (completion)
                 completion(object, success);
         }];
-        NSLog(@"Data: %@", data);
+        NSLog(@"Data: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
         NSLog(@"Response: %@", response);
         if (error)
             NSLog(@"Error: %@", [error userInfo]);
