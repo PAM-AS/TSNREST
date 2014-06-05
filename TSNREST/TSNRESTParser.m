@@ -94,6 +94,7 @@
 #endif
     
     NSArray *existingObjects = [[map classToMap] findAll];
+    
     NSArray *existingIds = [existingObjects valueForKey:@"systemId"];
     NSSet *newSet = [NSSet setWithArray:[array valueForKey:@"id"]?:@[]];
     NSMutableSet *existingSet = [NSMutableSet setWithArray:existingIds?:@[]];
@@ -120,147 +121,157 @@
         }
     }
     
-    for (NSDictionary *dict in array)
-    {
-#if DEBUG
-        /*
-         Start the loop by logging what object we are adding.
-         */
-        NSLog(@"Adding %@ %@", NSStringFromClass([map classToMap]), [dict objectForKey:@"id"]);
-#endif
+    
+    
+    
+    
+    
+    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"systemId" ascending:YES];
+    NSEnumerator *existingEnumerator = [[existingObjects sortedArrayUsingDescriptors:@[sortDescriptor]] objectEnumerator];
+    
+    sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"id" ascending:YES];
+    NSEnumerator *newEnumerator = [[array sortedArrayUsingDescriptors:@[sortDescriptor]] objectEnumerator];
+    
+    NSDictionary *jsonObject = [newEnumerator nextObject];
+    id existingObject = [existingEnumerator nextObject];
+    
+    while (jsonObject) {
         
-        // Check if systemId exists
-        NSNumber *systemId = [dict objectForKey:@"id"];
+        // while (id != id)
+            // nextObject
+        while (existingObject && [[jsonObject objectForKey:@"id"] intValue] > [[existingObject valueForKey:@"systemId"] intValue]) {
+            existingObject = [existingEnumerator nextObject];
+        }
         
-        
-        
-        // Check if existing object is saved locally
         id object = nil;
-        id existingId = [existingSet member:systemId];
-        if (existingId) // Object exists
+        
+        if (existingObject)
+            object = existingObject;
+        else
         {
-            NSLog(@"Found existing %@ %@", NSStringFromClass([map classToMap]), [dict objectForKey:@"id"]);
-            NSUInteger index = [existingIds indexOfObjectIdenticalTo:existingId];
-            object = [[existingObjects objectAtIndex:index] inContext:localContext];
-        }
-        
-        
-        
-        // If there is no object, create one.
-        if (!object)
-        {
-            NSLog(@"Created new %@: %@", NSStringFromClass([map classToMap]), [dict objectForKey:@"id"]);
             object = [[map classToMap] createInContext:localContext];
-        }
-        // If we have an object, and this mapping should ignore updates, keep calm and carry on.
-        else if (map.shouldIgnoreUpdates && [object respondsToSelector:NSSelectorFromString(@"dirty")] && [[object valueForKey:@"dirty"] isEqualToNumber:@0])
-        {
-            NSLog(@"Object exists, and should be immutable. Ignore.");
-            return;
+            [object setValue:[jsonObject objectForKey:@"id"] forKey:@"systemId"];
         }
         
+        [TSNRESTParser mapDict:jsonObject toObject:object withMap:map inContext:localContext];
         
-        
-        if ([object respondsToSelector:NSSelectorFromString(@"updatedAt")])
-        {
-            NSDate *objectDate = [object valueForKey:@"updatedAt"];
-            NSDate *webDate = [[[TSNRESTManager sharedManager] ISO8601Formatter] dateFromString:[dict objectForKey:[[map objectToWeb] valueForKey:@"updatedAt"]]];
-            if (webDate && [objectDate isKindOfClass:[NSDate class]] && [objectDate isEqualToDate:webDate])
-            {
-                NSLog(@"Updated timestamp hasn't changed. Moving on.");
-                continue;
-            }
-        }
-        
-        if ([object respondsToSelector:NSSelectorFromString(@"systemId")])
-            [object setValue:[dict objectForKey:@"id"] forKey:@"systemId"];
-        if ([object respondsToSelector:NSSelectorFromString(@"dirty")])
-        {
-            if ([[object valueForKey:@"dirty"] integerValue] == 1)
-            {
-                [(NSManagedObject *)object persist];
-                continue;
-            }
-            else
-                [object setValue:@0 forKey:@"dirty"];
-        }
-        
-        for (NSString *key in [map objectToWeb])
-        {
-            NSString *webKey = [[map objectToWeb] objectForKey:key];
-            
-            if ([[map enumMaps] valueForKey:key])
-            {
-                NSDictionary *enumMap = [[map enumMaps] valueForKey:key];
-                id value = [[enumMap allKeysForObject:[dict valueForKey:webKey]] firstObject];
-                [object setValue:value forKey:key];
-                NSLog(@"Found enum map for %@. set value to %@", key, value);
-            }
-            
-            // Check if this is a relation to another object
-            else if ([[dict valueForKey:webKey] isKindOfClass:[NSArray class]] && [[[dict valueForKey:webKey] objectAtIndex:0] isKindOfClass:[NSDictionary class]])
-            {
-                TSNRESTObjectMap *oMap = [[TSNRESTManager sharedManager] objectMapForServerPath:webKey];
-                if (oMap)
-                {
-#if DEBUG
-                    NSLog(@"Found object map for %@", oMap.serverPath);
-#endif
-                    [self parseAndPersistArray:[dict valueForKey:webKey] withObjectMap:oMap inContext:localContext];
-                }
-                else
-                {
-#if DEBUG
-                    NSLog(@"Found no object map for %@", webKey);
-#endif
-                }
-            }
-            else if ([[object classOfPropertyNamed:key] isSubclassOfClass:[NSManagedObject class]] && [dict valueForKey:webKey] != [NSNull null])
-            {
-                // NSLog(@"Adding %@ (%@) to %@ %@", key, [object classOfPropertyNamed:key], NSStringFromClass([map classToMap]), [dict objectForKey:@"id"]);
-                id classObject = nil;
-                classObject = [[object classOfPropertyNamed:key] findFirstByAttribute:@"systemId" withValue:[dict valueForKey:webKey] inContext:localContext];
-                
-                if (!classObject) // Create a new, empty object and set system id
-                {
-#if DEBUG
-                    NSLog(@"Created new %@ with id %@ and added it to %@ %@", [object classOfPropertyNamed:key], [dict valueForKey:webKey], NSStringFromClass([object class]), [object valueForKey:@"systemId"]);
-#endif
-                    classObject = [[object classOfPropertyNamed:key] createInContext:localContext];
-                    if ([classObject respondsToSelector:NSSelectorFromString(@"systemId")])
-                        [classObject setValue:[dict valueForKey:webKey] forKey:@"systemId"];
-                    if ([classObject respondsToSelector:NSSelectorFromString(@"dirty")]) // Object needs to load fault
-                        [classObject setValue:@2 forKey:@"dirty"];
-#if DEBUG
-                    else
-                        NSLog(@"Warning: %@ is not faultable ('dirty' key missing)", NSStringFromClass([classObject class]));
-#endif
-                }
-
-                [object setValue:classObject forKey:key];
-            }
-            // Special case for dates: Need to be converted from a string containing ISO8601
-            else if ([object classOfPropertyNamed:key] == [NSDate class])
-            {
-                // NSLog(@"Adding %@ (Date) to %@ %@", key, NSStringFromClass([map classToMap]), [dict objectForKey:@"id"]);
-                NSDate *date = [[[TSNRESTManager sharedManager] ISO8601Formatter] dateFromString:[dict objectForKey:webKey]]; // This method also supports epoch timestamps.
-                [object setValue:date forKey:key];
-            }
-            // Assume NSString or NSNumber for everything else.
-            else if ([dict valueForKey:webKey] != [NSNull null] && [[dict valueForKey:webKey] isKindOfClass:[object classOfPropertyNamed:key]])
-            {
-                //  NSLog(@"Adding %@ (String/Number) to %@ %@", key, NSStringFromClass([map classToMap]), [dict objectForKey:@"id"]);])
-                [object setValue:[dict objectForKey:webKey] forKey:key];
-            }
-        }
-        if (map.mappingBlock)
-            map.mappingBlock(object, localContext, dict);
-        // NSLog(@"Complete object: %@", object);
+        jsonObject = [newEnumerator nextObject];
     }
     
 #if DEBUG
     NSLog(@"Parsing %i objects of type %@ took %f seconds", array.count, NSStringFromClass([map classToMap]), [NSDate timeIntervalSinceReferenceDate] - start);
 #endif
+}
+
++ (void)mapDict:(NSDictionary *)dict toObject:(id)object withMap:(TSNRESTObjectMap *)map inContext:(NSManagedObjectContext *)context
+{
+#if DEBUG
+    /*
+     Start the loop by logging what object we are adding.
+     */
+    NSLog(@"Adding %@ %@", NSStringFromClass([map classToMap]), [dict objectForKey:@"id"]);
+#endif
+    
+    // Check if systemId exists
+    
+    
+    
+    
+    if ([object respondsToSelector:NSSelectorFromString(@"updatedAt")])
+    {
+        NSDate *objectDate = [object valueForKey:@"updatedAt"];
+        NSDate *webDate = [[[TSNRESTManager sharedManager] ISO8601Formatter] dateFromString:[dict objectForKey:[[map objectToWeb] valueForKey:@"updatedAt"]]];
+        if (webDate && [objectDate isKindOfClass:[NSDate class]] && [objectDate isEqualToDate:webDate])
+        {
+            NSLog(@"Updated timestamp hasn't changed. Moving on.");
+            return;
+        }
+    }
+    
+    if ([object respondsToSelector:NSSelectorFromString(@"systemId")])
+        [object setValue:[dict objectForKey:@"id"] forKey:@"systemId"];
+    if ([object respondsToSelector:NSSelectorFromString(@"dirty")])
+    {
+        if ([[object valueForKey:@"dirty"] integerValue] == 1)
+        {
+            [(NSManagedObject *)object persist];
+            return;
+        }
+        else
+            [object setValue:@0 forKey:@"dirty"];
+    }
+    
+    for (NSString *key in [map objectToWeb])
+    {
+        NSString *webKey = [[map objectToWeb] objectForKey:key];
+        
+        if ([[map enumMaps] valueForKey:key])
+        {
+            NSDictionary *enumMap = [[map enumMaps] valueForKey:key];
+            id value = [[enumMap allKeysForObject:[dict valueForKey:webKey]] firstObject];
+            [object setValue:value forKey:key];
+            NSLog(@"Found enum map for %@. set value to %@", key, value);
+        }
+        
+        // Check if this is a relation to another object
+        else if ([[dict valueForKey:webKey] isKindOfClass:[NSArray class]] && [[[dict valueForKey:webKey] objectAtIndex:0] isKindOfClass:[NSDictionary class]])
+        {
+            TSNRESTObjectMap *oMap = [[TSNRESTManager sharedManager] objectMapForServerPath:webKey];
+            if (oMap)
+            {
+#if DEBUG
+                NSLog(@"Found object map for %@", oMap.serverPath);
+#endif
+                [self parseAndPersistArray:[dict valueForKey:webKey] withObjectMap:oMap inContext:context];
+            }
+            else
+            {
+#if DEBUG
+                NSLog(@"Found no object map for %@", webKey);
+#endif
+            }
+        }
+        else if ([[object classOfPropertyNamed:key] isSubclassOfClass:[NSManagedObject class]] && [dict valueForKey:webKey] != [NSNull null])
+        {
+            // NSLog(@"Adding %@ (%@) to %@ %@", key, [object classOfPropertyNamed:key], NSStringFromClass([map classToMap]), [dict objectForKey:@"id"]);
+            id classObject = nil;
+            classObject = [[object classOfPropertyNamed:key] findFirstByAttribute:@"systemId" withValue:[dict valueForKey:webKey] inContext:context];
+            
+            if (!classObject) // Create a new, empty object and set system id
+            {
+#if DEBUG
+                NSLog(@"Created new %@ with id %@ and added it to %@ %@", [object classOfPropertyNamed:key], [dict valueForKey:webKey], NSStringFromClass([object class]), [object valueForKey:@"systemId"]);
+#endif
+                classObject = [[object classOfPropertyNamed:key] createInContext:context];
+                if ([classObject respondsToSelector:NSSelectorFromString(@"systemId")])
+                    [classObject setValue:[dict valueForKey:webKey] forKey:@"systemId"];
+                if ([classObject respondsToSelector:NSSelectorFromString(@"dirty")]) // Object needs to load fault
+                    [classObject setValue:@2 forKey:@"dirty"];
+#if DEBUG
+                else
+                    NSLog(@"Warning: %@ is not faultable ('dirty' key missing)", NSStringFromClass([classObject class]));
+#endif
+            }
+            
+            [object setValue:classObject forKey:key];
+        }
+        // Special case for dates: Need to be converted from a string containing ISO8601
+        else if ([object classOfPropertyNamed:key] == [NSDate class])
+        {
+            // NSLog(@"Adding %@ (Date) to %@ %@", key, NSStringFromClass([map classToMap]), [dict objectForKey:@"id"]);
+            NSDate *date = [[[TSNRESTManager sharedManager] ISO8601Formatter] dateFromString:[dict objectForKey:webKey]]; // This method also supports epoch timestamps.
+            [object setValue:date forKey:key];
+        }
+        // Assume NSString or NSNumber for everything else.
+        else if ([dict valueForKey:webKey] != [NSNull null] && [[dict valueForKey:webKey] isKindOfClass:[object classOfPropertyNamed:key]])
+        {
+            //  NSLog(@"Adding %@ (String/Number) to %@ %@", key, NSStringFromClass([map classToMap]), [dict objectForKey:@"id"]);])
+            [object setValue:[dict objectForKey:webKey] forKey:key];
+        }
+    }
+    if (map.mappingBlock)
+        map.mappingBlock(object, context, dict);
+    // NSLog(@"Complete object: %@", object);
 }
 
 @end
