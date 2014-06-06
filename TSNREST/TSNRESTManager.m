@@ -141,7 +141,6 @@
     
     NSURLSession *session = [NSURLSession sharedSession];
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-    [request addValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     if (self.customHeaders)
         [self.customHeaders enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
             [request addValue:obj forHTTPHeaderField:key];
@@ -168,9 +167,14 @@
         }
         else if ([(NSHTTPURLResponse *)response statusCode] < 200 || [(NSHTTPURLResponse *)response statusCode] > 204)
         {
+#if DEBUG
             NSLog(@"Deletion of object failed (Status code %li).", (long)[(NSHTTPURLResponse *)response statusCode]);
             if (error)
                 NSLog(@"Error: %@", [error localizedDescription]);
+            
+            NSLog(@"Response: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+#endif
+            
             if (completion)
                 completion(object, NO);
         }
