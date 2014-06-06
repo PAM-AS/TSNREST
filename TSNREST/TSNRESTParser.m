@@ -159,7 +159,7 @@
     }
     
 #if DEBUG
-    NSLog(@"Parsing %i objects of type %@ took %f seconds", array.count, NSStringFromClass([map classToMap]), [NSDate timeIntervalSinceReferenceDate] - start);
+    NSLog(@"Parsing %lu objects of type %@ took %f seconds", (unsigned long)array.count, NSStringFromClass([map classToMap]), [NSDate timeIntervalSinceReferenceDate] - start);
 #endif
 }
 
@@ -171,11 +171,6 @@
      */
     NSLog(@"Adding %@ %@", NSStringFromClass([map classToMap]), [dict objectForKey:@"id"]);
 #endif
-    
-    // Check if systemId exists
-    
-    
-    
     
     if ([object respondsToSelector:NSSelectorFromString(@"updatedAt")])
     {
