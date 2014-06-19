@@ -26,6 +26,7 @@
 {
 #if DEBUG
     NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
+    int objects = 0;
 #endif
     
     for (NSString *dictKey in dict)
@@ -37,6 +38,9 @@
             NSLog(@"Found map for %@", dictKey);
 #endif
             NSArray *jsonData = [dict objectForKey:dictKey];
+#if DEBUG
+            objects += jsonData.count;
+#endif
             
             if (object && [object valueForKey:@"systemId"] == nil && [map classToMap] == [object class] && jsonData.count == 1)
             {
@@ -57,7 +61,7 @@
     }
     
 #if DEBUG
-    NSLog(@"Parsing took %f", [NSDate timeIntervalSinceReferenceDate] - start);
+    NSLog(@"Parsing %u arrays (%i objects) took %f", dict.count, objects, [NSDate timeIntervalSinceReferenceDate] - start);
 #endif
     
     
@@ -68,7 +72,8 @@
 #if DEBUG
         NSLog(@"Notifying everyone that new data is here, Praise TFSM");
 #endif
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"newData" object:nil];
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"newData" object:[dict allKeys]];
     });
     return YES;
 }
