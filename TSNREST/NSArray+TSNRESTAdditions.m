@@ -67,56 +67,60 @@
     [self refreshGroupWithSideloads:nil];
 }
 
+
 - (void)refreshGroupWithSideloads:(NSArray *)sideloads
 {
-    NSMutableString *ids = [[NSMutableString alloc] initWithString:@"?id="];
-    
-    SEL systemidSelector = sel_registerName("systemId");
-    for (id object in self)
-    {
-        if ([object respondsToSelector:systemidSelector])
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSMutableString *ids = [[NSMutableString alloc] initWithString:@"?id="];
+        
+        SEL systemidSelector = sel_registerName("systemId");
+        for (id object in self)
         {
-            if (![[ids substringFromIndex:ids.length-1] isEqualToString:@"="])
-                [ids appendString:@","];
-            [ids appendString:[NSString stringWithFormat:@"%@", [object valueForKey:@"systemId"]]];
+            if ([object respondsToSelector:systemidSelector])
+            {
+                if (![[ids substringFromIndex:ids.length-1] isEqualToString:@"="])
+                    [ids appendString:@","];
+                [ids appendString:[NSString stringWithFormat:@"%@", [object valueForKey:@"systemId"]]];
+            }
         }
-    }
-    
-    NSMutableString *sideloadString = [[NSMutableString alloc] initWithString:@"&_sl="];
-    for (NSString *string in sideloads)
-    {
-        if (![[sideloadString substringFromIndex:sideloadString.length-1] isEqualToString:@"="])
-            [sideloadString appendString:@","];
-        [sideloadString appendString:string];
-    }
-
-    TSNRESTObjectMap *map = [[TSNRESTManager sharedManager] objectMapForClass:[[self objectAtIndex:0] class]];
-    if (!map)
-    {
+        
+        NSMutableString *sideloadString = [[NSMutableString alloc] initWithString:@"&_sl="];
+        for (NSString *string in sideloads)
+        {
+            if (![[sideloadString substringFromIndex:sideloadString.length-1] isEqualToString:@"="])
+                [sideloadString appendString:@","];
+            [sideloadString appendString:string];
+        }
+        
+        TSNRESTObjectMap *map = [[TSNRESTManager sharedManager] objectMapForClass:[[self objectAtIndex:0] class]];
+        if (!map)
+        {
 #if DEBUG
-        NSLog(@"No map for %@, can't fault.", NSStringFromClass([[self objectAtIndex:0] class]));
+            NSLog(@"No map for %@, can't fault.", NSStringFromClass([[self objectAtIndex:0] class]));
 #endif
-        return;
-    }
-    
-    NSString *url = [[(NSString *)[[TSNRESTManager sharedManager] baseURL] stringByAppendingPathComponent:map.serverPath] stringByAppendingString:ids];
-    if (sideloads)
-        url = [url stringByAppendingString:sideloadString];
-    
+            return;
+        }
+        
+        NSString *url = [[(NSString *)[[TSNRESTManager sharedManager] baseURL] stringByAppendingPathComponent:map.serverPath] stringByAppendingString:ids];
+        if (sideloads)
+            url = [url stringByAppendingString:sideloadString];
+        
 #if DEBUG
-    NSLog(@"Refreshing group of %@ with URL: %@", NSStringFromClass([map classToMap]), url);
+        NSLog(@"Refreshing group of %@ with URL: %@", NSStringFromClass([map classToMap]), url);
 #endif
-    
-    NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
-    
-    NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
-        NSLog(@"Got a dict back, transmitting it to our parser");
-        [TSNRESTParser parseAndPersistDictionary:dict];
-    }];
-    [task resume];
+        
+        NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+        
+        NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+            NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
+            NSLog(@"Got a dict back, transmitting it to our parser");
+            [TSNRESTParser parseAndPersistDictionary:dict];
+        }];
+        [task resume];
+    });
 }
+
 
 - (void)persistContainedNSManagedObjects
 {
