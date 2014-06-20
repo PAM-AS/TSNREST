@@ -206,7 +206,8 @@
         else
         {
             [self handleResponse:response withData:data error:error object:nil completion:^(id object, BOOL success) {
-                completion(success, NO);
+                if ([(NSHTTPURLResponse *)response statusCode] != 401)
+                    completion(success, NO);
             } requestDict:@{@"request":request, @"completion":completion}];
         }
     }];
@@ -291,10 +292,12 @@
         if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"prev401"] timeIntervalSince1970] > [[NSDate date] timeIntervalSince1970] - 30) // Limit 401 trigger to once every 30 seconds
             return;
         
+        BOOL queued = NO;
         @synchronized ([TSNRESTManager class]) {
             self.isAuthenticating = YES;
             if (requestDict)
             {
+                queued = YES;
                 [self.requestQueue addObject:requestDict];
             }
         }
@@ -305,7 +308,7 @@
             [TSNRESTLogin loginWithDefaultRefreshTokenAndUserClass:[self.delegate userClass] url:[self.delegate authURL]];
         else
             [TSNRESTLogin loginWithDefaultRefreshTokenAndUserClass:nil url:[self.delegate authURL]];
-        if (completion)
+        if (completion && !queued)
             completion(object, NO);
         else
         {
