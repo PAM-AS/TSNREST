@@ -52,12 +52,6 @@
             [self parseAndPersistArray:jsonData withObjectMap:map];
             
         }
-        else
-        {
-#if DEBUG
-            NSLog(@"No object map for %@", dictKey);
-#endif
-        }
     }
     
 #if DEBUG
@@ -183,7 +177,6 @@
         NSDate *webDate = [[[TSNRESTManager sharedManager] ISO8601Formatter] dateFromString:[dict objectForKey:[[map objectToWeb] valueForKey:@"updatedAt"]]];
         if (webDate && [objectDate isKindOfClass:[NSDate class]] && [objectDate isEqualToDate:webDate])
         {
-            NSLog(@"Updated timestamp hasn't changed. Moving on.");
             return;
         }
     }
@@ -223,12 +216,6 @@
                 NSLog(@"Found object map for %@", oMap.serverPath);
 #endif
                 [self parseAndPersistArray:[dict valueForKey:webKey] withObjectMap:oMap inContext:context];
-            }
-            else
-            {
-#if DEBUG
-                NSLog(@"Found no object map for %@", webKey);
-#endif
             }
         }
         else if ([[object classOfPropertyNamed:key] isSubclassOfClass:[NSManagedObject class]] && [dict valueForKey:webKey] != [NSNull null])

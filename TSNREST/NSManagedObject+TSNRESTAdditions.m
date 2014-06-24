@@ -71,7 +71,6 @@
 
 - (void)faultIfNeededWithCompletion:(void (^)(id object, BOOL success))completion
 {
-    NSLog(@"Testing fault on %@ %@", NSStringFromClass(self.class), [self valueForKey:@"systemId"]);
     SEL dirtyIdSelector = sel_registerName("dirty");
     if ([self respondsToSelector:dirtyIdSelector] && [[self valueForKey:@"dirty"] isEqualToNumber:@2])
     {
