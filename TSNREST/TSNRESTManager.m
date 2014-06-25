@@ -197,22 +197,35 @@
 #pragma mark - Network helpers
 - (void)runAutoAuthenticatingRequest:(NSURLRequest *)request completion:(void (^)(BOOL success, BOOL newData))completion
 {
-    [self dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+    /*
+     Holy block, batman
+     
+     Weak reference copy of a strong reference block to avoid retain issues.
+     
+     http://stackoverflow.com/questions/18061750/recursive-block-gets-deallocated-too-early
+     */
+    
+    __weak __block void (^weakRequestCompletion)(NSData *, NSURLResponse *, NSError *);
+    __block void (^requestCompletion)(NSData *, NSURLResponse *, NSError *) = ^(NSData *data, NSURLResponse *response, NSError *error) {
+        __block void (^requestCompletion)(NSData *, NSURLResponse *, NSError *) = weakRequestCompletion;
         NSLog(@"Got response for autoauthingrequest: %@", request.URL.absoluteString);
         if ([(NSHTTPURLResponse *)response statusCode] < 200 || [(NSHTTPURLResponse *)response statusCode] > 204)
         {
             [self handleResponse:response withData:data error:error object:nil completion:^(id object, BOOL success) {
                 if ([(NSHTTPURLResponse *)response statusCode] != 401) // 401 will be picked up and retried
                     completion(success, NO);
-            } requestDict:@{@"request":request, @"completion":completion}];
+            } requestDict:@{@"request":request, @"completion":requestCompletion}];
         }
         else
         {
             [self handleResponse:response withData:data error:error object:nil completion:^(id object, BOOL success) {
                 completion(success, YES);
-            } requestDict:@{@"request":request, @"completion":completion}];
+            } requestDict:@{@"request":request, @"completion":requestCompletion}];
         }
-    }];
+    };
+    
+    weakRequestCompletion = requestCompletion;
+    [self dataTaskWithRequest:request completionHandler:requestCompletion];
 }
 
 - (void)dataTaskWithRequest:(NSURLRequest *)request completionHandler:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completion
