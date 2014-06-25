@@ -33,6 +33,7 @@
     // executes a block object once and only once for the lifetime of an application
     dispatch_once(&p, ^{
         _sharedObject = [[self alloc] init];
+        [(TSNRESTManager *)_sharedObject setRequestQueue:[[NSMutableArray alloc] init]];
     });
     
     // returns the same object each time
@@ -200,14 +201,14 @@
         if ([(NSHTTPURLResponse *)response statusCode] < 200 || [(NSHTTPURLResponse *)response statusCode] > 204)
         {
             [self handleResponse:response withData:data error:error object:nil completion:^(id object, BOOL success) {
-                completion(success, YES);
+                if ([(NSHTTPURLResponse *)response statusCode] != 401) // 401 will be picked up and retried
+                    completion(success, NO);
             } requestDict:@{@"request":request, @"completion":completion}];
         }
         else
         {
             [self handleResponse:response withData:data error:error object:nil completion:^(id object, BOOL success) {
-                if ([(NSHTTPURLResponse *)response statusCode] != 401)
-                    completion(success, NO);
+                completion(success, YES);
             } requestDict:@{@"request":request, @"completion":completion}];
         }
     }];
@@ -289,8 +290,14 @@
     if (statusCode == 401 || (headerUserId != nil && headerUserId.intValue != myUserId.intValue))
     {
         [[NSUserDefaults standardUserDefaults] synchronize];
-        if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"prev401"] timeIntervalSince1970] > [[NSDate date] timeIntervalSince1970] - 30) // Limit 401 trigger to once every 30 seconds
+        if ([self isAuthenticating])
+        {
+            if (requestDict)
+                [self.requestQueue addObject:requestDict];
+            else
+                completion(object, NO);
             return;
+        }
         
         BOOL queued = NO;
         @synchronized ([TSNRESTManager class]) {

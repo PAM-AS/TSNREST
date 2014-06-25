@@ -73,6 +73,7 @@
 #endif
         if (completion)
             completion(nil, NO);
+        [[TSNRESTManager sharedManager] setIsAuthenticating:NO];
         return;
     }
     
@@ -102,6 +103,7 @@
         else
         {
             NSLog(@"Login Succeeded. Proceeding to create user object. %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+            [[TSNRESTManager sharedManager] setIsAuthenticating:NO];
             [[TSNRESTManager sharedManager] runQueuedRequests];
             NSDictionary *dataDict = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
             
@@ -153,8 +155,8 @@
                     completion(user, YES);
                 else if (completion)
                     completion(dataDict, YES);
-                [[TSNRESTManager sharedManager] setIsAuthenticating:NO];
-                [[TSNRESTManager sharedManager] runQueuedRequests];
+                //[[TSNRESTManager sharedManager] setIsAuthenticating:NO];
+                //[[TSNRESTManager sharedManager] runQueuedRequests];
             }];
 
             /*
