@@ -14,6 +14,7 @@
 
 + (void)loginWithDefaultRefreshTokenAndUserClass:(Class)userClass url:(NSString *)url
 {
+    [[TSNRESTManager sharedManager] setIsAuthenticating:YES];
     [self loginWithDefaultRefreshTokenAndUserClass:userClass url:url completion:nil];
 }
 
@@ -60,6 +61,7 @@
 
 + (void)loginWithPostData:(NSString *)postData userClass:(Class)userClass url:(NSString *)url completion:(void (^)(id object, BOOL success))completion
 {
+    [[TSNRESTManager sharedManager] setIsAuthenticating:YES];
     Reachability *rb = [Reachability reachabilityForInternetConnection];
     if (![rb isReachable])
     {
