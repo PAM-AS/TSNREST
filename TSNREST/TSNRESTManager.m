@@ -198,6 +198,7 @@
 - (void)runAutoAuthenticatingRequest:(NSURLRequest *)request completion:(void (^)(BOOL success, BOOL newData))completion
 {
     [self dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        NSLog(@"Got response for autoauthingrequest: %@", request.URL.absoluteString);
         if ([(NSHTTPURLResponse *)response statusCode] < 200 || [(NSHTTPURLResponse *)response statusCode] > 204)
         {
             [self handleResponse:response withData:data error:error object:nil completion:^(id object, BOOL success) {
@@ -251,12 +252,24 @@
 
 - (void)runQueuedRequests
 {
+    if (self.isAuthenticating)
+    {
+        NSLog(@"Can't run queued requests, still not done authenticating.");
+        return;
+    }
+    
     NSLog(@"Running %u requests from queue", self.requestQueue.count);
     for (NSDictionary *dictionary in self.requestQueue)
     {
         if ([[dictionary objectForKey:@"request"] isKindOfClass:[NSURLRequest class]])
-            NSLog(@"Running queued request: %@", [[(NSURLRequest *)[dictionary objectForKey:@"request"] URL] absoluteString]);
-        [self dataTaskWithRequest:[dictionary objectForKey:@"request"] completionHandler:[dictionary objectForKey:@"completion"] session:[dictionary objectForKey:@"session"]];
+        {
+            NSURLSession *session = [dictionary objectForKey:@"session"];
+            if (!session)
+                session = [NSURLSession sharedSession];
+            
+            NSURLSessionDataTask *task = [session dataTaskWithRequest:[dictionary objectForKey:@"request"] completionHandler:[dictionary objectForKey:@"completion"]];
+            [task resume];
+        }
     }
 }
 
