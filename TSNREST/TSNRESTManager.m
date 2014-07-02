@@ -272,15 +272,22 @@
     }
     
     NSLog(@"Running %u requests from queue", self.requestQueue.count);
-    for (NSDictionary *dictionary in self.requestQueue)
+    
+    NSArray *requestQueue = [NSArray arrayWithArray:self.requestQueue];
+    
+    for (NSDictionary *dictionary in requestQueue)
     {
-        if ([[dictionary objectForKey:@"request"] isKindOfClass:[NSURLRequest class]])
+        if ([[dictionary objectForKey:@"request"] isKindOfClass:[NSMutableURLRequest class]])
         {
             NSURLSession *session = [dictionary objectForKey:@"session"];
             if (!session)
                 session = [NSURLSession sharedSession];
             
-            NSURLSessionDataTask *task = [session dataTaskWithRequest:[dictionary objectForKey:@"request"] completionHandler:[dictionary objectForKey:@"completion"]];
+            NSMutableURLRequest *request = [dictionary objectForKey:@"request"];
+            
+            [request setAllHTTPHeaderFields:self.customHeaders];
+            
+            NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:[dictionary objectForKey:@"completion"]];
             [task resume];
         }
     }
@@ -319,7 +326,12 @@
         if ([self isAuthenticating])
         {
             if (requestDict)
-                [self.requestQueue addObject:requestDict];
+            {
+                if ([self.requestQueue containsObject:requestDict]) // This has been tried before. Remove it instead.
+                    [self.requestQueue removeObject:requestDict];
+                else
+                    [self.requestQueue addObject:requestDict];
+            }
             else
                 completion(object, NO);
             return;
