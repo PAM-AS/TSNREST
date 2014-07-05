@@ -212,7 +212,40 @@
         }];
     }];
     [task resume];
+}
+
++ (void)findOnServerByAttribute:(NSString *)objectAttribute pluralizedWebAttribute:(NSString *)pluralizedWebAttribute values:(NSArray *)values completion:(void (^)(NSArray *results))completion
+{
+    TSNRESTObjectMap *map = [[TSNRESTManager sharedManager] objectMapForClass:[self class]];
     
+    NSMutableString *query = [[NSMutableString alloc] initWithString:@"?"];
+    
+    for (NSString *value in values)
+    {
+        if (query.length > 1)
+            [query appendString:@"&"];
+        [query appendString:[NSString stringWithFormat:@"%@[]=%@", pluralizedWebAttribute, value]];
+    }
+    
+    NSURL *url = [[[NSURL URLWithString:(NSString *)[[TSNRESTManager sharedManager] baseURL]] URLByAppendingPathComponent:[map serverPath]] URLByAppendingQueryString:query];
+    
+    NSLog(@"Asking server for %@", url);
+    
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:url];
+
+    NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
+        [TSNRESTParser parseAndPersistDictionary:dict withCompletion:^{
+            // If object, we need to check against the object, not it's ID
+            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"%K IN %@", objectAttribute, values];
+            
+            NSArray *objects = [[self class] findAllWithPredicate:predicate];
+            if (completion)
+                completion(objects);
+        }];
+    }];
+    [task resume];
 }
 
 @end
