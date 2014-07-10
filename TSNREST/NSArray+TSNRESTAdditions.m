@@ -86,7 +86,7 @@
             }
         }
         
-        NSMutableString *sideloadString = [[NSMutableString alloc] initWithString:@"&_sl="];
+        NSMutableString *sideloadString = [[NSMutableString alloc] initWithString:@"&include="];
         for (NSString *string in sideloads)
         {
             if (![[sideloadString substringFromIndex:sideloadString.length-1] isEqualToString:@"="])
