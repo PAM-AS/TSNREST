@@ -97,8 +97,8 @@
                 completion(nil, NO);
             
             [[TSNRESTManager sharedManager] setIsAuthenticating:NO];
-            [[TSNRESTManager sharedManager] runQueuedRequests];
-#warning flush all login-data and force manual reload
+            [[TSNRESTManager sharedManager] flushQueuedRequests];
+            [[TSNRESTManager sharedManager] flushLoadingRetains];
         }
         else
         {

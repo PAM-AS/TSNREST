@@ -263,6 +263,17 @@
     [task resume];
 }
 
+- (void)flushLoadingRetains
+{
+    self.loadingRetainCount = 0;
+}
+
+- (void)flushQueuedRequests
+{
+    self.loadingRetainCount -= self.requestQueue.count;
+    [self.requestQueue removeAllObjects];
+}
+
 - (void)runQueuedRequests
 {
     if (self.isAuthenticating)
