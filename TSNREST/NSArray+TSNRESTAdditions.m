@@ -58,6 +58,12 @@
 #endif
         return;
     }
+    else
+    {
+#if DEBUG
+        NSLog(@"Faulting %u objects of type %@", tempArray.count, NSStringFromClass([tempArray.firstObject class]));
+#endif
+    }
     
     [tempArray refreshGroupWithSideloads:sideloads];
 }
@@ -70,8 +76,6 @@
 
 - (void)refreshGroupWithSideloads:(NSArray *)sideloads
 {
-    if (!sideloads || sideloads.count == 0)
-        return;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSMutableString *ids = [[NSMutableString alloc] initWithString:@"?id="];
         
@@ -86,14 +90,6 @@
             }
         }
         
-        NSMutableString *sideloadString = [[NSMutableString alloc] initWithString:@"&include="];
-        for (NSString *string in sideloads)
-        {
-            if (![[sideloadString substringFromIndex:sideloadString.length-1] isEqualToString:@"="])
-                [sideloadString appendString:@","];
-            [sideloadString appendString:string];
-        }
-        
         TSNRESTObjectMap *map = [[TSNRESTManager sharedManager] objectMapForClass:[[self objectAtIndex:0] class]];
         if (!map)
         {
@@ -104,8 +100,19 @@
         }
         
         NSString *url = [[(NSString *)[[TSNRESTManager sharedManager] baseURL] stringByAppendingPathComponent:map.serverPath] stringByAppendingString:ids];
-        if (sideloads)
-            url = [url stringByAppendingString:sideloadString];
+        
+        if (sideloads && sideloads.count > 0)
+        {
+            NSMutableString *sideloadString = [[NSMutableString alloc] initWithString:@"&include="];
+            for (NSString *string in sideloads)
+            {
+                if (![[sideloadString substringFromIndex:sideloadString.length-1] isEqualToString:@"="])
+                    [sideloadString appendString:@","];
+                [sideloadString appendString:string];
+            }
+            if (sideloads)
+                url = [url stringByAppendingString:sideloadString];
+        }
         
 #if DEBUG
         NSLog(@"Refreshing group of %@ with URL: %@", NSStringFromClass([map classToMap]), url);
