@@ -11,6 +11,7 @@
 #import <CoreData/CoreData.h>
 #import "CoreData+MagicalRecord.h"
 #import "TSNRESTManager.h"
+#import "NSSet+TSNRESTAdditions.h"
 
 @interface NSManagedObject (TSNRESTAdditions)
 
