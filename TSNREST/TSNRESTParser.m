@@ -44,9 +44,15 @@
             
             if (object && [object valueForKey:@"systemId"] == nil && [map classToMap] == [object class] && jsonData.count == 1)
             {
-                [object setValue:[[jsonData objectAtIndex:0] valueForKey:@"id"] forKey:@"systemId"];
-                NSError *error = [[NSError alloc] init];
-                [[object managedObjectContext] save:&error];
+                dispatch_sync([[TSNRESTManager sharedManager] serialQueue], ^{
+                    [MagicalRecord saveUsingCurrentThreadContextWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+                        id existingObject = [[object class] findFirstByAttribute:@"systemId" withValue:[[jsonData objectAtIndex:0] valueForKey:@"id"] inContext:localContext];
+                        if (existingObject)
+                            [(NSManagedObject *)object deleteEntity];
+                        else
+                            [[object inContext:localContext] setValue:[[jsonData objectAtIndex:0] valueForKey:@"id"] forKey:@"systemId"];
+                    }];
+                });
             }
             
             [self parseAndPersistArray:jsonData withObjectMap:map];
