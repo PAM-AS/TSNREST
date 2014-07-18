@@ -76,6 +76,8 @@
 
 - (void)refreshGroupWithSideloads:(NSArray *)sideloads
 {
+    if (self.count == 0)
+        return;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSMutableString *ids = [[NSMutableString alloc] initWithString:@"?id="];
         
