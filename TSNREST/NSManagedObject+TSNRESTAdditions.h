@@ -17,7 +17,7 @@
 
 @property (nonatomic) BOOL inFlight;
 
-+ (void)addMagicGetters;
+- (id)get:(NSString *)propertyKey;
 
 - (void)persist;
 - (void)persistWithCompletion:(void (^)(id object, BOOL success))completion;

@@ -11,7 +11,7 @@
 #import "TSNRESTObjectMap.h"
 #import "NSObject+PropertyClass.h"
 #import <objc/runtime.h>
-#import "JGMethodSwizzler.h"
+#import "RSSwizzle.h"
 
 static void * InFlightPropertyKey = &InFlightPropertyKey;
 
@@ -25,39 +25,51 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
     objc_setAssociatedObject(self, InFlightPropertyKey, [NSNumber numberWithBool:inFlight], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
+/*
 + (void)addMagicGetters
 {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         Class class = [self class];
-        id me = [self findFirst];
         for (NSString *propertyName in [[self class] propertyNames])
         {
             if ([propertyName isEqualToString:@"inFlight"] || [propertyName isEqualToString:@"dirty"] || [propertyName isEqualToString:@"systemId"])
                 continue;
             
             SEL selector = NSSelectorFromString(propertyName);
+            class_getInstanceMethod([self class], selector);
             
-            
-//            SEL originalSelector = NSSelectorFromString(propertyName);
-//            Method method = class_getInstanceMethod(class, originalSelector);
-//            
-//            NSLog(@"Method name: %@", NSStringFromSelector(method_getName(method)));
-//            
-//            char ret[256];
-//            method_getReturnType(method, ret, 256);
-//            NSString *returnType = [NSString stringWithFormat:@"%s", ret];
-//            NSLog(@"ReturnType: %@", returnType);
-//            if ([returnType isEqualToString:@"string"])
-//                NSLog(@"Before swizzle: %@", [me performSelector:NSSelectorFromString(propertyName) withObject:nil]);
-//            
-//            NSLog(@"Swizzling %@", propertyName);
-//            __original_Method_Imp = method_setImplementation(method, (IMP)_replacement_Method);
-//            
-//            if ([returnType isEqualToString:@"string"])
-//                NSLog(@"After swizzle: %@", [me performSelector:NSSelectorFromString(propertyName) withObject:nil]);
+            RSSwizzleInstanceMethod([class class], selector, RSSWReturnType(id), nil, RSSWReplacement({
+                NSLog(@"Swizzle the shizzle");
+                return RSSWCallOriginal();
+            }), 0, nil);
         }
     });
+}
+ */
+
+- (id)get:(NSString *)propertyKey
+{
+    if ([self respondsToSelector:NSSelectorFromString(@"dirty")])
+    {
+        if ([[self valueForKey:@"dirty"] isKindOfClass:[NSNumber class]] && [[self valueForKey:@"dirty"] isEqualToNumber:@2])
+        {
+            if (self.inFlight)
+                return nil;
+            
+            [self setInFlight:YES];
+            [self refreshWithCompletion:^(id object, BOOL success) {
+                [self setInFlight:NO];
+            }];
+            return nil;
+        }
+    }
+    
+    SEL selector = NSSelectorFromString(propertyKey);
+    if ([self respondsToSelector:selector])
+        return [self valueForKey:propertyKey];
+
+    return nil;
 }
 
 - (void)persist
