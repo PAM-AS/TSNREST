@@ -15,9 +15,13 @@
 
 @interface NSManagedObject (TSNRESTAdditions)
 
+@property (nonatomic) BOOL inFlight;
+
++ (void)addMagicGetters;
+
 - (void)persist;
 - (void)persistWithCompletion:(void (^)(id object, BOOL success))completion;
-- (void)persistWithCompletion:(void (^)(id object, BOOL success))completion session:(NSURLSession *)session;
+- (void)persistWithCompletion:(void     (^)(id object, BOOL success))completion session:(NSURLSession *)session;
 
 - (void)deleteFromServer;
 - (void)deleteFromServerWithCompletion:(void (^)(id object, BOOL success))completion;
@@ -27,6 +31,7 @@
 - (void)refresh;
 - (void)refreshWithCompletion:(void (^)(id object, BOOL success))completion;
 
++ (NSArray *)propertyNames;
 - (NSString *)JSONRepresentation;
 
 + (void)refresh;

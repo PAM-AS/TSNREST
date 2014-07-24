@@ -10,8 +10,58 @@
 #import "TSNRESTParser.h"
 #import "TSNRESTObjectMap.h"
 #import "NSObject+PropertyClass.h"
+#import <objc/runtime.h>
+
+static void * InFlightPropertyKey = &InFlightPropertyKey;
+
+static IMP __original_Method_Imp;
+id _replacement_Method(id self, SEL _cmd)
+{
+    NSLog(@"Swizzle the shizzle");
+    return __original_Method_Imp(self, _cmd);
+}
 
 @implementation NSManagedObject (TSNRESTAdditions)
+
+- (BOOL)inFlight {
+    return [objc_getAssociatedObject(self, InFlightPropertyKey) boolValue];
+}
+
+- (void)setInFlight:(BOOL)inFlight {
+    objc_setAssociatedObject(self, InFlightPropertyKey, [NSNumber numberWithBool:inFlight], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
++ (void)addMagicGetters
+{
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        Class class = [self class];
+        id me = [self findFirst];
+        for (NSString *propertyName in [[self class] propertyNames])
+        {
+            if ([propertyName isEqualToString:@"inFlight"] || [propertyName isEqualToString:@"dirty"] || [propertyName isEqualToString:@"systemId"])
+                continue;
+            
+            SEL originalSelector = NSSelectorFromString(propertyName);
+            Method method = class_getInstanceMethod(class, originalSelector);
+            
+            NSLog(@"Method name: %@", NSStringFromSelector(method_getName(method)));
+            
+            char ret[256];
+            method_getReturnType(method, ret, 256);
+            NSString *returnType = [NSString stringWithFormat:@"%s", ret];
+            NSLog(@"ReturnType: %@", returnType);
+            if ([returnType isEqualToString:@"string"])
+                NSLog(@"Before swizzle: %@", [me performSelector:NSSelectorFromString(propertyName) withObject:nil]);
+            
+            NSLog(@"Swizzling %@", propertyName);
+            __original_Method_Imp = method_setImplementation(method, (IMP)_replacement_Method);
+            
+            if ([returnType isEqualToString:@"string"])
+                NSLog(@"After swizzle: %@", [me performSelector:NSSelectorFromString(propertyName) withObject:nil]);
+        }
+    });
+}
 
 - (void)persist
 {
@@ -106,6 +156,20 @@
         }];
     }];
     [task resume];
+}
+
++ (NSArray *)propertyNames
+{
+    id class = [self class];
+    unsigned int outCount, i;
+    objc_property_t *properties = class_copyPropertyList(class, &outCount);
+    NSMutableArray *names = [[NSMutableArray alloc] initWithCapacity:outCount];
+    for (i = 0; i < outCount; i++) {
+        objc_property_t property = properties[i];
+        NSString *propertyNameString = [NSString stringWithFormat:@"%s", property_getName(property)];
+        [names addObject:propertyNameString];
+    }
+    return [NSArray arrayWithArray:names];
 }
 
 - (NSString *)JSONRepresentation
