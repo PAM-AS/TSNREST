@@ -20,5 +20,6 @@
 - (void)refreshGroup;
 - (void)refreshGroupWithSideloads:(NSArray *)sideloads;
 - (void)persistContainedNSManagedObjects;
+- (void)persistContainedNSManagedObjectsWithSuccess:(void (^)(id object))successBlock failure:(void (^)(id object))failureBlock finally:(void (^)(id object))finallyBlock;
 
 @end
