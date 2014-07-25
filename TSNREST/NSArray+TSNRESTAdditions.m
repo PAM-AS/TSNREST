@@ -144,10 +144,13 @@
         NSMutableArray *doneYet = [[NSMutableArray alloc] initWithCapacity:self.count];
         NSMutableArray *successful = [[NSMutableArray alloc] initWithCapacity:self.count];
         
-        for (int i = 0; i < self.count; i++)
+        for (id object in self)
         {
-            [doneYet addObject:[NSNumber numberWithBool:NO]];
-            [successful addObject:[NSNumber numberWithBool:NO]];
+            if (![object isKindOfClass:[NSManagedObject class]])
+            {
+                [doneYet addObject:[NSNumber numberWithBool:NO]];
+                [successful addObject:[NSNumber numberWithBool:NO]];
+            }
         }
         
         for (id object in self)
