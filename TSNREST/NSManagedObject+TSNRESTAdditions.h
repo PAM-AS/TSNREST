@@ -19,6 +19,10 @@
 
 - (id)get:(NSString *)propertyKey;
 
+- (void)saveAndPersist;
+- (void)saveAndPersistWithSuccess:(void (^)(id object))successBlock failure:(void (^)(id object))failureBlock;
+- (void)saveAndPersistWithSuccess:(void (^)(id object))successBlock failure:(void (^)(id object))failureBlock finally:(void (^)(id object))finallyBlock;
+
 - (void)persist;
 - (void)persistWithCompletion:(void (^)(id object, BOOL success))completion;
 - (void)persistWithCompletion:(void     (^)(id object, BOOL success))completion session:(NSURLSession *)session;
