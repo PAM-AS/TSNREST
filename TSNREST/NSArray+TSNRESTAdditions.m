@@ -155,7 +155,7 @@
         
         for (id object in self)
         {
-            if (![object isKindOfClass:[NSManagedObject class]])
+            if ([object isKindOfClass:[NSManagedObject class]])
             {
                 [doneYet addObject:[NSNumber numberWithBool:NO]];
                 [successful addObject:[NSNumber numberWithBool:NO]];
