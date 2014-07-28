@@ -140,6 +140,15 @@
 
 - (void)persistContainedNSManagedObjectsWithSuccess:(void (^)(id object))successBlock failure:(void (^)(id object))failureBlock finally:(void (^)(id object))finallyBlock
 {
+    if (self.count < 1)
+    {
+#if DEBUG
+        NSLog(@"Tried to persist empty array. returning with failure.");
+#endif
+        failureBlock(self);
+        finallyBlock(self);
+        return;
+    }
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSMutableArray *doneYet = [[NSMutableArray alloc] initWithCapacity:self.count];
         NSMutableArray *successful = [[NSMutableArray alloc] initWithCapacity:self.count];
