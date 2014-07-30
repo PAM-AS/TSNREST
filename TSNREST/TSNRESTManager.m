@@ -541,8 +541,6 @@
     
     if ([object valueForKey:@"systemId"] && [[object valueForKey:@"systemId"] isKindOfClass:[NSNumber class]])
         url = [url URLByAppendingPathComponent:[NSString stringWithFormat:@"%@", [object valueForKey:@"systemId"]]];
-    else
-        NSLog(@"WTFCAKES %@'s systemId is %@", object, [object valueForKey:@"systemId"]);
     
     [request setURL:url];
     
