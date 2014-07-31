@@ -18,6 +18,9 @@
 
 @property (nonatomic, strong) NSMutableArray *requestQueue;
 
+#warning workaround timer
+@property (nonatomic) NSTimer *resetLoadingTimer;
+
 @end
 
 @implementation TSNRESTManager
@@ -50,6 +53,7 @@
 #if DEBUG
     NSLog(@"LoadingRetain: %i New loading starts: %@", self.loadingRetainCount, identifier);
 #endif
+    [self checkResetLoadingTimer];
 }
 
 - (void)endLoading:(NSString *)identifier
@@ -62,6 +66,27 @@
 #if DEBUG
     NSLog(@"LoadingRetain: %i Loading done: %@", self.loadingRetainCount, identifier);
 #endif
+    [self checkResetLoadingTimer];
+}
+
+- (void)checkResetLoadingTimer
+{
+    NSLog(@"Scheduling resetTimer");
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (self.resetLoadingTimer)
+            [self.resetLoadingTimer invalidate];
+        if (self.loadingRetainCount != 0)
+        {
+            self.resetLoadingTimer = [NSTimer scheduledTimerWithTimeInterval:30 target:self selector:@selector(resetLoading) userInfo:nil repeats:NO];
+        }
+        [self.resetLoadingTimer setTolerance:2];
+    });
+}
+
+- (void)resetLoading
+{
+    self.loadingRetainCount = 0;
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"stopLoadingAnimation" object:nil];
 }
 
 #pragma mark - Getters & setters
