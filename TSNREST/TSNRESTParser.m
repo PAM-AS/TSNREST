@@ -177,7 +177,7 @@
     NSLog(@"Adding %@ %@", NSStringFromClass([map classToMap]), [dict objectForKey:@"id"]);
 #endif
     
-    if ([object respondsToSelector:NSSelectorFromString(@"updatedAt")])
+    if ([object respondsToSelector:NSSelectorFromString(@"updatedAt")] && (![object respondsToSelector:NSSelectorFromString(@"dirty")] || ![[object valueForKey:@"dirty"] isEqualToNumber:@2]))
     {
         NSDate *objectDate = [object valueForKey:@"updatedAt"];
         NSDate *webDate = [[[TSNRESTManager sharedManager] ISO8601Formatter] dateFromString:[dict objectForKey:[[map objectToWeb] valueForKey:@"updatedAt"]]];
