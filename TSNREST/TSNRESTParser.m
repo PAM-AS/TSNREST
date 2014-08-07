@@ -126,11 +126,6 @@
         }
     }
     
-    
-    
-    
-    
-    
     NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"systemId" ascending:YES];
     NSEnumerator *existingEnumerator = [[existingObjects sortedArrayUsingDescriptors:@[sortDescriptor]] objectEnumerator];
     
@@ -150,7 +145,7 @@
         
         id object = nil;
         
-        if (existingObject)
+        if (existingObject && [[existingObject valueForKey:@"systemId"] integerValue] == [[jsonObject objectForKey:@"id"] integerValue])
             object = existingObject;
         else
         {
@@ -174,7 +169,10 @@
     /*
      Start the loop by logging what object we are adding.
      */
-    NSLog(@"Adding %@ %@", NSStringFromClass([map classToMap]), [dict objectForKey:@"id"]);
+    if (object)
+        NSLog(@"Updating %@ %@ (%@)", NSStringFromClass([map classToMap]), [dict objectForKey:@"id"], [object valueForKey:@"systemId"]);
+    else
+        NSLog(@"Adding %@ %@", NSStringFromClass([map classToMap]), [dict objectForKey:@"id"]);
 #endif
     
     if ([object respondsToSelector:NSSelectorFromString(@"updatedAt")] && (![object respondsToSelector:NSSelectorFromString(@"dirty")] || ![[object valueForKey:@"dirty"] isEqualToNumber:@2]))
@@ -226,7 +224,7 @@
         }
         else if ([[object classOfPropertyNamed:key] isSubclassOfClass:[NSManagedObject class]] && [dict valueForKey:webKey] != [NSNull null])
         {
-            // NSLog(@"Adding %@ (%@) to %@ %@", key, [object classOfPropertyNamed:key], NSStringFromClass([map classToMap]), [dict objectForKey:@"id"]);
+            // NSLog(@"Adding %@ (%@) to %@ %@", key, [dict valueForKey:webKey], NSStringFromClass([map classToMap]), [dict objectForKey:@"id"]);
             id classObject = nil;
             classObject = [[object classOfPropertyNamed:key] findFirstByAttribute:@"systemId" withValue:[dict valueForKey:webKey] inContext:context];
             
@@ -264,7 +262,10 @@
     }
     if (map.mappingBlock)
         map.mappingBlock(object, context, dict);
+    
+#if DEBUG
     // NSLog(@"Complete object: %@", object);
+#endif
 }
 
 @end
