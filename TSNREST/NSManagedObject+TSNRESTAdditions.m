@@ -95,6 +95,7 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
             successBlock(self);
         else if (!success)
         {
+            [self.managedObjectContext.undoManager endUndoGrouping];
             [self.managedObjectContext.undoManager undoNestedGroup];
             [self.managedObjectContext refreshObject:self mergeChanges:NO];
             if (failureBlock)
