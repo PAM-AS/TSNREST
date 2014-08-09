@@ -84,19 +84,11 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
 
 - (void)saveAndPersistWithSuccess:(void (^)(id object))successBlock failure:(void (^)(id object))failureBlock finally:(void (^)(id object))finallyBlock
 {
-    if (!self.managedObjectContext.undoManager) // on iOS, the undo manager is nil by default.
-        self.managedObjectContext.undoManager = [[NSUndoManager alloc] init];
-    [self.managedObjectContext.undoManager beginUndoGrouping];
-    NSError *error = [[NSError alloc] init];
-    [self.managedObjectContext save:&error];
-    [self.managedObjectContext.undoManager endUndoGrouping];
     [self persistWithCompletion:^(id object, BOOL success) {
         if (success && successBlock)
             successBlock(self);
         else if (!success)
         {
-            [self.managedObjectContext.undoManager endUndoGrouping];
-            [self.managedObjectContext.undoManager undoNestedGroup];
             [self.managedObjectContext refreshObject:self mergeChanges:NO];
             if (failureBlock)
                 failureBlock(self);
