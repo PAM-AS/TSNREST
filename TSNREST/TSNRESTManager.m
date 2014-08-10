@@ -470,6 +470,9 @@
 {
     NSMutableDictionary *dataDict = [[NSMutableDictionary alloc] init];
     
+    if ([object valueForKey:@"systemId"])
+        [dataDict setValue:[object valueForKey:@"systemId"] forKey:@"id"];
+    
     // Fill data dict - the dict that we convert to JSON
     [objectMap.objectToWeb enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
         // We get the value of the object (the actual data), and set the web key from the objectToWeb dictionary value.
