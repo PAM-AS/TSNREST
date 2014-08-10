@@ -84,6 +84,8 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
 
 - (void)saveAndPersistWithSuccess:(void (^)(id object))successBlock failure:(void (^)(id object))failureBlock finally:(void (^)(id object))finallyBlock
 {
+    NSError *error = [[NSError alloc] init];
+    [self.managedObjectContext save:&error];
     [self persistWithCompletion:^(id object, BOOL success) {
         if (success && successBlock)
             successBlock(self);
