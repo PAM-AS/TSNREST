@@ -220,7 +220,7 @@
 }
 
 #pragma mark - Network helpers
-- (void)runAutoAuthenticatingRequest:(NSURLRequest *)request completion:(void (^)(BOOL success, BOOL newData))completion
+- (void)runAutoAuthenticatingRequest:(NSURLRequest *)request completion:(void (^)(BOOL success, BOOL newData, BOOL retrying))completion
 {
     /*
      Holy block, batman
@@ -238,13 +238,15 @@
         {
             [self handleResponse:response withData:data error:error object:nil completion:^(id object, BOOL success) {
                 if ([(NSHTTPURLResponse *)response statusCode] != 401) // 401 will be picked up and retried
-                    completion(success, NO);
+                    completion(success, NO, NO);
+                else
+                    completion(success, NO, YES);
             } requestDict:@{@"request":request, @"completion":requestCompletion}];
         }
         else
         {
             [self handleResponse:response withData:data error:error object:nil completion:^(id object, BOOL success) {
-                completion(success, YES);
+                completion(success, YES, NO);
             } requestDict:@{@"request":request, @"completion":requestCompletion}];
         }
     };

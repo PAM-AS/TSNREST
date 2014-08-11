@@ -255,7 +255,7 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
             [request addValue:obj forHTTPHeaderField:key];
         }];
     
-    [[TSNRESTManager sharedManager] runAutoAuthenticatingRequest:request completion:^(BOOL success, BOOL newData) {
+    [[TSNRESTManager sharedManager] runAutoAuthenticatingRequest:request completion:^(BOOL success, BOOL newData, BOOL retrying) {
         if (completion)
             completion();
         [[TSNRESTManager sharedManager] endLoading:@"refreshWithCompletion"];
