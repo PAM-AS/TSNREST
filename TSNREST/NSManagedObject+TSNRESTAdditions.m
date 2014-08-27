@@ -88,7 +88,10 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
     [self.managedObjectContext save:&error];
     [self persistWithCompletion:^(id object, BOOL success) {
         if (success && successBlock)
+        {
+            [self.managedObjectContext refreshObject:self mergeChanges:YES];
             successBlock(self);
+        }
         else if (!success)
         {
             [self.managedObjectContext refreshObject:self mergeChanges:NO];

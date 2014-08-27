@@ -46,11 +46,17 @@
             {
                 dispatch_sync([[TSNRESTManager sharedManager] serialQueue], ^{
                     [MagicalRecord saveUsingCurrentThreadContextWithBlockAndWait:^(NSManagedObjectContext *localContext) {
-                        id existingObject = [[object class] findFirstByAttribute:@"systemId" withValue:[[jsonData objectAtIndex:0] valueForKey:@"id"] inContext:localContext];
-                        if (existingObject)
-                            [(NSManagedObject *)object deleteEntity];
-                        else
-                            [[object inContext:localContext] setValue:[[jsonData objectAtIndex:0] valueForKey:@"id"] forKey:@"systemId"];
+                        if ([[jsonData objectAtIndex:0] valueForKey:@"id"])
+                        {
+                            id existingObject = [[object class] findFirstByAttribute:@"systemId" withValue:[[jsonData objectAtIndex:0] valueForKey:@"id"] inContext:localContext];
+                            
+                            // Not quite sure why this catches things that the Core Data query above does not, but we need it to avoid bugs.
+                            if (existingObject && [existingObject valueForKey:@"systemId"] == [[jsonData objectAtIndex:0] valueForKey:@"id"])
+                            {
+                                [(NSManagedObject *)object deleteEntity];
+                            }
+                        }
+                        [[object inContext:localContext] setValue:[[jsonData objectAtIndex:0] valueForKey:@"id"] forKey:@"systemId"];
                     }];
                 });
             }
