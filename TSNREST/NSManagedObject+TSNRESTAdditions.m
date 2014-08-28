@@ -84,8 +84,16 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
 
 - (void)saveAndPersistWithSuccess:(void (^)(id object))successBlock failure:(void (^)(id object))failureBlock finally:(void (^)(id object))finallyBlock
 {
+    if (self.inFlight)
+    {
+#if DEBUG
+        NSLog(@"Skipping save because object already is in flight.");
+#endif
+        return;
+    }
     NSError *error = [[NSError alloc] init];
     [self.managedObjectContext save:&error];
+    [self setInFlight:YES];
     [self persistWithCompletion:^(id object, BOOL success) {
         if (success && successBlock)
         {
@@ -100,6 +108,7 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
         }
         if (finallyBlock)
             finallyBlock(self);
+        [self setInFlight:NO];
     }];
 }
 
