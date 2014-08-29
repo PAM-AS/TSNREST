@@ -51,10 +51,8 @@
                             id existingObject = [[object class] findFirstByAttribute:@"systemId" withValue:[[jsonData objectAtIndex:0] valueForKey:@"id"] inContext:localContext];
                             
                             // Not quite sure why this catches things that the Core Data query above does not, but we need it to avoid bugs.
-                            if (existingObject && [existingObject valueForKey:@"systemId"] == [[jsonData objectAtIndex:0] valueForKey:@"id"])
-                            {
+                            if (existingObject)
                                 [(NSManagedObject *)object deleteEntity];
-                            }
                         }
                         [[object inContext:localContext] setValue:[[jsonData objectAtIndex:0] valueForKey:@"id"] forKey:@"systemId"];
                     }];
@@ -67,7 +65,7 @@
     }
     
 #if DEBUG
-    NSLog(@"Parsing %u arrays (%i objects) took %f", dict.count, objects, [NSDate timeIntervalSinceReferenceDate] - start);
+    NSLog(@"Parsing %lu arrays (%i objects) took %f", (unsigned long)dict.count, objects, [NSDate timeIntervalSinceReferenceDate] - start);
 #endif
     
     
