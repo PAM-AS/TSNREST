@@ -178,67 +178,8 @@
                 {
                     BOOL wasSuccess = ![successful containsObject:@NO];
 #if DEBUG
-                    NSLog(@"Updated %u objects, with success %i", self.count, wasSuccess);
+                    NSLog(@"Updated %lu objects, with success %i", (unsigned long)self.count, wasSuccess);
 #endif
-                    if (wasSuccess && successBlock)
-                        successBlock(self);
-                    else if (!wasSuccess && failureBlock)
-                        failureBlock(self);
-                    if (finallyBlock)
-                        finallyBlock(self);
-                }
-            }];
-        }
-    });
-}
-
-- (void)persistContainedNSManagedObjects
-{
-    [self persistContainedNSManagedObjectsWithSuccess:nil failure:nil finally:nil];
-}
-
-- (void)persistContainedNSManagedObjectsWithSuccess:(void (^)(id object))successBlock failure:(void (^)(id object))failureBlock finally:(void (^)(id object))finallyBlock
-{
-    if (self.count < 1)
-    {
-#if DEBUG
-        NSLog(@"Tried to persist empty array. returning with failure.");
-#endif
-        failureBlock(self);
-        finallyBlock(self);
-        return;
-    }
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSMutableArray *doneYet = [[NSMutableArray alloc] initWithCapacity:self.count];
-        NSMutableArray *successful = [[NSMutableArray alloc] initWithCapacity:self.count];
-        
-        for (id object in self)
-        {
-            if ([object isKindOfClass:[NSManagedObject class]])
-            {
-                [doneYet addObject:[NSNumber numberWithBool:NO]];
-                [successful addObject:[NSNumber numberWithBool:NO]];
-            }
-        }
-        
-        for (id object in self)
-        {
-            if (![object isKindOfClass:[NSManagedObject class]])
-                continue;
-            
-            [object persistWithCompletion:^(id aobject, BOOL success) {
-                NSUInteger index = [self indexOfObject:object];
-                [doneYet replaceObjectAtIndex:index withObject:@YES];
-                [successful replaceObjectAtIndex:index withObject:[NSNumber numberWithBool:success]];
-                
-                if (![doneYet containsObject:@NO])
-                {
-                    BOOL wasSuccess = ![successful containsObject:@NO];
-                    
-#if DEBUG
-                    NSLog(@"Updated %u objects, with success %i", self.count, wasSuccess);
-#endif
-                    
                     if (wasSuccess && successBlock)
                         successBlock(self);
                     else if (!wasSuccess && failureBlock)

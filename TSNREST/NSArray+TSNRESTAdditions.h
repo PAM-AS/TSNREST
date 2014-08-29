@@ -21,7 +21,5 @@
 - (void)refreshGroupWithSideloads:(NSArray *)sideloads;
 - (void)saveAndPersistContainedNSManagedObjects;
 - (void)saveAndPersistContainedNSManagedObjectsWithSuccess:(void (^)(id object))successBlock failure:(void (^)(id object))failureBlock finally:(void (^)(id object))finallyBlock;
-- (void)persistContainedNSManagedObjects DEPRECATED_ATTRIBUTE;
-- (void)persistContainedNSManagedObjectsWithSuccess:(void (^)(id object))successBlock failure:(void (^)(id object))failureBlock finally:(void (^)(id object))finallyBlock DEPRECATED_ATTRIBUTE;
 
 @end
