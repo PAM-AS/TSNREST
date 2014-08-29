@@ -237,10 +237,13 @@
         if ([(NSHTTPURLResponse *)response statusCode] < 200 || [(NSHTTPURLResponse *)response statusCode] > 204)
         {
             [self handleResponse:response withData:data error:error object:nil completion:^(id object, BOOL success) {
-                if ([(NSHTTPURLResponse *)response statusCode] != 401) // 401 will be picked up and retried
-                    completion(success, NO, NO);
-                else
-                    completion(success, NO, YES);
+                if (completion)
+                {
+                    if ([(NSHTTPURLResponse *)response statusCode] != 401) // 401 will be picked up and retried
+                        completion(success, NO, NO);
+                    else
+                        completion(success, NO, YES);
+                }
             } requestDict:@{@"request":request, @"completion":requestCompletion}];
         }
         else
