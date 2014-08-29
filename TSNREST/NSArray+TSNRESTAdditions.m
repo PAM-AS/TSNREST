@@ -124,9 +124,11 @@
         NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
         
         NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-            NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
-            NSLog(@"Got a dict back, transmitting it to our parser");
-            [TSNRESTParser parseAndPersistDictionary:dict];
+            [[TSNRESTManager sharedManager] handleResponse:response
+                                                  withData:data
+                                                     error:error
+                                                    object:nil
+                                                completion:nil];
         }];
         [task resume];
     });
