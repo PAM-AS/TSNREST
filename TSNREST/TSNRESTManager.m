@@ -352,13 +352,20 @@
         return;
     }
 #if DEBUG
-    NSLog(@"Response: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+    NSLog(@"Response (%li): %@", (long)[(NSHTTPURLResponse *)response statusCode], [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
 #endif
     NSInteger statusCode = [(NSHTTPURLResponse *)response statusCode];
     NSNumber *headerUserId = [[(NSHTTPURLResponse *)response allHeaderFields] objectForKey:@"X-PAM-UserId"];
     NSNumber *myUserId = [[NSUserDefaults standardUserDefaults] objectForKey:@"userId"];
     
-    if (statusCode == 401 || (headerUserId != nil && headerUserId.intValue != myUserId.intValue))
+    // Delete entity if server doesn't have it.
+    if (statusCode == 404 && [object isKindOfClass:[NSManagedObject class]])
+    {
+        [(NSManagedObject *)object deleteEntity];
+        if (completion)
+            completion(nil, NO);
+    }
+    else if (statusCode == 401 || (headerUserId != nil && headerUserId.intValue != myUserId.intValue))
     {
         [[NSUserDefaults standardUserDefaults] synchronize];
         if ([self isAuthenticating])
@@ -370,7 +377,7 @@
                 else
                     [self.requestQueue addObject:requestDict];
             }
-            else
+            else if (completion)
                 completion(object, NO);
             return;
         }

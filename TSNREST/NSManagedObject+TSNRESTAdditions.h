@@ -32,6 +32,7 @@
 
 - (void)faultIfNeeded;
 - (void)faultIfNeededWithCompletion:(void (^)(id object, BOOL success))completion;
+- (void)checkForDeletion:(void (^)(BOOL hasBeenDeleted))completion;
 - (void)refresh;
 - (void)refreshWithCompletion:(void (^)(id object, BOOL success))completion;
 

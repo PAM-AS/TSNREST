@@ -182,6 +182,28 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
     }
 }
 
+- (void)checkForDeletion:(void (^)(BOOL hasBeenDeleted))completion
+{
+    TSNRESTObjectMap *map = [[TSNRESTManager sharedManager] objectMapForClass:self.class];
+    NSString *url = [[(NSString *)[[TSNRESTManager sharedManager] baseURL] stringByAppendingPathComponent:map.serverPath] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@", [self valueForKey:@"systemId"]]];
+    
+#if DEBUG
+    NSLog(@"Checking deletion for %@ (%@) at %@", NSStringFromClass(self.class), [self valueForKey:@"systemId"], url);
+#endif
+    
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+    
+    NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        if ([(NSHTTPURLResponse *)response statusCode] == 404)
+            [self deleteEntity];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            completion([(NSHTTPURLResponse *)response statusCode] == 404);
+        });
+    }];
+    [task resume];
+}
+
 - (void)refresh
 {
     [self refreshWithCompletion:nil];
@@ -189,7 +211,9 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
 
 - (void)refreshWithCompletion:(void (^)(id object, BOOL success))completion
 {
+#if DEBUG
     NSLog(@"Refreshing %@ %@", NSStringFromClass(self.class), [self valueForKey:@"systemId"]);
+#endif
     TSNRESTObjectMap *map = [[TSNRESTManager sharedManager] objectMapForClass:self.class];
     NSString *url = [[(NSString *)[[TSNRESTManager sharedManager] baseURL] stringByAppendingPathComponent:map.serverPath] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@", [self valueForKey:@"systemId"]]];
     
