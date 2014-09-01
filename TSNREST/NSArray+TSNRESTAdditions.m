@@ -151,15 +151,13 @@
         return;
     }
     
-    __weak typeof(successBlock) _successBlock = successBlock;
-    __weak typeof(failureBlock) _failureBlock = failureBlock;
-    __weak typeof(finallyBlock) _finallyBlock = finallyBlock;
+    __weak typeof(self) _weakSelf = self;
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSMutableArray *doneYet = [[NSMutableArray alloc] initWithCapacity:self.count];
         NSMutableArray *successful = [[NSMutableArray alloc] initWithCapacity:self.count];
         
-        for (id object in self)
+        for (id object in _weakSelf)
         {
             if ([object isKindOfClass:[NSManagedObject class]])
             {
@@ -168,12 +166,12 @@
             }
         }
         
-        for (id object in self)
+        for (id object in _weakSelf)
         {
             if (![object isKindOfClass:[NSManagedObject class]])
                 continue;
             
-            NSUInteger index = [self indexOfObject:object];
+            NSUInteger index = [_weakSelf indexOfObject:object];
             [[object inContext:[NSManagedObjectContext contextForCurrentThread]] saveAndPersistWithSuccess:^(id object) {
                 [successful replaceObjectAtIndex:index withObject:@YES];
             } failure:^(id object) {
@@ -186,12 +184,12 @@
 #if DEBUG
                     NSLog(@"Updated %lu objects, with success %i", (unsigned long)self.count, wasSuccess);
 #endif
-                    if (wasSuccess && _successBlock)
-                        _successBlock(self);
-                    else if (!wasSuccess && _failureBlock)
-                        _failureBlock(self);
-                    if (_finallyBlock)
-                        _finallyBlock(self);
+                    if (wasSuccess && successBlock)
+                        successBlock(_weakSelf);
+                    else if (!wasSuccess && failureBlock)
+                        failureBlock(_weakSelf);
+                    if (finallyBlock)
+                        finallyBlock(_weakSelf);
                 }
             }];
         }
