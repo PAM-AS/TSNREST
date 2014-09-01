@@ -146,16 +146,18 @@
 #if DEBUG
         NSLog(@"Tried to persist empty array. returning with failure.");
 #endif
-        failureBlock(self);
-        finallyBlock(self);
+        if (failureBlock)
+            failureBlock(self);
+        if (finallyBlock)
+            finallyBlock(self);
         return;
     }
     
     __weak typeof(self) _weakSelf = self;
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSMutableArray *doneYet = [[NSMutableArray alloc] initWithCapacity:self.count];
-        NSMutableArray *successful = [[NSMutableArray alloc] initWithCapacity:self.count];
+        NSMutableArray *doneYet = [[NSMutableArray alloc] initWithCapacity:_weakSelf.count];
+        NSMutableArray *successful = [[NSMutableArray alloc] initWithCapacity:_weakSelf.count];
         
         for (id object in _weakSelf)
         {
@@ -182,7 +184,7 @@
                 {
                     BOOL wasSuccess = ![successful containsObject:@NO];
 #if DEBUG
-                    NSLog(@"Updated %lu objects, with success %i", (unsigned long)self.count, wasSuccess);
+                    NSLog(@"Updated %lu objects, with success %i", (unsigned long)_weakSelf.count, wasSuccess);
 #endif
                     if (wasSuccess && successBlock)
                         successBlock(_weakSelf);

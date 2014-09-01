@@ -91,9 +91,9 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
 #endif
         return;
     }
+    [self setInFlight:YES];
     NSError *error = [[NSError alloc] init];
     [self.managedObjectContext save:&error];
-    [self setInFlight:YES];
     [self persistWithCompletion:^(id object, BOOL success) {
         if (success && successBlock)
         {
