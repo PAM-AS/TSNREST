@@ -151,6 +151,10 @@
         return;
     }
     
+    __weak typeof(successBlock) _successBlock = successBlock;
+    __weak typeof(failureBlock) _failureBlock = failureBlock;
+    __weak typeof(finallyBlock) _finallyBlock = finallyBlock;
+    
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSMutableArray *doneYet = [[NSMutableArray alloc] initWithCapacity:self.count];
         NSMutableArray *successful = [[NSMutableArray alloc] initWithCapacity:self.count];
@@ -182,12 +186,12 @@
 #if DEBUG
                     NSLog(@"Updated %lu objects, with success %i", (unsigned long)self.count, wasSuccess);
 #endif
-                    if (wasSuccess && successBlock)
-                        successBlock(self);
-                    else if (!wasSuccess && failureBlock)
-                        failureBlock(self);
-                    if (finallyBlock)
-                        finallyBlock(self);
+                    if (wasSuccess && _successBlock)
+                        _successBlock(self);
+                    else if (!wasSuccess && _failureBlock)
+                        _failureBlock(self);
+                    if (_finallyBlock)
+                        _finallyBlock(self);
                 }
             }];
         }
