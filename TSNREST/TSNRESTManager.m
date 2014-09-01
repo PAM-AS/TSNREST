@@ -249,7 +249,8 @@
         else
         {
             [self handleResponse:response withData:data error:error object:nil completion:^(id object, BOOL success) {
-                completion(success, YES, NO);
+                if (completion)
+                    completion(success, YES, NO);
             } requestDict:@{@"request":request, @"completion":requestCompletion}];
         }
     };
