@@ -481,6 +481,11 @@
 
 - (NSDictionary *)dictionaryFromObject:(id)object withObjectMap:(TSNRESTObjectMap *)objectMap
 {
+    return [self dictionaryFromObject:object withObjectMap:objectMap optionalKeys:nil];
+}
+
+- (NSDictionary *)dictionaryFromObject:(id)object withObjectMap:(TSNRESTObjectMap *)objectMap optionalKeys:(NSArray *)optionalKeys
+{
     NSMutableDictionary *dataDict = [[NSMutableDictionary alloc] init];
     
     if ([object valueForKey:@"systemId"])
@@ -498,6 +503,15 @@
         }
         
         if ([[objectMap readOnlyKeys] containsObject:key]) // Readonly. Skip.
+        {
+            return;
+        }
+        
+        /* Check optionals.
+         optionalKeys in objectmap specifies which are optional,
+         optionalKeys as parameter to this function specifies which one we want to send anyway.
+         */
+        if ([[objectMap optionalKeys] containsObject:key] && (!optionalKeys || ![optionalKeys containsObject:key]))
         {
             return;
         }

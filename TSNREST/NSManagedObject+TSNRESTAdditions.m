@@ -84,6 +84,11 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
 
 - (void)saveAndPersistWithSuccess:(void (^)(id object))successBlock failure:(void (^)(id object))failureBlock finally:(void (^)(id object))finallyBlock
 {
+    [self saveAndPersistWithSuccess:successBlock failure:failureBlock finally:finallyBlock optionalKeys:nil];
+}
+
+- (void)saveAndPersistWithSuccess:(void (^)(id object))successBlock failure:(void (^)(id object))failureBlock finally:(void (^)(id object))finallyBlock optionalKeys:(NSArray *)optionalKeys
+{
     if (self.inFlight)
     {
 #if DEBUG
@@ -119,26 +124,20 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
 
 - (void)persistWithCompletion:(void (^)(id object, BOOL success))completion
 {
-    NSURLSession *session = [NSURLSession sharedSession];
-    [self persistWithCompletion:completion session:session];
+    [self persistWithCompletion:completion session:nil];
 }
 
 - (void)persistWithCompletion:(void (^)(id object, BOOL success))completion session:(NSURLSession *)session
 {
+    NSURLSession *currentSession = session;
+    if (!currentSession)
+        currentSession = [NSURLSession sharedSession];
+        
+    
     [[TSNRESTManager sharedManager] startLoading:@"persistWithCompletion:session:"];
     NSURLRequest *request = [[TSNRESTManager sharedManager] requestForObject:self];
     
-    /*
-    [[TSNRESTManager sharedManager] runAutoAuthenticatingRequest:request completion:^(BOOL success, BOOL newData) {
-        [object.managedObjectContext refreshObject:object mergeChanges:YES];
-        if (completion)
-            completion(object, success);
-        [[TSNRESTManager sharedManager] endLoading:@"persistWithCompletion:session:"];
-    }];
-     
-     */
-    
-    NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+    NSURLSessionDataTask *dataTask = [currentSession dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         [[TSNRESTManager sharedManager] handleResponse:response withData:data error:error object:self completion:^(id object, BOOL success) {
             [[TSNRESTManager sharedManager] endLoading:@"persistWithCompletion:session:"];
             if (completion)
@@ -148,7 +147,6 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
         NSLog(@"Response: %@", response);
         if (error)
             NSLog(@"Error: %@", [error userInfo]);
-//        [[TSNRESTManager sharedManager] endLoading:@"persistWithCompletion:session:"];
     }];
     [dataTask resume];
 }
