@@ -479,11 +479,6 @@
     }
 }
 
-- (NSDictionary *)dictionaryFromObject:(id)object withObjectMap:(TSNRESTObjectMap *)objectMap
-{
-    return [self dictionaryFromObject:object withObjectMap:objectMap optionalKeys:nil];
-}
-
 - (NSDictionary *)dictionaryFromObject:(id)object withObjectMap:(TSNRESTObjectMap *)objectMap optionalKeys:(NSArray *)optionalKeys
 {
     NSMutableDictionary *dataDict = [[NSMutableDictionary alloc] init];
@@ -563,11 +558,16 @@
 
 - (NSURLRequest *)requestForObject:(id)object
 {
+    [self requestForObject:object optionalKeys:nil];
+}
+
+- (NSURLRequest *)requestForObject:(id)object optionalKeys:(NSArray *)optionalKeys
+{
     [[(NSManagedObject *)object managedObjectContext] refreshObject:object mergeChanges:NO];
     NSLog(@"Persisting object %@ (context: %@)", [object class], [object managedObjectContext]);
     TSNRESTObjectMap *objectMap = [self objectMapForClass:[object class]];
     NSLog(@"ObjectMap: %@", objectMap);
-    NSDictionary *dataDict = [self dictionaryFromObject:object withObjectMap:objectMap];
+    NSDictionary *dataDict = [self dictionaryFromObject:object withObjectMap:objectMap optionalKeys:optionalKeys];
     
     NSData *JSONData = nil;
     if (dataDict.count > 0)

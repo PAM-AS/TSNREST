@@ -114,7 +114,7 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
         if (finallyBlock)
             finallyBlock(self);
         [self setInFlight:NO];
-    }];
+    } session:nil optionalKeys:optionalKeys];
 }
 
 - (void)persist
@@ -129,13 +129,18 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
 
 - (void)persistWithCompletion:(void (^)(id object, BOOL success))completion session:(NSURLSession *)session
 {
+    [self persistWithCompletion:completion session:session optionalKeys:nil];
+}
+
+- (void)persistWithCompletion:(void (^)(id object, BOOL success))completion session:(NSURLSession *)session optionalKeys:(NSArray *)optionalKeys
+{
     NSURLSession *currentSession = session;
     if (!currentSession)
         currentSession = [NSURLSession sharedSession];
         
     
     [[TSNRESTManager sharedManager] startLoading:@"persistWithCompletion:session:"];
-    NSURLRequest *request = [[TSNRESTManager sharedManager] requestForObject:self];
+    NSURLRequest *request = [[TSNRESTManager sharedManager] requestForObject:self optionalKeys:optionalKeys];
     
     NSURLSessionDataTask *dataTask = [currentSession dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         [[TSNRESTManager sharedManager] handleResponse:response withData:data error:error object:self completion:^(id object, BOOL success) {
@@ -245,7 +250,7 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
 
 - (NSString *)JSONRepresentation
 {
-    NSDictionary *dict = [[TSNRESTManager sharedManager] dictionaryFromObject:self withObjectMap:[[TSNRESTManager sharedManager] objectMapForClass:[self class]]];
+    NSDictionary *dict = [[TSNRESTManager sharedManager] dictionaryFromObject:self withObjectMap:[[TSNRESTManager sharedManager] objectMapForClass:[self class]] optionalKeys:nil];
     NSError *error = [[NSError alloc] init];
     NSData *JSONData = [NSJSONSerialization dataWithJSONObject:dict options:0 error:&error];
     NSString *JSONString = [[NSString alloc] initWithData:JSONData encoding:NSUTF8StringEncoding];

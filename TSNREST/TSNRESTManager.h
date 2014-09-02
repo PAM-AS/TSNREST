@@ -56,6 +56,7 @@
 
 // Common helpers for other TSNREST components
 - (NSURLRequest *)requestForObject:(id)object;
+- (NSURLRequest *)requestForObject:(id)object optionalKeys:(NSArray *)optionalKeys;
 
 /*
  Run a request that will automatically attempt to reauthenticate if it receives a 401 status.
@@ -73,7 +74,6 @@
 - (void)handleResponse:(NSURLResponse *)response withData:(NSData *)data error:(NSError *)error object:(id)object completion:(void (^)(id object, BOOL success))completion;
 - (void)handleResponse:(NSURLResponse *)response withData:(NSData *)data error:(NSError *)error object:(id)object completion:(void (^)(id object, BOOL success))completion requestDict:(NSDictionary *)requestDict;
 
-- (NSDictionary *)dictionaryFromObject:(id)object withObjectMap:(TSNRESTObjectMap *)objectMap;
 - (NSDictionary *)dictionaryFromObject:(id)object withObjectMap:(TSNRESTObjectMap *)objectMap optionalKeys:(NSArray *)optionalKeys;
 
 - (void)resetDataStore;
