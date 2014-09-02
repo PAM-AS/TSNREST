@@ -22,6 +22,7 @@
 @property (nonatomic,strong) NSMutableDictionary *booleans;
 @property (nonatomic,strong) NSMutableDictionary *enumMaps;
 @property (nonatomic,strong) NSArray *readOnlyKeys;
+@property (nonatomic,strong) NSArray *optionalKeys;
 
 @property (nonatomic) BOOL shouldIgnoreUpdates;
 
