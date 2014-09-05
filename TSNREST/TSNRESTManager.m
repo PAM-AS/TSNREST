@@ -213,11 +213,12 @@
         {
             dispatch_async([[TSNRESTManager sharedManager] serialQueue], ^{
                 NSLog(@"Object successfully deleted.");
-                [object deleteEntity];
-                NSError *aerror = [[NSError alloc] init];
-                [[object managedObjectContext] save:&aerror];
-                if (completion)
-                    completion(object, YES);
+                [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+                    [[object inContext:localContext] deleteEntity];
+                } completion:^(BOOL success, NSError *error) {
+                    if (completion)
+                        completion(object, YES);
+                }];
             });
         }
     }];
