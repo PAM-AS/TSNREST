@@ -177,18 +177,23 @@
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@/%@", self.baseURL, objectMap.serverPath, systemId]];
     [request setURL:url];
     
+#if DEBUG
     NSLog(@"Sending delete action for %@ to %@", systemId, [url absoluteString]);
+#endif
     
     NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         if ([(NSHTTPURLResponse *)response statusCode] == 404) // Assume object isn't on server yet. Delete locally.
         {
             dispatch_async([[TSNRESTManager sharedManager] serialQueue], ^{
+#if DEBUG
                 NSLog(@"Object attempted deleted, assume success (404).");
-                [object deleteEntity];
-                NSError *aerror = [[NSError alloc] init];
-                [[object managedObjectContext] save:&aerror];
-                if (completion)
-                    completion(object, YES);
+#endif
+                [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+                    [[object inContext:localContext] deleteEntity];
+                } completion:^(BOOL success, NSError *error) {
+                    if (completion)
+                        completion(object, YES);
+                }];
             });
         }
         else if ([(NSHTTPURLResponse *)response statusCode] < 200 || [(NSHTTPURLResponse *)response statusCode] > 204)
