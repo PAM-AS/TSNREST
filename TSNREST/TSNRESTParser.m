@@ -189,6 +189,11 @@
         }
     }
     
+    // Duplicate avoidance
+    if ([object respondsToSelector:NSSelectorFromString(@"uuid")] && [dict objectForKey:@"uuid"] && ![[object valueForKey:@"uuid"] isEqualToString:[dict objectForKey:@"uuid"]])
+        return;
+        
+    
     if ([object respondsToSelector:NSSelectorFromString(@"systemId")])
         [object setValue:[dict objectForKey:@"id"] forKey:@"systemId"];
     if ([object respondsToSelector:NSSelectorFromString(@"dirty")])

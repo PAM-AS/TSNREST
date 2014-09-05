@@ -137,11 +137,19 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
     NSURLSession *currentSession = session;
     if (!currentSession)
         currentSession = [NSURLSession sharedSession];
-        
+    
+    if ([self respondsToSelector:NSSelectorFromString(@"uuid")])
+    {
+        if (![self valueForKey:@"uuid"])
+        {
+            [self setValue:[[NSUUID UUID] UUIDString] forKey:@"uuid"];
+            NSError *error = [[NSError alloc] init];
+            [self.managedObjectContext save:&error];
+        }
+    }
     
     [[TSNRESTManager sharedManager] startLoading:@"persistWithCompletion:session:"];
     NSURLRequest *request = [[TSNRESTManager sharedManager] requestForObject:self optionalKeys:optionalKeys];
-    
     NSURLSessionDataTask *dataTask = [currentSession dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         [[TSNRESTManager sharedManager] handleResponse:response withData:data error:error object:self completion:^(id object, BOOL success) {
             [[TSNRESTManager sharedManager] endLoading:@"persistWithCompletion:session:"];

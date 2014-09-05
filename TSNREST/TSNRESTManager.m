@@ -485,6 +485,8 @@
     
     if ([object valueForKey:@"systemId"])
         [dataDict setValue:[object valueForKey:@"systemId"] forKey:@"id"];
+    if ([object respondsToSelector:NSSelectorFromString(@"uuid")] && [object valueForKey:@"uuid"])
+        [dataDict setValue:[object valueForKey:@"uuid"] forKey:@"uuid"];
     
     // Fill data dict - the dict that we convert to JSON
     [objectMap.objectToWeb enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
