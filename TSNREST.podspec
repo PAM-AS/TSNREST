@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = 'TSNREST'
-  s.version = '0.1.93'
+  s.version = '0.1.94'
   s.authors = {'Thomas Sunde Nielsen' => 'thomas@pam.as'}
   s.homepage = 'https://github.com/PAM-AS/TSNREST'
   s.summary = 'iOS REST library built on MagicalRecord.'

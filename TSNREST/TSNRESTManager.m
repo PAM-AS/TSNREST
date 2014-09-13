@@ -281,7 +281,9 @@
                 dictionary = @{@"request":request,@"completion":completion,@"session":session};
             else
                 dictionary = @{@"request":request,@"completion":completion};
-            [self.requestQueue addObject:dictionary];
+            @synchronized(self.requestQueue) {
+                [self.requestQueue addObject:dictionary];
+            }
             
             NSLog(@"Authentication is in progress. Datatask added to queue: %@", request.URL.absoluteString);
             
@@ -307,8 +309,10 @@
 
 - (void)flushQueuedRequests
 {
-    self.loadingRetainCount -= self.requestQueue.count;
-    [self.requestQueue removeAllObjects];
+    @synchronized(self.requestQueue) {
+        self.loadingRetainCount -= (int)self.requestQueue.count;
+        [self.requestQueue removeAllObjects];
+    }
 }
 
 - (void)runQueuedRequests
@@ -319,9 +323,16 @@
         return;
     }
     
-    NSLog(@"Running %u requests from queue", self.requestQueue.count);
+    NSArray *requestQueue = nil;
+
+    @synchronized(self.requestQueue)
+    {
+#if DEBUG
+        NSLog(@"Running %lu requests from queue", self.requestQueue.count);
+#endif
     
-    NSArray *requestQueue = [NSArray arrayWithArray:self.requestQueue];
+        requestQueue = [NSArray arrayWithArray:self.requestQueue];
+    }
     
     for (NSDictionary *dictionary in requestQueue)
     {
@@ -382,10 +393,12 @@
         {
             if (requestDict)
             {
-                if ([self.requestQueue containsObject:requestDict]) // This has been tried before. Remove it instead.
-                    [self.requestQueue removeObject:requestDict];
-                else
-                    [self.requestQueue addObject:requestDict];
+                @synchronized (self.requestQueue) {
+                    if ([self.requestQueue containsObject:requestDict]) // This has been tried before. Remove it instead.
+                        [self.requestQueue removeObject:requestDict];
+                    else
+                        [self.requestQueue addObject:requestDict];
+                }
             }
             else if (completion)
                 completion(object, NO);
@@ -398,7 +411,9 @@
             if (requestDict)
             {
                 queued = YES;
-                [self.requestQueue addObject:requestDict];
+                @synchronized(self.requestQueue) {
+                    [self.requestQueue addObject:requestDict];
+                }
             }
         }
         
@@ -566,7 +581,7 @@
 
 - (NSURLRequest *)requestForObject:(id)object
 {
-    [self requestForObject:object optionalKeys:nil];
+    return [self requestForObject:object optionalKeys:nil];
 }
 
 - (NSURLRequest *)requestForObject:(id)object optionalKeys:(NSArray *)optionalKeys
