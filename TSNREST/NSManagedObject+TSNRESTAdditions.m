@@ -92,29 +92,53 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
     if (self.inFlight)
     {
 #if DEBUG
-        NSLog(@"Skipping save because object already is in flight.");
+        NSLog(@"Skipping save of %@ %@ because object already is in flight.", NSStringFromClass([self class]), [self valueForKey:@"systemId"]);
 #endif
         return;
     }
     [self setInFlight:YES];
     NSError *error = [[NSError alloc] init];
     [self.managedObjectContext save:&error];
-    [self persistWithCompletion:^(id object, BOOL success) {
-        if (success && successBlock)
+    NSURLSession *currentSession = [NSURLSession sharedSession];
+    
+    if ([self respondsToSelector:NSSelectorFromString(@"uuid")])
+    {
+        if (![self valueForKey:@"uuid"])
         {
+            [self setValue:[[NSUUID UUID] UUIDString] forKey:@"uuid"];
+            NSError *error = [[NSError alloc] init];
+            [self.managedObjectContext save:&error];
+        }
+    }
+    
+    [[TSNRESTManager sharedManager] startLoading:@"persistWithCompletion:session:"];
+    NSURLRequest *request = [[TSNRESTManager sharedManager] requestForObject:self optionalKeys:optionalKeys];
+    NSURLSessionDataTask *dataTask = [currentSession dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        [[TSNRESTManager sharedManager] handleResponse:response withData:data error:error object:self completion:^(id object, BOOL success) {
+            [[TSNRESTManager sharedManager] endLoading:@"persistWithCompletion:session:"];
             [self.managedObjectContext refreshObject:self mergeChanges:YES];
-            successBlock(self);
-        }
-        else if (!success)
-        {
-            [self.managedObjectContext refreshObject:self mergeChanges:NO];
-            if (failureBlock)
+            [self setInFlight:NO];
+            if (success && successBlock)
+            {
+                successBlock(self);
+            }
+            else if (failureBlock)
+            {
                 failureBlock(self);
+            }
+            if (finallyBlock)
+                finallyBlock(self);
+        }];
+#if DEBUG
+        NSLog(@"Data: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+        if (error)
+        {
+            NSLog(@"Response: %@", response);
+            NSLog(@"Error: %@", [error userInfo]);
         }
-        if (finallyBlock)
-            finallyBlock(self);
-        [self setInFlight:NO];
-    } session:nil optionalKeys:optionalKeys];
+#endif
+    }];
+    [dataTask resume];
 }
 
 - (void)persist

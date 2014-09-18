@@ -24,10 +24,10 @@
 - (void)saveAndPersistWithSuccess:(void (^)(id object))successBlock failure:(void (^)(id object))failureBlock finally:(void (^)(id object))finallyBlock;
 - (void)saveAndPersistWithSuccess:(void (^)(id object))successBlock failure:(void (^)(id object))failureBlock finally:(void (^)(id object))finallyBlock optionalKeys:(NSArray *)optionalKeys;
 
-- (void)persist;
-- (void)persistWithCompletion:(void (^)(id object, BOOL success))completion;
-- (void)persistWithCompletion:(void     (^)(id object, BOOL success))completion session:(NSURLSession *)session;
-- (void)persistWithCompletion:(void (^)(id object, BOOL success))completion session:(NSURLSession *)session optionalKeys:(NSArray *)optionalKeys;
+- (void)persist DEPRECATED_ATTRIBUTE;
+- (void)persistWithCompletion:(void (^)(id object, BOOL success))completion DEPRECATED_ATTRIBUTE;
+- (void)persistWithCompletion:(void     (^)(id object, BOOL success))completion session:(NSURLSession *)session DEPRECATED_ATTRIBUTE;
+- (void)persistWithCompletion:(void (^)(id object, BOOL success))completion session:(NSURLSession *)session optionalKeys:(NSArray *)optionalKeys DEPRECATED_ATTRIBUTE;
 
 - (void)deleteFromServer;
 - (void)deleteFromServerWithCompletion:(void (^)(id object, BOOL success))completion;

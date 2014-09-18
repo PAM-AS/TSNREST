@@ -441,7 +441,7 @@
         if (object)
         {
             dispatch_async([[TSNRESTManager sharedManager] serialQueue], ^{
-                [MagicalRecord saveUsingCurrentThreadContextWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+                [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
                     id contextObject = [object inContext:localContext];
                     if ([contextObject respondsToSelector:NSSelectorFromString(@"dirty")])
                         [contextObject setValue:@1 forKey:@"dirty"];
@@ -471,7 +471,7 @@
         if (object && [object respondsToSelector:NSSelectorFromString(@"dirty")])
         {
             dispatch_sync([[TSNRESTManager sharedManager] serialQueue], ^{
-                [MagicalRecord saveUsingCurrentThreadContextWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+                [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
                     id contextObject = [object inContext:localContext];
                     [contextObject setValue:@0 forKey:@"dirty"];
                 }];

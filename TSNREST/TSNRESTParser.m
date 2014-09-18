@@ -48,11 +48,12 @@
                 NSLog(@"First write to object, so setting ID for object %@", object);
 #endif
                 dispatch_sync([[TSNRESTManager sharedManager] serialQueue], ^{
-                    [MagicalRecord saveUsingCurrentThreadContextWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+                    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+                        id localObject = [object inContext:localContext];
                         id systemId = [[jsonData objectAtIndex:0] valueForKey:@"id"];
                         if (systemId)
                         {
-                            id existingObject = [[object class] findFirstByAttribute:@"systemId" withValue:systemId inContext:localContext];
+                            id existingObject = [[localObject class] findFirstByAttribute:@"systemId" withValue:systemId inContext:localContext];
                             
                             // Not quite sure why this catches things that the Core Data query above does not, but we need it to avoid bugs.
                             if (existingObject)
@@ -61,21 +62,20 @@
                                 NSLog(@"Found existing object. Appending it's data to our object, then deleting it (%@).", [existingObject valueForKey:@"systemId"]);
 #endif
                                 NSDictionary *data = [(NSManagedObject *)existingObject dictionaryRepresentation];
-                                [self mapDict:data toObject:object withMap:map inContext:localContext];
+                                [self mapDict:data toObject:localObject withMap:map inContext:localContext];
                                 [existingObject deleteEntity];
                             }
                             else
                             {
                                 NSLog(@"No existing object. Setting id (%@) to input object", systemId);
-                                [[object inContext:localContext] setValue:systemId forKey:@"systemId"];
-                                [[(NSManagedObject *)object managedObjectContext] refreshObject:object mergeChanges:YES];
+                                [[localObject inContext:localContext] setValue:systemId forKey:@"systemId"];
                             }
                         }
                         else
                         {
                             NSLog(@"No existing object, and no id. Skipping any further action.");
                         }
-                        NSLog(@"Done setting ID: %@", object);
+                        NSLog(@"Done setting ID: %@", localObject);
                     }];
                 });
             }
@@ -123,7 +123,7 @@
 {
     NSLog(@"Starting Magic block in parseAndPersistArray for map %@", NSStringFromClass([map classToMap]));
     dispatch_sync([[TSNRESTManager sharedManager] serialQueue], ^{
-        [MagicalRecord saveUsingCurrentThreadContextWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+        [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
             [self parseAndPersistArray:array withObjectMap:map inContext:localContext];
         }];
     });
@@ -244,8 +244,9 @@
 #endif
 }
 
-+ (void)mapDict:(NSDictionary *)dict toObject:(id)object withMap:(TSNRESTObjectMap *)map inContext:(NSManagedObjectContext *)context
++ (void)mapDict:(NSDictionary *)dict toObject:(id)globalobject withMap:(TSNRESTObjectMap *)map inContext:(NSManagedObjectContext *)context
 {
+    id object = [globalobject inContext:context];
 #if DEBUG
     /*
      Start the loop by logging what object we are adding.
