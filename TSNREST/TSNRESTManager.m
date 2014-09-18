@@ -188,7 +188,7 @@
 #if DEBUG
                 NSLog(@"Object attempted deleted, assume success (404).");
 #endif
-                [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+                [MagicalRecord saveUsingCurrentThreadContextWithBlock:^(NSManagedObjectContext *localContext) {
                     [[object inContext:localContext] deleteEntity];
                 } completion:^(BOOL success, NSError *error) {
                     if (completion)
@@ -213,7 +213,7 @@
         {
             dispatch_async([[TSNRESTManager sharedManager] serialQueue], ^{
                 NSLog(@"Object successfully deleted.");
-                [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+                [MagicalRecord saveUsingCurrentThreadContextWithBlock:^(NSManagedObjectContext *localContext) {
                     [[object inContext:localContext] deleteEntity];
                 } completion:^(BOOL success, NSError *error) {
                     if (completion)
@@ -441,7 +441,7 @@
         if (object)
         {
             dispatch_async([[TSNRESTManager sharedManager] serialQueue], ^{
-                [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+                [MagicalRecord saveUsingCurrentThreadContextWithBlockAndWait:^(NSManagedObjectContext *localContext) {
                     id contextObject = [object inContext:localContext];
                     if ([contextObject respondsToSelector:NSSelectorFromString(@"dirty")])
                         [contextObject setValue:@1 forKey:@"dirty"];
@@ -470,8 +470,8 @@
     {
         if (object && [object respondsToSelector:NSSelectorFromString(@"dirty")])
         {
-            dispatch_async([[TSNRESTManager sharedManager] serialQueue], ^{
-                [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+            dispatch_sync([[TSNRESTManager sharedManager] serialQueue], ^{
+                [MagicalRecord saveUsingCurrentThreadContextWithBlockAndWait:^(NSManagedObjectContext *localContext) {
                     id contextObject = [object inContext:localContext];
                     [contextObject setValue:@0 forKey:@"dirty"];
                 }];
@@ -479,18 +479,10 @@
         }
         
         [TSNRESTParser parseAndPersistDictionary:responseDict withCompletion:^{
-            id newObject = nil;
-            
-            if (object && objectClass && systemId)
-            {
-                newObject = [objectClass findFirstByAttribute:@"systemId" withValue:systemId];
-                if ([newObject respondsToSelector:NSSelectorFromString(@"name")])
-                    NSLog(@"Object name: %@", [newObject valueForKey:@"name"]);
-                NSLog(@"Object: %@", newObject);
-            }
+            [[(NSManagedObject *)object managedObjectContext] refreshObject:object mergeChanges:YES];
             
             if (completion)
-                completion(newObject, YES);
+                completion(object, YES);
             else
             {
                 [[TSNRESTManager sharedManager] endLoading:@"handleResponse generic (no completion block provided)"];

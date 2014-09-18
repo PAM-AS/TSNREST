@@ -256,11 +256,15 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
     return [NSArray arrayWithArray:names];
 }
 
+- (NSDictionary *)dictionaryRepresentation
+{
+    return [[TSNRESTManager sharedManager] dictionaryFromObject:self withObjectMap:[[TSNRESTManager sharedManager] objectMapForClass:[self class]] optionalKeys:nil];
+}
+
 - (NSString *)JSONRepresentation
 {
-    NSDictionary *dict = [[TSNRESTManager sharedManager] dictionaryFromObject:self withObjectMap:[[TSNRESTManager sharedManager] objectMapForClass:[self class]] optionalKeys:nil];
     NSError *error = [[NSError alloc] init];
-    NSData *JSONData = [NSJSONSerialization dataWithJSONObject:dict options:0 error:&error];
+    NSData *JSONData = [NSJSONSerialization dataWithJSONObject:[self dictionaryRepresentation] options:0 error:&error];
     NSString *JSONString = [[NSString alloc] initWithData:JSONData encoding:NSUTF8StringEncoding];
     return JSONString;
 }

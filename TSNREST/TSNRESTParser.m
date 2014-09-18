@@ -22,10 +22,8 @@
     return [self parseAndPersistDictionary:dict withCompletion:completion forObject:nil];
 }
 
-+ (BOOL)parseAndPersistDictionary:(NSDictionary *)dict withCompletion:(void (^)())completion forObject:(id)inputObject
++ (BOOL)parseAndPersistDictionary:(NSDictionary *)dict withCompletion:(void (^)())completion forObject:(id)object
 {
-    id __block object = inputObject;
-    
 #if DEBUG
     NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
     int objects = 0;
@@ -46,20 +44,56 @@
             
             if (object && [object valueForKey:@"systemId"] == nil && [map classToMap] == [object class] && jsonData.count == 1)
             {
+#if DEBUG
+                NSLog(@"First write to object, so setting ID for object %@", object);
+#endif
                 dispatch_sync([[TSNRESTManager sharedManager] serialQueue], ^{
                     [MagicalRecord saveUsingCurrentThreadContextWithBlockAndWait:^(NSManagedObjectContext *localContext) {
-                        if ([[jsonData objectAtIndex:0] valueForKey:@"id"])
+                        id systemId = [[jsonData objectAtIndex:0] valueForKey:@"id"];
+                        if (systemId)
                         {
-                            id existingObject = [[object class] findFirstByAttribute:@"systemId" withValue:[[jsonData objectAtIndex:0] valueForKey:@"id"] inContext:localContext];
+                            id existingObject = [[object class] findFirstByAttribute:@"systemId" withValue:systemId inContext:localContext];
                             
                             // Not quite sure why this catches things that the Core Data query above does not, but we need it to avoid bugs.
                             if (existingObject)
-                                object = existingObject;
+                            {
+#if DEBUG
+                                NSLog(@"Found existing object. Appending it's data to our object, then deleting it (%@).", [existingObject valueForKey:@"systemId"]);
+#endif
+                                NSDictionary *data = [(NSManagedObject *)existingObject dictionaryRepresentation];
+                                [self mapDict:data toObject:object withMap:map inContext:localContext];
+                                [existingObject deleteEntity];
+                            }
+                            else
+                            {
+                                NSLog(@"No existing object. Setting id (%@) to input object", systemId);
+                                [[object inContext:localContext] setValue:systemId forKey:@"systemId"];
+                                [[(NSManagedObject *)object managedObjectContext] refreshObject:object mergeChanges:YES];
+                            }
                         }
-                        [[object inContext:localContext] setValue:[[jsonData objectAtIndex:0] valueForKey:@"id"] forKey:@"systemId"];
+                        else
+                        {
+                            NSLog(@"No existing object, and no id. Skipping any further action.");
+                        }
+                        NSLog(@"Done setting ID: %@", object);
                     }];
                 });
             }
+            
+#if DEBUG
+            else if (!object) {
+                NSLog(@"Got no object as input, skipping setting of id");
+            }
+            else if ([object valueForKey:@"systemId"] != nil) {
+                NSLog(@"Input object already has ID %@, continuing to update", [object valueForKey:@"systemId"]);
+            }
+            else if ([map classToMap] != [object class]) {
+                NSLog(@"Got wrong objectmap (%@ != %@), skipping setting id", NSStringFromClass([map classToMap]), NSStringFromClass([object class]));
+            }
+            else if (jsonData.count != 1) {
+                NSLog(@"Got more or less than 1 object in return. Continuing to parsing. (got %li)", jsonData.count);
+            }
+#endif
             
             [self parseAndPersistArray:jsonData withObjectMap:map];
             
@@ -126,7 +160,7 @@
         if (![dirtyKeys member:@1] && ![dirtyKeys member:@2])
         {
 #if DEBUG
-            NSLog(@"No objects of type %@ has been updated. Skipping %i objects.", NSStringFromClass([map classToMap]), array.count);
+            NSLog(@"No objects of type %@ has been updated. Skipping %lu objects.", NSStringFromClass([map classToMap]), (unsigned long)array.count);
 #endif
             return;
         }
@@ -151,12 +185,53 @@
         
         id object = nil;
         
+#if DEBUG
+        NSLog(@"Moment of creation: Existing %@ object? %@", NSStringFromClass([existingObject class]), existingObject);
+        NSLog(@"Moment of creation: Existing object id? %@", [existingObject valueForKey:@"systemId"]);
+        NSLog(@"Moment of creation: New object id? %@", [jsonObject objectForKey:@"id"]);
+#endif
+        
         if (existingObject && [[existingObject valueForKey:@"systemId"] integerValue] == [[jsonObject objectForKey:@"id"] integerValue])
+        {
+#if DEBUG
+            NSLog(@"Found existing object, updating it.");
+#endif
             object = existingObject;
+        }
         else
         {
-            object = [[map classToMap] createInContext:localContext];
-            [object setValue:[jsonObject objectForKey:@"id"] forKey:@"systemId"];
+#if DEBUG
+            NSLog(@"Don't give up, ask the store for this ID in particular");
+#endif
+            // Try to fetch from store, one last time
+            @synchronized([TSNRESTParser class])
+            {
+                // Core Data is strange. https://github.com/magicalpanda/MagicalRecord/issues/25
+                NSError *error = [[NSError alloc] init];
+                [localContext save:&error];
+                
+                existingObject = [map.classToMap findFirstByAttribute:@"systemId" withValue:[jsonObject objectForKey:@"id"] inContext:localContext];
+                
+#if DEBUG
+                NSLog(@"Found this in the store: %@ (%@)", existingObject, [existingObject valueForKey:@"systemId"]);
+#endif
+                
+                if (existingObject && [[existingObject valueForKey:@"systemId"] integerValue] == [[jsonObject objectForKey:@"id"] integerValue])
+                {
+#if DEBUG
+                    NSLog(@"Payoff! Object really did exist.");
+#endif
+                    object = existingObject;
+                }
+                else
+                {
+#if DEBUG
+                    NSLog(@"Nope. No object. Quite sure.");
+#endif
+                    object = [[map classToMap] createInContext:localContext];
+                    [object setValue:[jsonObject objectForKey:@"id"] forKey:@"systemId"];
+                }
+            }
         }
         
         [TSNRESTParser mapDict:jsonObject toObject:object withMap:map inContext:localContext];

@@ -39,6 +39,7 @@
 - (void)refreshWithCompletion:(void (^)(id object, BOOL success))completion;
 
 + (NSArray *)propertyNames;
+- (NSDictionary *)dictionaryRepresentation;
 - (NSString *)JSONRepresentation;
 
 + (void)refresh;
