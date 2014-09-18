@@ -22,8 +22,10 @@
     return [self parseAndPersistDictionary:dict withCompletion:completion forObject:nil];
 }
 
-+ (BOOL)parseAndPersistDictionary:(NSDictionary *)dict withCompletion:(void (^)())completion forObject:(id)object
++ (BOOL)parseAndPersistDictionary:(NSDictionary *)dict withCompletion:(void (^)())completion forObject:(id)inputObject
 {
+    id __block object = inputObject;
+    
 #if DEBUG
     NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
     int objects = 0;
@@ -52,7 +54,7 @@
                             
                             // Not quite sure why this catches things that the Core Data query above does not, but we need it to avoid bugs.
                             if (existingObject)
-                                [(NSManagedObject *)object deleteEntity];
+                                object = existingObject;
                         }
                         [[object inContext:localContext] setValue:[[jsonData objectAtIndex:0] valueForKey:@"id"] forKey:@"systemId"];
                     }];
@@ -189,7 +191,7 @@
         }
     }
     
-    // Duplicate avoidance
+    // Duplicate avoidance (only works if server actually returns the uuid)
     if ([object respondsToSelector:NSSelectorFromString(@"uuid")] && [dict objectForKey:@"uuid"] && ![[object valueForKey:@"uuid"] isEqualToString:[dict objectForKey:@"uuid"]])
         return;
         
