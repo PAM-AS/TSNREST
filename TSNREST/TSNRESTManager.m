@@ -188,7 +188,7 @@
 #if DEBUG
                 NSLog(@"Object attempted deleted, assume success (404).");
 #endif
-                [MagicalRecord saveUsingCurrentThreadContextWithBlock:^(NSManagedObjectContext *localContext) {
+                [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
                     [[object inContext:localContext] deleteEntity];
                 } completion:^(BOOL success, NSError *error) {
                     if (completion)
@@ -213,7 +213,7 @@
         {
             dispatch_async([[TSNRESTManager sharedManager] serialQueue], ^{
                 NSLog(@"Object successfully deleted.");
-                [MagicalRecord saveUsingCurrentThreadContextWithBlock:^(NSManagedObjectContext *localContext) {
+                [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
                     [[object inContext:localContext] deleteEntity];
                 } completion:^(BOOL success, NSError *error) {
                     if (completion)
