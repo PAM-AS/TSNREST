@@ -14,5 +14,6 @@
 - (void)faultAllIfNeeded;
 - (void)saveAndPersistContainedNSManagedObjects;
 - (void)saveAndPersistContainedNSManagedObjectsWithSuccess:(void (^)(id object))successBlock failure:(void (^)(id object))failureBlock finally:(void (^)(id object))finallyBlock;
+- (NSSet *)inContext:(NSManagedObjectContext *)context;
 
 @end

@@ -26,4 +26,15 @@
     [self.allObjects saveAndPersistContainedNSManagedObjectsWithSuccess:successBlock failure:failureBlock finally:finallyBlock];
 }
 
+- (NSSet *)inContext:(NSManagedObjectContext *)context
+{
+    NSMutableSet *newSet = [[NSMutableSet alloc] init];
+    for (id object in self)
+    {
+        if ([object isKindOfClass:[NSManagedObject class]])
+            [newSet addObject:[(NSManagedObject *)object inContext:context]];
+    }
+    return [NSSet setWithSet:newSet];
+}
+
 @end

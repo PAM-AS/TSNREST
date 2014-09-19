@@ -163,6 +163,15 @@
 
 - (void)deleteObjectFromServer:(id)object completion:(void (^)(id object, BOOL success))completion
 {
+    NSNumber *systemId = [object valueForKey:@"systemId"];
+    if (!systemId)
+    {
+        [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+            [[object inContext:localContext] deleteEntity];
+        }];
+        return;
+    }
+    
     TSNRESTObjectMap *objectMap = [self objectMapForClass:[object class]];
     
     NSURLSession *session = [NSURLSession sharedSession];
@@ -173,7 +182,6 @@
         }];
     [request setHTTPMethod:@"DELETE"];
     
-    NSNumber *systemId = [object valueForKey:@"systemId"];
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@/%@", self.baseURL, objectMap.serverPath, systemId]];
     [request setURL:url];
     
