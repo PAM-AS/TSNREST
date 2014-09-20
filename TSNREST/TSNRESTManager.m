@@ -615,10 +615,18 @@
         [request setHTTPBody:JSONData];
     }
     
-    NSURL *url = [[NSURL URLWithString:self.baseURL] URLByAppendingPathComponent:objectMap.serverPath];
+    NSURL *url = [NSURL URLWithString:self.baseURL];
+    if (objectMap.serverPath)
+        url = [url URLByAppendingPathComponent:objectMap.serverPath];
+    else
+        return nil;
     
     if ([object valueForKey:@"systemId"] && [[object valueForKey:@"systemId"] isKindOfClass:[NSNumber class]])
-        url = [url URLByAppendingPathComponent:[NSString stringWithFormat:@"%@", [object valueForKey:@"systemId"]]];
+    {
+        NSString *pathComponent = [NSString stringWithFormat:@"%@", [object valueForKey:@"systemId"]];
+        if (pathComponent)
+            url = [url URLByAppendingPathComponent:pathComponent];
+    }
     
     [request setURL:url];
     
