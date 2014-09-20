@@ -96,6 +96,11 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
 #endif
         return;
     }
+    // Catch changes made externally
+    NSError *error = [[NSError alloc] init];
+    [self.managedObjectContext save:&error];
+    
+    // Save inFlight, and force a MoC sync
     [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         NSManagedObject *localSelf = [self inContext:localContext];
         localSelf.inFlight = YES;
