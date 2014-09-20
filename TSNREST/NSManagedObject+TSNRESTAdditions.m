@@ -96,18 +96,20 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
 #endif
         return;
     }
-    [self setInFlight:YES];
-    NSError *error = [[NSError alloc] init];
-    [self.managedObjectContext save:&error];
+    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+        NSManagedObject *localSelf = [self inContext:localContext];
+        localSelf.inFlight = YES;
+    }];
     NSURLSession *currentSession = [NSURLSession sharedSession];
     
     if ([self respondsToSelector:NSSelectorFromString(@"uuid")])
     {
         if (![self valueForKey:@"uuid"])
         {
-            [self setValue:[[NSUUID UUID] UUIDString] forKey:@"uuid"];
-            NSError *error = [[NSError alloc] init];
-            [self.managedObjectContext save:&error];
+            [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+                NSManagedObject *localSelf = [self inContext:localContext];
+                [localSelf setValue:[[NSUUID UUID] UUIDString] forKey:@"uuid"];
+            }];
         }
     }
     
@@ -116,8 +118,10 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
     NSURLSessionDataTask *dataTask = [currentSession dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         [[TSNRESTManager sharedManager] handleResponse:response withData:data error:error object:self completion:^(id object, BOOL success) {
             [[TSNRESTManager sharedManager] endLoading:@"persistWithCompletion:session:"];
-            [self.managedObjectContext refreshObject:self mergeChanges:YES];
-            [self setInFlight:NO];
+            [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+                NSManagedObject *localSelf = [self inContext:localContext];
+                localSelf.inFlight = NO;
+            }];
             if (success && successBlock)
             {
                 successBlock(self);
