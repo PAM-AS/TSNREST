@@ -169,6 +169,7 @@
         [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
             [[object inContext:localContext] deleteEntity];
         }];
+        completion(object, YES);
         return;
     }
     
