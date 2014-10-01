@@ -170,10 +170,19 @@
     NSEnumerator *existingEnumerator = [[existingObjects sortedArrayUsingDescriptors:@[sortDescriptor]] objectEnumerator];
     
     sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"id" ascending:YES];
-    NSEnumerator *newEnumerator = [[array sortedArrayUsingDescriptors:@[sortDescriptor]] objectEnumerator];
+    NSArray *sortedArray = [array sortedArrayUsingDescriptors:@[sortDescriptor]];
+    NSEnumerator *newEnumerator = [sortedArray objectEnumerator];
+    
+#if DEBUG
+    NSLog(@"New: %@", array.firstObject);
+#endif
     
     NSDictionary *jsonObject = [newEnumerator nextObject];
     id existingObject = [existingEnumerator nextObject];
+    
+#if DEBUG
+    NSLog(@"JSONObject: %@", jsonObject);
+#endif
     
     while (jsonObject) {
         
@@ -263,14 +272,18 @@
         NSDate *webDate = [[[TSNRESTManager sharedManager] ISO8601Formatter] dateFromString:[dict objectForKey:[[map objectToWeb] valueForKey:@"updatedAt"]]];
         if (webDate && [objectDate isKindOfClass:[NSDate class]] && [objectDate isEqualToDate:webDate])
         {
+            NSLog(@"Skipping object that hasn't been updated since %@", webDate);
             return;
         }
     }
     
     // Duplicate avoidance (only works if server actually returns the uuid)
     if ([object respondsToSelector:NSSelectorFromString(@"uuid")] && [dict objectForKey:@"uuid"] && ![[object valueForKey:@"uuid"] isEqualToString:[dict objectForKey:@"uuid"]])
+    {
+        NSLog(@"Skipping because of matching UUIDs %@", [dict objectForKey:@"uuid"]);
         return;
-        
+    }
+    
     
     if ([object respondsToSelector:NSSelectorFromString(@"systemId")])
         [object setValue:[dict objectForKey:@"id"] forKey:@"systemId"];
@@ -279,6 +292,7 @@
         if ([[object valueForKey:@"dirty"] integerValue] == 1)
         {
             [(NSManagedObject *)object persist];
+            NSLog(@"Object was dirty, attempting to persist it.");
             return;
         }
         else
