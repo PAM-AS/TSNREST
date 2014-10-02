@@ -138,7 +138,7 @@
     NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
 #endif
     
-    NSArray *existingObjects = [[map classToMap] findAll];
+    NSArray *existingObjects = [[map classToMap] findAllInContext:localContext];
     
     NSArray *existingIds = [existingObjects valueForKey:@"systemId"];
     NSSet *newSet = [NSSet setWithArray:[array valueForKey:@"id"]?:@[]];
