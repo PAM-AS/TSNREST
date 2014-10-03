@@ -96,22 +96,18 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
 #endif
         return;
     }
-    // Catch changes made externally
-    NSError *error = [[NSError alloc] init];
-    [self.managedObjectContext save:&error];
     
-    // Save inFlight, and force a MoC sync
-    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
-        NSManagedObject *localSelf = [self inContext:localContext];
-        localSelf.inFlight = YES;
-    }];
+    self.inFlight = YES;
+    // Catch changes made externally
+    [self.managedObjectContext saveToPersistentStoreAndWait];
+
     NSURLSession *currentSession = [NSURLSession sharedSession];
     
     if ([self respondsToSelector:NSSelectorFromString(@"uuid")])
     {
         if (![self valueForKey:@"uuid"])
         {
-            [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+            [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
                 NSManagedObject *localSelf = [self inContext:localContext];
                 [localSelf setValue:[[NSUUID UUID] UUIDString] forKey:@"uuid"];
             }];
@@ -123,7 +119,7 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
     NSURLSessionDataTask *dataTask = [currentSession dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         [[TSNRESTManager sharedManager] handleResponse:response withData:data error:error object:self completion:^(id object, BOOL success) {
             [[TSNRESTManager sharedManager] endLoading:@"persistWithCompletion:session:"];
-            [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+            [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
                 NSManagedObject *localSelf = [self inContext:localContext];
                 localSelf.inFlight = NO;
             }];
@@ -176,8 +172,7 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
         if (![self valueForKey:@"uuid"])
         {
             [self setValue:[[NSUUID UUID] UUIDString] forKey:@"uuid"];
-            NSError *error = [[NSError alloc] init];
-            [self.managedObjectContext save:&error];
+            [self.managedObjectContext saveToPersistentStoreAndWait];
         }
     }
     
@@ -242,7 +237,8 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
         if ([(NSHTTPURLResponse *)response statusCode] == 404)
             [self deleteEntity];
         dispatch_async(dispatch_get_main_queue(), ^{
-            completion([(NSHTTPURLResponse *)response statusCode] == 404);
+            if (completion)
+                completion([(NSHTTPURLResponse *)response statusCode] == 404);
         });
     }];
     [task resume];

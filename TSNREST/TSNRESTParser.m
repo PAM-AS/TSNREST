@@ -34,9 +34,6 @@
         TSNRESTObjectMap *map = [[TSNRESTManager sharedManager] objectMapForServerPath:dictKey];
         if (map)
         {
-#if DEBUG
-            NSLog(@"Found map for %@", dictKey);
-#endif
             NSArray *jsonData = [dict objectForKey:dictKey];
 #if DEBUG
             objects += jsonData.count;
@@ -45,10 +42,10 @@
             if (object && [object valueForKey:@"systemId"] == nil && [map classToMap] == [object class] && jsonData.count == 1)
             {
 #if DEBUG
-                NSLog(@"First write to object, so setting ID for object %@", object);
+                NSLog(@"First write to object (recently created), so setting ID for object %@", object);
 #endif
-                dispatch_sync([[TSNRESTManager sharedManager] serialQueue], ^{
-                    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+                dispatch_async([[TSNRESTManager sharedManager] serialQueue], ^{
+                    [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
                         id localObject = [object inContext:localContext];
                         id systemId = [[jsonData objectAtIndex:0] valueForKey:@"id"];
                         if (systemId)
@@ -91,40 +88,43 @@
                 NSLog(@"Got wrong objectmap (%@ != %@), skipping setting id", NSStringFromClass([map classToMap]), NSStringFromClass([object class]));
             }
             else if (jsonData.count != 1) {
-                NSLog(@"Got more or less than 1 object in return. Continuing to parsing. (got %li)", jsonData.count);
+                NSLog(@"Got more or less than 1 object in return. Continuing to parsing. (got %li)", (unsigned long)jsonData.count);
             }
 #endif
             
-            [self parseAndPersistArray:jsonData withObjectMap:map];
-            
+            [self parseAndPersistArray:jsonData withObjectMap:map withCompletion:completion ofDict:dict];
         }
+#if DEBUG
+        else
+        {
+            NSLog(@"No object map found. Bailing out.");
+        }
+#endif
     }
     
 #if DEBUG
     NSLog(@"Parsing %lu arrays (%i objects) took %f", (unsigned long)dict.count, objects, [NSDate timeIntervalSinceReferenceDate] - start);
 #endif
-    
-    
-    if (completion)
-        completion();
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-#if DEBUG
-        NSLog(@"Notifying everyone that new data is here, Praise TFSM");
-#endif
-        
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"newData" object:[dict allKeys]];
-    });
     return YES;
 }
 
 
-+ (BOOL)parseAndPersistArray:(NSArray *)array withObjectMap:(TSNRESTObjectMap *)map
++ (BOOL)parseAndPersistArray:(NSArray *)array withObjectMap:(TSNRESTObjectMap *)map withCompletion:(void (^)())completion ofDict:(NSDictionary *)dict
 {
     NSLog(@"Starting Magic block in parseAndPersistArray for map %@", NSStringFromClass([map classToMap]));
-    dispatch_sync([[TSNRESTManager sharedManager] serialQueue], ^{
-        [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+    dispatch_async([[TSNRESTManager sharedManager] serialQueue], ^{
+        [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
             [self parseAndPersistArray:array withObjectMap:map inContext:localContext];
+        } completion:^(BOOL success, NSError *error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (completion)
+                    completion();
+#if DEBUG
+                NSLog(@"Notifying everyone that new data is here, Praise TFSM");
+#endif
+                
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"newData" object:[dict allKeys]];
+            });
         }];
     });
     NSLog(@"Stopping Magic block in parseAndPersistArray for map %@", NSStringFromClass([map classToMap]));
@@ -138,7 +138,7 @@
     NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
 #endif
     
-    NSArray *existingObjects = [[map classToMap] findAllInContext:localContext];
+    NSArray *existingObjects = [[map classToMap] findAll];
     
     NSArray *existingIds = [existingObjects valueForKey:@"systemId"];
     NSSet *newSet = [NSSet setWithArray:[array valueForKey:@"id"]?:@[]];
@@ -195,9 +195,7 @@
         id object = nil;
         
 #if DEBUG
-        NSLog(@"Moment of creation: Existing %@ object? %@", NSStringFromClass([existingObject class]), existingObject);
-        NSLog(@"Moment of creation: Existing object id? %@", [existingObject valueForKey:@"systemId"]);
-        NSLog(@"Moment of creation: New object id? %@", [jsonObject objectForKey:@"id"]);
+        NSLog(@"Moment of creation: Existing object class: %@ id? %@ new object id: %@", NSStringFromClass([existingObject class]), [existingObject valueForKey:@"systemId"], [jsonObject objectForKey:@"id"]);
 #endif
         
         if (existingObject && [[existingObject valueForKey:@"systemId"] integerValue] == [[jsonObject objectForKey:@"id"] integerValue])
@@ -216,8 +214,7 @@
             @synchronized([TSNRESTParser class])
             {
                 // Core Data is strange. https://github.com/magicalpanda/MagicalRecord/issues/25
-                NSError *error = [[NSError alloc] init];
-                [localContext save:&error];
+                [localContext saveOnlySelfAndWait];
                 
                 existingObject = [map.classToMap findFirstByAttribute:@"systemId" withValue:[jsonObject objectForKey:@"id"] inContext:localContext];
                 

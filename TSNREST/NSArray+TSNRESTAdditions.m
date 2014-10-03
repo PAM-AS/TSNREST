@@ -174,7 +174,7 @@
                 continue;
             
             NSUInteger index = [_weakSelf indexOfObject:object];
-            [[object inContext:[NSManagedObjectContext contextForCurrentThread]] saveAndPersistWithSuccess:^(id object) {
+            [object saveAndPersistWithSuccess:^(id object) {
                 [successful replaceObjectAtIndex:index withObject:@YES];
             } failure:^(id object) {
                 [successful replaceObjectAtIndex:index withObject:@NO];

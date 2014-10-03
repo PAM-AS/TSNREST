@@ -166,10 +166,14 @@
     NSNumber *systemId = [object valueForKey:@"systemId"];
     if (!systemId)
     {
-        [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+        [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
             [[object inContext:localContext] deleteEntity];
+        } completion:^(BOOL success, NSError *error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (completion)
+                    completion(object, YES);
+            });
         }];
-        completion(object, YES);
         return;
     }
     
@@ -450,12 +454,15 @@
         if (object)
         {
             dispatch_async([[TSNRESTManager sharedManager] serialQueue], ^{
-                [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+                [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
                     id contextObject = [object inContext:localContext];
                     if ([contextObject respondsToSelector:NSSelectorFromString(@"dirty")])
                         [contextObject setValue:@1 forKey:@"dirty"];
+                } completion:^(BOOL success, NSError *error) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [[NSNotificationCenter defaultCenter] postNotificationName:@"modelUpdated" object:nil];
+                    });
                 }];
-                [[NSNotificationCenter defaultCenter] postNotificationName:@"modelUpdated" object:nil];
             });
         }
         
