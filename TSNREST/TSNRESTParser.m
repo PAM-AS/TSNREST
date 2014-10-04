@@ -288,7 +288,7 @@
     {
         if ([[object valueForKey:@"dirty"] integerValue] == 1)
         {
-            [(NSManagedObject *)object persist];
+            [(NSManagedObject *)object saveAndPersist];
             NSLog(@"Object was dirty, attempting to persist it.");
             return;
         }

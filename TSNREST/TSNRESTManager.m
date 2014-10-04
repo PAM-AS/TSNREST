@@ -341,7 +341,7 @@
     @synchronized(self.requestQueue)
     {
 #if DEBUG
-        NSLog(@"Running %lu requests from queue", self.requestQueue.count);
+        NSLog(@"Running %lu requests from queue", (unsigned long)self.requestQueue.count);
 #endif
     
         requestQueue = [NSArray arrayWithArray:self.requestQueue];
@@ -373,9 +373,6 @@
 
 - (void)handleResponse:(NSURLResponse *)response withData:(NSData *)data error:(NSError *)error object:(id)object completion:(void (^)(id object, BOOL success))completion requestDict:(NSDictionary *)requestDict
 {
-    NSNumber *systemId = [object valueForKey:@"systemId"];
-    Class objectClass = [object class];
-    
     NSDictionary *responseDict = nil;
     if (data)
         responseDict = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];

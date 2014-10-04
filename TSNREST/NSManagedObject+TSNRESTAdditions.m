@@ -107,10 +107,8 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
     {
         if (![self valueForKey:@"uuid"])
         {
-            [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
-                NSManagedObject *localSelf = [self inContext:localContext];
-                [localSelf setValue:[[NSUUID UUID] UUIDString] forKey:@"uuid"];
-            }];
+            [self setValue:[[NSUUID UUID] UUIDString] forKey:@"uuid"];
+            [self.managedObjectContext saveOnlySelfAndWait];
         }
     }
     
@@ -135,59 +133,13 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
                 finallyBlock(self);
         }];
 #if DEBUG
-        NSLog(@"Data: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
         if (error)
         {
+            NSLog(@"Data: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
             NSLog(@"Response: %@", response);
             NSLog(@"Error: %@", [error userInfo]);
         }
 #endif
-    }];
-    [dataTask resume];
-}
-
-- (void)persist
-{
-    [self persistWithCompletion:nil];
-}
-
-- (void)persistWithCompletion:(void (^)(id object, BOOL success))completion
-{
-    [self persistWithCompletion:completion session:nil];
-}
-
-- (void)persistWithCompletion:(void (^)(id object, BOOL success))completion session:(NSURLSession *)session
-{
-    [self persistWithCompletion:completion session:session optionalKeys:nil];
-}
-
-- (void)persistWithCompletion:(void (^)(id object, BOOL success))completion session:(NSURLSession *)session optionalKeys:(NSArray *)optionalKeys
-{
-    NSURLSession *currentSession = session;
-    if (!currentSession)
-        currentSession = [NSURLSession sharedSession];
-    
-    if ([self respondsToSelector:NSSelectorFromString(@"uuid")])
-    {
-        if (![self valueForKey:@"uuid"])
-        {
-            [self setValue:[[NSUUID UUID] UUIDString] forKey:@"uuid"];
-            [self.managedObjectContext saveToPersistentStoreAndWait];
-        }
-    }
-    
-    [[TSNRESTManager sharedManager] startLoading:@"persistWithCompletion:session:"];
-    NSURLRequest *request = [[TSNRESTManager sharedManager] requestForObject:self optionalKeys:optionalKeys];
-    NSURLSessionDataTask *dataTask = [currentSession dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        [[TSNRESTManager sharedManager] handleResponse:response withData:data error:error object:self completion:^(id object, BOOL success) {
-            [[TSNRESTManager sharedManager] endLoading:@"persistWithCompletion:session:"];
-            if (completion)
-                completion(object, success);
-        }];
-        NSLog(@"Data: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
-        NSLog(@"Response: %@", response);
-        if (error)
-            NSLog(@"Error: %@", [error userInfo]);
     }];
     [dataTask resume];
 }
