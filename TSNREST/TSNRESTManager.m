@@ -403,6 +403,9 @@
         {
             if (requestDict)
             {
+#if DEBUG
+                NSLog(@"Added request to queue while authenticating");
+#endif
                 @synchronized (self.requestQueue) {
                     if ([self.requestQueue containsObject:requestDict]) // This has been tried before. Remove it instead.
                         [self.requestQueue removeObject:requestDict];

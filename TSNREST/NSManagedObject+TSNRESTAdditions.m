@@ -94,6 +94,10 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
 #if DEBUG
         NSLog(@"Skipping save of %@ %@ because object already is in flight.", NSStringFromClass([self class]), [self valueForKey:@"systemId"]);
 #endif
+        if (successBlock)
+            successBlock(self);
+        if (finallyBlock)
+            finallyBlock(self);
         return;
     }
     

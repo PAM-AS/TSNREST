@@ -173,16 +173,8 @@
     NSArray *sortedArray = [array sortedArrayUsingDescriptors:@[sortDescriptor]];
     NSEnumerator *newEnumerator = [sortedArray objectEnumerator];
     
-#if DEBUG
-    NSLog(@"New: %@", array.firstObject);
-#endif
-    
     NSDictionary *jsonObject = [newEnumerator nextObject];
     id existingObject = [existingEnumerator nextObject];
-    
-#if DEBUG
-    NSLog(@"JSONObject: %@", jsonObject);
-#endif
     
     while (jsonObject) {
         
@@ -195,14 +187,14 @@
         id object = nil;
         
 #if DEBUG
-        NSLog(@"Moment of creation: Existing object class: %@ id? %@ new object id: %@", NSStringFromClass([existingObject class]), [existingObject valueForKey:@"systemId"], [jsonObject objectForKey:@"id"]);
+        if (![[existingObject valueForKey:@"systemId"] isEqualToNumber:[jsonObject objectForKey:@"id"]])
+        {
+            NSLog(@"Moment of creation (not update): Existing object class: %@ id? %@ new object id: %@", NSStringFromClass([existingObject class]), [existingObject valueForKey:@"systemId"], [jsonObject objectForKey:@"id"]);
+        }
 #endif
         
         if (existingObject && [[existingObject valueForKey:@"systemId"] integerValue] == [[jsonObject objectForKey:@"id"] integerValue])
         {
-#if DEBUG
-            NSLog(@"Found existing object, updating it.");
-#endif
             object = existingObject;
         }
         else
@@ -358,7 +350,7 @@
             [object setValue:[dict objectForKey:webKey] forKey:key];
         }
     }
-    if (map.mappingBlock)
+    if (map.mappingBlock && object)
         map.mappingBlock(object, context, dict);
     
 #if DEBUG
