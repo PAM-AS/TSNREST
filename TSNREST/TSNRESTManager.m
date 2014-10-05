@@ -167,7 +167,7 @@
     if (!systemId)
     {
         [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
-            [[object inContext:localContext] deleteEntity];
+            [[object MR_inContext:localContext] MR_deleteEntity];
         } completion:^(BOOL success, NSError *error) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (completion)
@@ -202,7 +202,7 @@
                 NSLog(@"Object attempted deleted, assume success (404).");
 #endif
                 [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
-                    [[object inContext:localContext] deleteEntity];
+                    [[object MR_inContext:localContext] MR_deleteEntity];
                 } completion:^(BOOL success, NSError *error) {
                     if (completion)
                         completion(object, YES);
@@ -227,7 +227,7 @@
             dispatch_async([[TSNRESTManager sharedManager] serialQueue], ^{
                 NSLog(@"Object successfully deleted.");
                 [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
-                    [[object inContext:localContext] deleteEntity];
+                    [[object MR_inContext:localContext] MR_deleteEntity];
                 } completion:^(BOOL success, NSError *error) {
                     if (completion)
                         completion(object, YES);
@@ -392,7 +392,7 @@
     // Delete entity if server doesn't have it.
     if (statusCode == 404 && [object isKindOfClass:[NSManagedObject class]])
     {
-        [(NSManagedObject *)object deleteEntity];
+        [(NSManagedObject *)object MR_deleteEntity];
         if (completion)
             completion(nil, NO);
     }
@@ -455,7 +455,7 @@
         {
             dispatch_async([[TSNRESTManager sharedManager] serialQueue], ^{
                 [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
-                    id contextObject = [object inContext:localContext];
+                    id contextObject = [object MR_inContext:localContext];
                     if ([contextObject respondsToSelector:NSSelectorFromString(@"dirty")])
                         [contextObject setValue:@1 forKey:@"dirty"];
                 } completion:^(BOOL success, NSError *error) {
@@ -488,7 +488,7 @@
         {
             dispatch_sync([[TSNRESTManager sharedManager] serialQueue], ^{
                 [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
-                    id contextObject = [object inContext:localContext];
+                    id contextObject = [object MR_inContext:localContext];
                     [contextObject setValue:@0 forKey:@"dirty"];
                 }];
             });
@@ -646,11 +646,11 @@
 {
     [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
         NSLog(@"Starting reset");
-        for (NSEntityDescription *entity in [[NSManagedObjectModel defaultManagedObjectModel] entities])
+        for (NSEntityDescription *entity in [[NSManagedObjectModel MR_defaultManagedObjectModel] entities])
         {
             id thisClass = NSClassFromString(entity.name);
             if ([thisClass respondsToSelector:NSSelectorFromString(@"truncateAllInContext:")])
-                [thisClass truncateAllInContext:localContext];
+                [thisClass MR_truncateAllInContext:localContext];
         }
     } completion:^(BOOL success, NSError *error) {
         [[NSNotificationCenter defaultCenter] postNotificationName:@"updateBadges" object:nil];

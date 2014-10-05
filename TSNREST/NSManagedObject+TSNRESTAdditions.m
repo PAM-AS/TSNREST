@@ -103,7 +103,7 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
     
     self.inFlight = YES;
     // Catch changes made externally
-    [self.managedObjectContext saveToPersistentStoreAndWait];
+    [self.managedObjectContext MR_saveToPersistentStoreAndWait];
 
     NSURLSession *currentSession = [NSURLSession sharedSession];
     
@@ -112,7 +112,7 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
         if (![self valueForKey:@"uuid"])
         {
             [self setValue:[[NSUUID UUID] UUIDString] forKey:@"uuid"];
-            [self.managedObjectContext saveOnlySelfAndWait];
+            [self.managedObjectContext MR_saveOnlySelfAndWait];
         }
     }
     
@@ -122,7 +122,7 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
         [[TSNRESTManager sharedManager] handleResponse:response withData:data error:error object:self completion:^(id object, BOOL success) {
             [[TSNRESTManager sharedManager] endLoading:@"persistWithCompletion:session:"];
             [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
-                NSManagedObject *localSelf = [self inContext:localContext];
+                NSManagedObject *localSelf = [self MR_inContext:localContext];
                 localSelf.inFlight = NO;
             }];
             if (success && successBlock)
@@ -191,7 +191,7 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
     
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         if ([(NSHTTPURLResponse *)response statusCode] == 404)
-            [self deleteEntity];
+            [self MR_deleteEntity];
         dispatch_async(dispatch_get_main_queue(), ^{
             if (completion)
                 completion([(NSHTTPURLResponse *)response statusCode] == 404);
@@ -340,7 +340,7 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
             id referenceObject = nil;
             if ([[(NSObject *)self classOfPropertyNamed:objectAttribute] isSubclassOfClass:[NSManagedObject class]])
             {
-                referenceObject = [[(NSObject *)self classOfPropertyNamed:objectAttribute] findFirstByAttribute:@"systemId" withValue:value];
+                referenceObject = [[(NSObject *)self classOfPropertyNamed:objectAttribute] MR_findFirstByAttribute:@"systemId" withValue:value];
                 predicate = [NSPredicate predicateWithFormat:@"%K = %@", objectAttribute, referenceObject];
             }
             else
@@ -348,7 +348,7 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
                 predicate = [NSPredicate predicateWithFormat:@"%K = %@", objectAttribute, value];
             }
             
-            NSArray *objects = [[self class] findAllWithPredicate:predicate];
+            NSArray *objects = [[self class] MR_findAllWithPredicate:predicate];
             if (completion)
                 completion(objects);
         }];
@@ -382,7 +382,7 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
             // If object, we need to check against the object, not it's ID
             NSPredicate *predicate = [NSPredicate predicateWithFormat:@"%K IN %@", objectAttribute, values];
             
-            NSArray *objects = [[self class] findAllWithPredicate:predicate];
+            NSArray *objects = [[self class] MR_findAllWithPredicate:predicate];
             if (completion)
                 completion(objects);
         }];

@@ -49,11 +49,11 @@
 #endif
                 dispatch_async([[TSNRESTManager sharedManager] serialQueue], ^{
                     [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
-                        id localObject = [object inContext:localContext];
+                        id localObject = [object MR_inContext:localContext];
                         id systemId = [[jsonData objectAtIndex:0] valueForKey:@"id"];
                         if (systemId)
                         {
-                            id existingObject = [[localObject class] findFirstByAttribute:@"systemId" withValue:systemId inContext:localContext];
+                            id existingObject = [[localObject class] MR_findFirstByAttribute:@"systemId" withValue:systemId inContext:localContext];
                             
                             // Not quite sure why this catches things that the Core Data query above does not, but we need it to avoid bugs.
                             if (existingObject)
@@ -63,12 +63,12 @@
 #endif
                                 NSDictionary *data = [(NSManagedObject *)existingObject dictionaryRepresentation];
                                 [self mapDict:data toObject:localObject withMap:map inContext:localContext];
-                                [existingObject deleteEntity];
+                                [existingObject MR_deleteEntity];
                             }
                             else
                             {
                                 NSLog(@"No existing object. Setting id (%@) to input object", systemId);
-                                [[localObject inContext:localContext] setValue:systemId forKey:@"systemId"];
+                                [[localObject MR_inContext:localContext] setValue:systemId forKey:@"systemId"];
                             }
                         }
                         else
@@ -157,9 +157,9 @@
 #endif
     
     // Core Data is strange. https://github.com/magicalpanda/MagicalRecord/issues/25
-    [localContext saveToPersistentStoreAndWait];
+    [localContext MR_saveToPersistentStoreAndWait];
     
-    NSArray *existingObjects = [[map classToMap] findAllInContext:[NSManagedObjectContext defaultContext]];
+    NSArray *existingObjects = [[map classToMap] MR_findAllInContext:[NSManagedObjectContext MR_defaultContext]];
     
     NSArray *existingIds = [existingObjects valueForKey:@"systemId"];
     NSSet *newSet = [NSSet setWithArray:[array valueForKey:@"id"]?:@[]];
@@ -227,9 +227,9 @@
             @synchronized([TSNRESTParser class])
             {
                 // Core Data is strange. https://github.com/magicalpanda/MagicalRecord/issues/25
-                [localContext saveOnlySelfAndWait];
+                [localContext MR_saveOnlySelfAndWait];
                 
-                existingObject = [map.classToMap findFirstByAttribute:@"systemId" withValue:[jsonObject objectForKey:@"id"] inContext:localContext];
+                existingObject = [map.classToMap MR_findFirstByAttribute:@"systemId" withValue:[jsonObject objectForKey:@"id"] inContext:localContext];
                 
 #if DEBUG
                 NSLog(@"Found this in the store: %@ (%@)", existingObject, [existingObject valueForKey:@"systemId"]);
@@ -247,7 +247,7 @@
 #if DEBUG
                     NSLog(@"Nope. No object. Quite sure.");
 #endif
-                    object = [[map classToMap] createInContext:localContext];
+                    object = [[map classToMap] MR_createInContext:localContext];
                     [object setValue:[jsonObject objectForKey:@"id"] forKey:@"systemId"];
                 }
             }
@@ -265,7 +265,7 @@
 
 + (void)mapDict:(NSDictionary *)dict toObject:(id)globalobject withMap:(TSNRESTObjectMap *)map inContext:(NSManagedObjectContext *)context
 {
-    id object = [globalobject inContext:context];
+    id object = [globalobject MR_inContext:context];
 #if DEBUG
     /*
      Start the loop by logging what object we are adding.
@@ -337,14 +337,14 @@
         {
             // NSLog(@"Adding %@ (%@) to %@ %@", key, [dict valueForKey:webKey], NSStringFromClass([map classToMap]), [dict objectForKey:@"id"]);
             id classObject = nil;
-            classObject = [[object classOfPropertyNamed:key] findFirstByAttribute:@"systemId" withValue:[dict valueForKey:webKey] inContext:context];
+            classObject = [[object classOfPropertyNamed:key]MR_findFirstByAttribute:@"systemId" withValue:[dict valueForKey:webKey] inContext:context];
             
             if (!classObject) // Create a new, empty object and set system id
             {
 #if DEBUG
                 NSLog(@"Created new %@ with id %@ and added it to %@ %@", [object classOfPropertyNamed:key], [dict valueForKey:webKey], NSStringFromClass([object class]), [object valueForKey:@"systemId"]);
 #endif
-                classObject = [[object classOfPropertyNamed:key] createInContext:context];
+                classObject = [[object classOfPropertyNamed:key] MR_createInContext:context];
                 if ([classObject respondsToSelector:NSSelectorFromString(@"systemId")])
                     [classObject setValue:[dict valueForKey:webKey] forKey:@"systemId"];
                 if ([classObject respondsToSelector:NSSelectorFromString(@"dirty")]) // Object needs to load fault

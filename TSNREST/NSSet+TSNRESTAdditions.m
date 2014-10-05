@@ -32,7 +32,7 @@
     for (id object in self)
     {
         if ([object isKindOfClass:[NSManagedObject class]])
-            [newSet addObject:[(NSManagedObject *)object inContext:context]];
+            [newSet addObject:[(NSManagedObject *)object MR_inContext:context]];
     }
     return [NSSet setWithSet:newSet];
 }

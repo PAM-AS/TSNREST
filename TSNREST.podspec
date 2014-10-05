@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   s.frameworks = 'CoreGraphics'
   s.ios.frameworks = 'UIKIT'
   s.source_files = 'TSNREST/*.{h,m}'
-  s.dependency 'MagicalRecord/Shorthand', '~> 2.2'
+  s.dependency 'MagicalRecord'
   s.dependency 'SAMCategories', '~> 0.4.0'
   s.dependency 'Reachability', '~> 3.1.0'
   s.dependency 'RSSwizzle', '~> 0.1.0'

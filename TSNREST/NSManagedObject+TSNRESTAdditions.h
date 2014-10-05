@@ -6,8 +6,6 @@
 //  Copyright (c) 2013 Thomas Sunde Nielsen. All rights reserved.
 //
 
-#define MR_SHORTHAND 1
-
 #import <CoreData/CoreData.h>
 #import "CoreData+MagicalRecord.h"
 #import "TSNRESTManager.h"

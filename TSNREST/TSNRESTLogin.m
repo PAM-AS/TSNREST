@@ -136,9 +136,9 @@
                 // + (id) findFirstByAttribute:(NSString *)attribute withValue:(id)searchValue;
                 id user = nil;
                 if (userId)
-                    user = [userClass findFirstByAttribute:@"systemId" withValue:userId];
+                    user = [userClass MR_findFirstByAttribute:@"systemId" withValue:userId];
                 else
-                    user = [userClass findFirst];
+                    user = [userClass MR_findFirst];
                 
                 NSLog(@"Login succeeded for user: %@", [user valueForKey:@"systemId"]);
                 if (userClass)
