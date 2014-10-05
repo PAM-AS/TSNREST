@@ -29,6 +29,9 @@
     int objects = 0;
 #endif
     
+    __block NSInteger parsed = 0;
+    NSInteger toParse = [dict count];
+    
     for (NSString *dictKey in dict)
     {
         TSNRESTObjectMap *map = [[TSNRESTManager sharedManager] objectMapForServerPath:dictKey];
@@ -92,11 +95,22 @@
             }
 #endif
             
-            [self parseAndPersistArray:jsonData withObjectMap:map withCompletion:completion ofDict:dict];
+            [self parseAndPersistArray:jsonData withObjectMap:map withCompletion:^{
+                parsed++;
+                if (parsed == toParse)
+                {
+                    [self doneWithCompletion:completion dict:dict];
+                }
+            }];
         }
 #if DEBUG
         else
         {
+            parsed++;
+            if (parsed == toParse)
+            {
+                [self doneWithCompletion:completion dict:dict];
+            }
             NSLog(@"No object map found. Bailing out.");
         }
 #endif
@@ -108,24 +122,28 @@
     return YES;
 }
 
++ (void)doneWithCompletion:(void (^)())completion dict:(NSDictionary *)dict
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (completion)
+            completion();
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"newData" object:[dict allKeys]];
+#if DEBUG
+        NSLog(@"Notifying everyone that new data is here, Praise TFSM");
+#endif
+    });
+}
 
-+ (BOOL)parseAndPersistArray:(NSArray *)array withObjectMap:(TSNRESTObjectMap *)map withCompletion:(void (^)())completion ofDict:(NSDictionary *)dict
++ (BOOL)parseAndPersistArray:(NSArray *)array withObjectMap:(TSNRESTObjectMap *)map withCompletion:(void (^)())completion
 {
     NSLog(@"Starting Magic block in parseAndPersistArray for map %@", NSStringFromClass([map classToMap]));
-    dispatch_async([[TSNRESTManager sharedManager] serialQueue], ^{
-        [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+    dispatch_sync([[TSNRESTManager sharedManager] serialQueue], ^{
+        [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
             [self parseAndPersistArray:array withObjectMap:map inContext:localContext];
-        } completion:^(BOOL success, NSError *error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (completion)
-                    completion();
-#if DEBUG
-                NSLog(@"Notifying everyone that new data is here, Praise TFSM");
-#endif
-                
-                [[NSNotificationCenter defaultCenter] postNotificationName:@"newData" object:[dict allKeys]];
-            });
         }];
+        NSLog(@"Done parsing some array");
+        if (completion)
+            completion();
     });
     NSLog(@"Stopping Magic block in parseAndPersistArray for map %@", NSStringFromClass([map classToMap]));
     return YES;
@@ -138,7 +156,10 @@
     NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
 #endif
     
-    NSArray *existingObjects = [[map classToMap] findAll];
+    // Core Data is strange. https://github.com/magicalpanda/MagicalRecord/issues/25
+    [localContext saveToPersistentStoreAndWait];
+    
+    NSArray *existingObjects = [[map classToMap] findAllInContext:[NSManagedObjectContext defaultContext]];
     
     NSArray *existingIds = [existingObjects valueForKey:@"systemId"];
     NSSet *newSet = [NSSet setWithArray:[array valueForKey:@"id"]?:@[]];

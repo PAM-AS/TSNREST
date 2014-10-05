@@ -218,10 +218,15 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
     NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
     
+    [[TSNRESTManager sharedManager] startLoading:[NSString stringWithFormat:@"refreshWithCompletion for %@ %@", NSStringFromClass(self.class), [self valueForKey:@"systemId"]]];
+    
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         [[TSNRESTManager sharedManager] handleResponse:response withData:data error:error object:self completion:^(id object, BOOL success) {
             if (completion)
+            {
+                [[TSNRESTManager sharedManager] endLoading:[NSString stringWithFormat:@"refreshWithCompletion for %@ %@", NSStringFromClass(self.class), [self valueForKey:@"systemId"]]];
                 completion(nil, success);
+            }
         }];
     }];
     [task resume];
@@ -264,7 +269,7 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
     // Send NSNotificationCenter push that model will be updated. Send model class as user data.
     
     TSNRESTManager *manager = [TSNRESTManager sharedManager];
-    [manager startLoading:@"refreshWithCompletion"];
+    [manager startLoading:[NSString stringWithFormat:@"refreshWithCompletion for class %@", NSStringFromClass(self.class)]];
     
     TSNRESTObjectMap *objectMap = [manager objectMapForClass:[self class]];
     if (!objectMap)
@@ -294,7 +299,7 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
     [[TSNRESTManager sharedManager] runAutoAuthenticatingRequest:request completion:^(BOOL success, BOOL newData, BOOL retrying) {
         if (completion)
             completion();
-        [[TSNRESTManager sharedManager] endLoading:@"refreshWithCompletion"];
+        [[TSNRESTManager sharedManager] endLoading:[NSString stringWithFormat:@"refreshWithCompletion for class %@", NSStringFromClass(self.class)]];
     }];
     
     /*
