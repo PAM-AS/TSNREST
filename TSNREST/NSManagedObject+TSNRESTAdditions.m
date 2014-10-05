@@ -102,6 +102,7 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
     }
     
     self.inFlight = YES;
+    
     // Catch changes made externally
     [self.managedObjectContext MR_saveToPersistentStoreAndWait];
 
@@ -121,10 +122,8 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
     NSURLSessionDataTask *dataTask = [currentSession dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         [[TSNRESTManager sharedManager] handleResponse:response withData:data error:error object:self completion:^(id object, BOOL success) {
             [[TSNRESTManager sharedManager] endLoading:@"persistWithCompletion:session:"];
-            [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
-                NSManagedObject *localSelf = [self MR_inContext:localContext];
-                localSelf.inFlight = NO;
-            }];
+            self.inFlight = NO;
+            [self.managedObjectContext MR_saveToPersistentStoreWithCompletion:nil];
             if (success && successBlock)
             {
                 successBlock(self);
