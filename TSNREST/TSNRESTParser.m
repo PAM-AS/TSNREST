@@ -103,7 +103,6 @@
                 }
             }];
         }
-#if DEBUG
         else
         {
             parsed++;
@@ -111,9 +110,10 @@
             {
                 [self doneWithCompletion:completion dict:dict];
             }
+#if DEBUG
             NSLog(@"No object map found. Bailing out.");
-        }
 #endif
+        }
     }
     
 #if DEBUG
@@ -124,7 +124,9 @@
 
 + (void)doneWithCompletion:(void (^)())completion dict:(NSDictionary *)dict
 {
+    NSLog(@"Done parsing");
     dispatch_async(dispatch_get_main_queue(), ^{
+        NSLog(@"Handing back torch to main thread");
         if (completion)
             completion();
         [[NSNotificationCenter defaultCenter] postNotificationName:@"newData" object:[dict allKeys]];
