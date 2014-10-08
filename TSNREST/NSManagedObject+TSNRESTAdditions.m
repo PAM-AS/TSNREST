@@ -128,7 +128,7 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
             {
                 successBlock(self);
             }
-            else if (failureBlock)
+            else if (failureBlock && !success)
             {
                 failureBlock(self);
             }
