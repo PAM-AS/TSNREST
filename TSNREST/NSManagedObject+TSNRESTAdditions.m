@@ -282,7 +282,9 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
     if (objectMap.permanentQuery)
         url = [url URLByAppendingQueryString:objectMap.permanentQuery];
     
+#if DEBUG
     NSLog(@"Checking for new %@ at %@", NSStringFromClass([self class]), [url absoluteString]);
+#endif
     
     // Fetch array of dicts from JSON
     //NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
@@ -291,7 +293,6 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
     //[request addValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     if ([[TSNRESTManager sharedManager] customHeaders])
         [[[TSNRESTManager sharedManager] customHeaders] enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-            NSLog(@"Added header %@ for %@", obj, key);
             [request addValue:obj forHTTPHeaderField:key];
         }];
     
