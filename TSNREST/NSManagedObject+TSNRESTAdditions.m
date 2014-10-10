@@ -89,6 +89,18 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
 
 - (void)saveAndPersistWithSuccess:(void (^)(id object))successBlock failure:(void (^)(id object))failureBlock finally:(void (^)(id object))finallyBlock optionalKeys:(NSArray *)optionalKeys
 {
+    if ([self hasBeenDeleted])
+    {
+#if DEBUG
+        NSLog(@"Skipping saving of product, since it has been deleted.");
+#endif
+        if (failureBlock)
+            failureBlock(nil);
+        if (finallyBlock)
+            finallyBlock(nil);
+        return;
+    }
+    
     if (self.inFlight)
     {
 #if DEBUG
@@ -155,6 +167,12 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
 - (void)deleteFromServerWithCompletion:(void (^)(id object, BOOL success))completion
 {
     [[TSNRESTManager sharedManager] deleteObjectFromServer:self completion:completion];
+}
+
+- (BOOL)hasBeenDeleted
+{
+    NSError *error = [[NSError alloc] init];
+    return ![self.managedObjectContext existingObjectWithID:[self objectID] error:&error];
 }
 
 - (void)faultIfNeeded

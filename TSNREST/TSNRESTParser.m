@@ -49,14 +49,16 @@
 #endif
                 dispatch_async([[TSNRESTManager sharedManager] serialQueue], ^{
                     [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
-                        id localObject = [object MR_inContext:localContext];
+                        id localObject = nil;
+                        if (![localObject hasBeenDeleted])
+                            localObject = [object MR_inContext:localContext];
                         id systemId = [[jsonData objectAtIndex:0] valueForKey:@"id"];
                         if (systemId)
                         {
                             id existingObject = [[localObject class] MR_findFirstByAttribute:@"systemId" withValue:systemId inContext:localContext];
                             
                             // Not quite sure why this catches things that the Core Data query above does not, but we need it to avoid bugs.
-                            if (existingObject)
+                            if (existingObject && localObject)
                             {
 #if DEBUG
                                 NSLog(@"Found existing object. Appending it's data to our object, then deleting it (%@).", [existingObject valueForKey:@"systemId"]);
@@ -65,7 +67,7 @@
                                 [self mapDict:data toObject:localObject withMap:map inContext:localContext];
                                 [existingObject MR_deleteEntity];
                             }
-                            else
+                            else if (localObject)
                             {
                                 NSLog(@"No existing object. Setting id (%@) to input object", systemId);
                                 [[localObject MR_inContext:localContext] setValue:systemId forKey:@"systemId"];
@@ -92,6 +94,9 @@
             }
             else if (jsonData.count != 1) {
                 NSLog(@"Got more or less than 1 object in return. Continuing to parsing. (got %li)", (unsigned long)jsonData.count);
+            }
+            else if ([object hasBeenDeleted]) {
+                NSLog(@"Object has recently been deleted, can't be updated.");
             }
 #endif
             
@@ -347,7 +352,7 @@
 #if DEBUG
                 NSLog(@"Created new %@ with id %@ and added it to %@ %@", [object classOfPropertyNamed:key], [dict valueForKey:webKey], NSStringFromClass([object class]), [object valueForKey:@"systemId"]);
 #endif
-                classObject = [[object classOfPropertyNamed:key] MR_createInContext:context];
+                classObject = [[object classOfPropertyNamed:key] MR_createEntityInContext:context];
                 if ([classObject respondsToSelector:NSSelectorFromString(@"systemId")])
                     [classObject setValue:[dict valueForKey:webKey] forKey:@"systemId"];
                 if ([classObject respondsToSelector:NSSelectorFromString(@"dirty")]) // Object needs to load fault

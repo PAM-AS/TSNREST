@@ -25,6 +25,8 @@
 - (void)deleteFromServer;
 - (void)deleteFromServerWithCompletion:(void (^)(id object, BOOL success))completion;
 
+- (BOOL)hasBeenDeleted;
+
 - (void)faultIfNeeded;
 - (void)faultIfNeededWithCompletion:(void (^)(id object, BOOL success))completion;
 - (void)checkForDeletion:(void (^)(BOOL hasBeenDeleted))completion;
