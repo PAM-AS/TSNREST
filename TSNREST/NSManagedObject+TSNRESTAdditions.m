@@ -112,51 +112,52 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
             finallyBlock(self);
         return;
     }
-    
-    self.inFlight = YES;
-    
-    // Catch changes made externally
-    [self.managedObjectContext MR_saveToPersistentStoreAndWait];
-
-    NSURLSession *currentSession = [NSURLSession sharedSession];
-    
-    if ([self respondsToSelector:NSSelectorFromString(@"uuid")])
-    {
-        if (![self valueForKey:@"uuid"])
+    dispatch_async([[TSNRESTManager sharedManager] serialQueue], ^{
+        self.inFlight = YES;
+        
+        // Catch changes made externally
+        [self.managedObjectContext MR_saveToPersistentStoreAndWait];
+        
+        NSURLSession *currentSession = [NSURLSession sharedSession];
+        
+        if ([self respondsToSelector:NSSelectorFromString(@"uuid")])
         {
-            [self setValue:[[NSUUID UUID] UUIDString] forKey:@"uuid"];
-            [self.managedObjectContext MR_saveOnlySelfAndWait];
+            if (![self valueForKey:@"uuid"])
+            {
+                [self setValue:[[NSUUID UUID] UUIDString] forKey:@"uuid"];
+                [self.managedObjectContext MR_saveOnlySelfAndWait];
+            }
         }
-    }
-    
-    [[TSNRESTManager sharedManager] startLoading:@"persistWithCompletion:session:"];
-    NSURLRequest *request = [[TSNRESTManager sharedManager] requestForObject:self optionalKeys:optionalKeys];
-    NSURLSessionDataTask *dataTask = [currentSession dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        [[TSNRESTManager sharedManager] handleResponse:response withData:data error:error object:self completion:^(id object, BOOL success) {
-            [[TSNRESTManager sharedManager] endLoading:@"persistWithCompletion:session:"];
-            self.inFlight = NO;
-            [self.managedObjectContext MR_saveToPersistentStoreWithCompletion:nil];
-            if (success && successBlock)
-            {
-                successBlock(self);
-            }
-            else if (failureBlock && !success)
-            {
-                failureBlock(self);
-            }
-            if (finallyBlock)
-                finallyBlock(self);
-        }];
+        
+        [[TSNRESTManager sharedManager] startLoading:@"persistWithCompletion:session:"];
+        NSURLRequest *request = [[TSNRESTManager sharedManager] requestForObject:self optionalKeys:optionalKeys];
+        NSURLSessionDataTask *dataTask = [currentSession dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+            [[TSNRESTManager sharedManager] handleResponse:response withData:data error:error object:self completion:^(id object, BOOL success) {
+                [[TSNRESTManager sharedManager] endLoading:@"persistWithCompletion:session:"];
+                self.inFlight = NO;
+                [self.managedObjectContext MR_saveToPersistentStoreWithCompletion:nil];
+                if (success && successBlock)
+                {
+                    successBlock(self);
+                }
+                else if (failureBlock && !success)
+                {
+                    failureBlock(self);
+                }
+                if (finallyBlock)
+                    finallyBlock(self);
+            }];
 #if DEBUG
-        if (error)
-        {
-            NSLog(@"Data: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
-            NSLog(@"Response: %@", response);
-            NSLog(@"Error: %@", [error userInfo]);
-        }
+            if (error)
+            {
+                NSLog(@"Data: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+                NSLog(@"Response: %@", response);
+                NSLog(@"Error: %@", [error userInfo]);
+            }
 #endif
-    }];
-    [dataTask resume];
+        }];
+        [dataTask resume];
+    });
 }
 
 - (void)deleteFromServer
@@ -172,7 +173,7 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
 - (BOOL)hasBeenDeleted
 {
     NSError *error = [[NSError alloc] init];
-    return ![self.managedObjectContext existingObjectWithID:[self objectID] error:&error];
+    return (![self.managedObjectContext existingObjectWithID:[self objectID] error:&error] || [self isDeleted]);
 }
 
 - (void)faultIfNeeded
