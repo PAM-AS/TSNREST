@@ -89,7 +89,7 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
 
 - (void)saveAndPersistWithSuccess:(void (^)(id object))successBlock failure:(void (^)(id object))failureBlock finally:(void (^)(id object))finallyBlock optionalKeys:(NSArray *)optionalKeys
 {
-    if ([self hasBeenDeleted])
+    if (self.isDeleted || [self hasBeenDeleted])
     {
 #if DEBUG
         NSLog(@"Skipping saving of product, since it has been deleted.");
@@ -112,52 +112,50 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
             finallyBlock(self);
         return;
     }
-    dispatch_async([[TSNRESTManager sharedManager] serialQueue], ^{
-        self.inFlight = YES;
-        
-        // Catch changes made externally
-        [self.managedObjectContext MR_saveToPersistentStoreAndWait];
-        
-        NSURLSession *currentSession = [NSURLSession sharedSession];
-        
-        if ([self respondsToSelector:NSSelectorFromString(@"uuid")])
+    self.inFlight = YES;
+    
+    // Catch changes made externally
+    [self.managedObjectContext MR_saveToPersistentStoreAndWait];
+    
+    NSURLSession *currentSession = [NSURLSession sharedSession];
+    
+    if ([self respondsToSelector:NSSelectorFromString(@"uuid")])
+    {
+        if (![self valueForKey:@"uuid"])
         {
-            if (![self valueForKey:@"uuid"])
-            {
-                [self setValue:[[NSUUID UUID] UUIDString] forKey:@"uuid"];
-                [self.managedObjectContext MR_saveOnlySelfAndWait];
-            }
+            [self setValue:[[NSUUID UUID] UUIDString] forKey:@"uuid"];
+            [self.managedObjectContext MR_saveOnlySelfAndWait];
         }
-        
-        [[TSNRESTManager sharedManager] startLoading:@"persistWithCompletion:session:"];
-        NSURLRequest *request = [[TSNRESTManager sharedManager] requestForObject:self optionalKeys:optionalKeys];
-        NSURLSessionDataTask *dataTask = [currentSession dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-            [[TSNRESTManager sharedManager] handleResponse:response withData:data error:error object:self completion:^(id object, BOOL success) {
-                [[TSNRESTManager sharedManager] endLoading:@"persistWithCompletion:session:"];
-                self.inFlight = NO;
-                [self.managedObjectContext MR_saveToPersistentStoreWithCompletion:nil];
-                if (success && successBlock)
-                {
-                    successBlock(self);
-                }
-                else if (failureBlock && !success)
-                {
-                    failureBlock(self);
-                }
-                if (finallyBlock)
-                    finallyBlock(self);
-            }];
-#if DEBUG
-            if (error)
+    }
+    
+    [[TSNRESTManager sharedManager] startLoading:@"persistWithCompletion:session:"];
+    NSURLRequest *request = [[TSNRESTManager sharedManager] requestForObject:self optionalKeys:optionalKeys];
+    NSURLSessionDataTask *dataTask = [currentSession dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        [[TSNRESTManager sharedManager] handleResponse:response withData:data error:error object:self completion:^(id object, BOOL success) {
+            [[TSNRESTManager sharedManager] endLoading:@"persistWithCompletion:session:"];
+            self.inFlight = NO;
+            [self.managedObjectContext MR_saveToPersistentStoreWithCompletion:nil];
+            if (success && successBlock)
             {
-                NSLog(@"Data: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
-                NSLog(@"Response: %@", response);
-                NSLog(@"Error: %@", [error userInfo]);
+                successBlock(self);
             }
-#endif
+            else if (failureBlock && !success)
+            {
+                failureBlock(self);
+            }
+            if (finallyBlock)
+                finallyBlock(self);
         }];
-        [dataTask resume];
-    });
+#if DEBUG
+        if (error)
+        {
+            NSLog(@"Data: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+            NSLog(@"Response: %@", response);
+            NSLog(@"Error: %@", [error userInfo]);
+        }
+#endif
+    }];
+    [dataTask resume];
 }
 
 - (void)deleteFromServer
