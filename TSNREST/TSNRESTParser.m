@@ -48,7 +48,7 @@
                 NSLog(@"First write to object (recently created), so setting ID for object %@", object);
 #endif
                 dispatch_async([[TSNRESTManager sharedManager] serialQueue], ^{
-                    [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+                    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
                         id localObject = nil;
                         if (![localObject hasBeenDeleted])
                             localObject = [object MR_inContext:localContext];
