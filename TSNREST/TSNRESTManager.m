@@ -512,6 +512,9 @@
 {
     NSMutableDictionary *dataDict = [[NSMutableDictionary alloc] init];
     
+    if ([object isDeleted] || [object hasBeenDeleted])
+        return @{};
+    
     if ([object valueForKey:@"systemId"])
         [dataDict setValue:[object valueForKey:@"systemId"] forKey:@"id"];
     if ([object respondsToSelector:NSSelectorFromString(@"uuid")] && [object valueForKey:@"uuid"])
