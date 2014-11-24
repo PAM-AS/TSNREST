@@ -9,17 +9,13 @@
 #import <CoreData/CoreData.h>
 #import "TSNRESTManager.h"
 #import "NSSet+TSNRESTAdditions.h"
+#import "NSManagedObject+TSNRESTSaving.h"
 
 @interface NSManagedObject (TSNRESTAdditions)
 
 @property (nonatomic) BOOL inFlight;
 
 - (id)get:(NSString *)propertyKey;
-
-- (void)saveAndPersist;
-- (void)saveAndPersistWithSuccess:(void (^)(id object))successBlock failure:(void (^)(id object))failureBlock;
-- (void)saveAndPersistWithSuccess:(void (^)(id object))successBlock failure:(void (^)(id object))failureBlock finally:(void (^)(id object))finallyBlock;
-- (void)saveAndPersistWithSuccess:(void (^)(id object))successBlock failure:(void (^)(id object))failureBlock finally:(void (^)(id object))finallyBlock optionalKeys:(NSArray *)optionalKeys;
 
 - (void)deleteFromServer;
 - (void)deleteFromServerWithCompletion:(void (^)(id object, BOOL success))completion;
