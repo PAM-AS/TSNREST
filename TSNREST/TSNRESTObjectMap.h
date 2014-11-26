@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <CoreData/CoreData.h>
 
 @interface TSNRESTObjectMap : NSObject
 
@@ -17,6 +18,7 @@
 
 @property (nonatomic, copy) void (^mappingBlock)(id object, NSManagedObjectContext *context, NSDictionary *dict);
 @property (nonatomic, copy) void (^reverseMappingBlock)(id object, NSMutableDictionary *dict);
+@property (nonatomic, copy) BOOL (^validationBlock)(NSManagedObject *object);
 
 @property (nonatomic,strong) NSMutableDictionary *objectToWeb;
 @property (nonatomic,strong) NSMutableDictionary *booleans;
