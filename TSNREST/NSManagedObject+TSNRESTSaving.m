@@ -60,10 +60,6 @@
         
         if (!self.isValid)
         {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Object not valid, can't save." message:[NSString stringWithFormat:@"This object of type %@ isn't valid. No can do.", NSStringFromClass([self class])] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
-                [alert show];
-            });
             if (failureBlock)
                 failureBlock(nil);
             if (finallyBlock)
