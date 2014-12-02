@@ -21,6 +21,7 @@
 @property (atomic) int loadingRetainCount;
 
 @property (nonatomic, strong) NSMutableSet *requestQueue;
+@property (nonatomic, strong) NSMutableSet *currentRequests;
 
 #warning workaround timer
 @property (nonatomic) NSTimer *resetLoadingTimer;
@@ -41,6 +42,7 @@
     dispatch_once(&p, ^{
         _sharedObject = [[self alloc] init];
         [(TSNRESTManager *)_sharedObject setRequestQueue:[[NSMutableSet alloc] init]];
+        [(TSNRESTManager *)_sharedObject setCurrentRequests:[[NSMutableSet alloc] init]];
         [[NSNotificationCenter defaultCenter] addObserver:_sharedObject selector:@selector(loginSucceeded) name:@"LoginSucceeded" object:nil];
     });
     
@@ -74,6 +76,32 @@
     [self checkResetLoadingTimer];
 }
 
+- (void)addRequestToLoading:(NSURLRequest *)request {
+    if (!request)
+        return;
+    @synchronized(self.currentRequests) {
+        if (self.loadingRetainCount == 0) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"startLoadingAnimation" object:nil];
+            });
+        }
+        [self.currentRequests addObject:request];
+    }
+}
+
+- (void)removeRequestFromLoading:(NSURLRequest *)request {
+    if (!request)
+        return;
+    @synchronized(self.currentRequests) {
+        [self.currentRequests removeObject:request];
+        if (self.currentRequests.count == 0) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"stopLoadingAnimation" object:nil];
+            });
+        }
+    }
+}
+
 - (void)checkResetLoadingTimer
 {
     NSLog(@"Scheduling resetTimer");
@@ -104,7 +132,7 @@
 
 - (BOOL)isLoading
 {
-    return (self.loadingRetainCount > 0);
+    return (self.currentRequests.count > 0);
 }
 
 - (NJISO8601Formatter *)ISO8601Formatter
@@ -183,7 +211,9 @@
 #pragma mark - Network helpers
 - (void)addRequestToAuthQueue:(NSDictionary *)request
 {
-    [self.requestQueue addObject:request];
+    @synchronized(self.requestQueue) {
+        [self.requestQueue addObject:request];
+    }
 }
 
 - (void)runAutoAuthenticatingRequest:(NSURLRequest *)request completion:(void (^)(BOOL success, BOOL newData, BOOL retrying))completion
