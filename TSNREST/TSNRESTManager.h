@@ -71,7 +71,6 @@
 - (void)dataTaskWithRequest:(NSURLRequest *)request completionHandler:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completion DEPRECATED_ATTRIBUTE;
 - (void)dataTaskWithRequest:(NSURLRequest *)request completionHandler:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completion session:(NSURLSession *)session DEPRECATED_ATTRIBUTE;
 
-- (void)flushLoadingRetains;
 - (void)flushQueuedRequests;
 - (void)runQueuedRequests;
 // If no request dict is supplied, function will not retry after a potential reauthentication (401)

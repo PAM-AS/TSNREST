@@ -98,7 +98,6 @@
             
             [[TSNRESTManager sharedManager] setIsAuthenticating:NO];
             [[TSNRESTManager sharedManager] flushQueuedRequests];
-            [[TSNRESTManager sharedManager] flushLoadingRetains];
         }
         else
         {

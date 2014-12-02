@@ -18,8 +18,6 @@
 
 @interface TSNRESTManager ()
 
-@property (atomic) int loadingRetainCount;
-
 @property (nonatomic, strong) NSMutableSet *requestQueue;
 @property (nonatomic, strong) NSMutableSet *currentRequests;
 
@@ -51,7 +49,7 @@
     if (!request)
         return;
     @synchronized(self.currentRequests) {
-        if (self.loadingRetainCount == 0) {
+        if (self.currentRequests.count == 0) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [[NSNotificationCenter defaultCenter] postNotificationName:@"startLoadingAnimation" object:nil];
             });
@@ -243,10 +241,6 @@
     [task resume];
 }
 
-- (void)flushLoadingRetains
-{
-    self.loadingRetainCount = 0;
-}
 
 - (void)flushQueuedRequests
 {
