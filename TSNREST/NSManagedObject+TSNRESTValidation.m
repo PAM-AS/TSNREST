@@ -13,6 +13,8 @@
 
 - (BOOL)isValid
 {
+    if (self.isDeleted)
+        return NO;
     TSNRESTObjectMap *map = [[TSNRESTManager sharedManager] objectMapForClass:[self class]];
     if (map.validationBlock)
         return map.validationBlock(self);
