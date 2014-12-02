@@ -245,7 +245,6 @@
 - (void)flushQueuedRequests
 {
     @synchronized(self.requestQueue) {
-        self.loadingRetainCount -= (int)self.requestQueue.count;
         [self.requestQueue removeAllObjects];
     }
 }

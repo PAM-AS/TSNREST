@@ -12,8 +12,11 @@
 
 @implementation NSURLSessionDataTask (TSNRESTDataTask)
 
-+ (NSURLSessionDataTask *)dataTaskWithRequest:(NSURLRequest *)request success:(void (^)(NSData *data, NSURLResponse *response, NSError *error))successBlock failure:(void (^)(NSData *data, NSURLResponse *response, NSError *error, NSInteger statusCode))failureBlock finally:(void (^)(NSData *data, NSURLResponse *response, NSError *error))finallyBlock
-{
++ (NSURLSessionDataTask *)dataTaskWithRequest:(NSURLRequest *)request success:(void (^)(NSData *data, NSURLResponse *response, NSError *error))successBlock failure:(void (^)(NSData *data, NSURLResponse *response, NSError *error, NSInteger statusCode))failureBlock finally:(void (^)(NSData *data, NSURLResponse *response, NSError *error))finallyBlock {
+    return [self dataTaskWithRequest:request success:successBlock failure:failureBlock finally:finallyBlock parseResult:YES];
+}
+
++ (NSURLSessionDataTask *)dataTaskWithRequest:(NSURLRequest *)request success:(void (^)(NSData *data, NSURLResponse *response, NSError *error))successBlock failure:(void (^)(NSData *data, NSURLResponse *response, NSError *error, NSInteger statusCode))failureBlock finally:(void (^)(NSData *data, NSURLResponse *response, NSError *error))finallyBlock parseResult:(BOOL)parseResult {
     __block TSNRESTManager *manager = [TSNRESTManager sharedManager];
     [manager addRequestToLoading:request];
     return [[manager URLSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
@@ -33,13 +36,21 @@
         }
         else {
             NSDictionary *responseDict = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
-            [TSNRESTParser parseAndPersistDictionary:responseDict withCompletion:^{
+            if (parseResult) {
+                [TSNRESTParser parseAndPersistDictionary:responseDict withCompletion:^{
+                    if (successBlock)
+                        successBlock(data, response, error);
+                    if (finallyBlock)
+                        finallyBlock(data, response, error);
+                    [manager removeRequestFromLoading:request];
+                }];
+            } else {
                 if (successBlock)
                     successBlock(data, response, error);
                 if (finallyBlock)
                     finallyBlock(data, response, error);
                 [manager removeRequestFromLoading:request];
-            }];
+            }
         }
     }];
 }

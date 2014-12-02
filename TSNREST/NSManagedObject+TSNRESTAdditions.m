@@ -95,7 +95,7 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
             if (completion)
                 completion(NO);
         }
-    } finally:nil];
+    } finally:nil parseResult:NO];
     [task resume];
 }
 

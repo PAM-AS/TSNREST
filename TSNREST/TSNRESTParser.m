@@ -124,7 +124,8 @@
         NSLog(@"Handing back torch to main thread");
         if (completion)
             completion();
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"newData" object:[dict allKeys]];
+        if ([[dict allKeys] count] > 0)
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"newData" object:[dict allKeys]];
 #if DEBUG
         NSLog(@"Notifying everyone that new data is here, Praise TFSM");
 #endif
