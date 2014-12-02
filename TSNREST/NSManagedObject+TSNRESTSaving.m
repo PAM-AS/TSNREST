@@ -60,7 +60,6 @@
                 finallyBlock(self);
             return;
         }
-        self.inFlight = YES;
         
         if (!self.isValid)
         {
@@ -70,6 +69,8 @@
                 finallyBlock(nil);
             return;
         }
+        
+        self.inFlight = YES;
         
         if ([self respondsToSelector:NSSelectorFromString(@"uuid")])
         {
@@ -115,7 +116,10 @@
             }
 #endif
             
-        } finally:nil];
+        } finally:^(NSData *data, NSURLResponse *response, NSError *error) {
+            NSLog(@"No longer in flight.");
+            self.inFlight = NO;
+        }];
 
         [dataTask resume];
         
