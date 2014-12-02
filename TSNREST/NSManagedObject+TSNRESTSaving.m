@@ -12,6 +12,7 @@
 #import "NSURLSessionDataTask+TSNRESTDataTask.h"
 #import "NSManagedObject+TSNRESTDeletion.h"
 #import "MagicalRecord.h"
+#import "TSNRESTParser.h"
 
 @implementation NSManagedObject (TSNRESTSaving)
 
@@ -89,11 +90,15 @@
                     [[self MR_inContext:localContext] setValue:@0 forKey:@"dirty"];
                 }];
             }
-            [self.managedObjectContext MR_saveOnlySelfAndWait];
-            if (successBlock)
-                successBlock(self);
-            if (finallyBlock)
-                finallyBlock(self);
+            
+            NSError *jsonError = [[NSError alloc] init];
+            NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
+            [TSNRESTParser parseAndPersistDictionary:jsonDict withCompletion:^{
+                if (successBlock)
+                    successBlock(self);
+                if (finallyBlock)
+                    finallyBlock(self);
+            } forObject:self];
         } failure:^(NSData *data, NSURLResponse *response, NSError *error, NSInteger statusCode) {
             if (statusCode == 404) {
                 [self deleteFromServer];

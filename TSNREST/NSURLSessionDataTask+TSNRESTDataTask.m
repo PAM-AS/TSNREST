@@ -27,6 +27,10 @@
             [manager removeRequestFromLoading:request];
         }
         else if (statusCode < 200 || statusCode > 204) { // No success
+#if DEBUG
+            NSLog(@"Request to %@ failed.", response.URL.absoluteString);
+            NSLog(@"Error from server: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+#endif
             if (failureBlock) {
                 failureBlock(data, response, error, statusCode);
             }

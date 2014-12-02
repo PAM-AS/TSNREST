@@ -24,11 +24,15 @@
     NSNumber *systemId = [self valueForKey:@"systemId"];
     if (!systemId)
     {
+#if DEBUG
+        NSLog(@"Deleting object locally - it doesn't exist on server.");
+#endif
         [self deleteLocallyWithCompletion:completion];
         return;
     }
     
     NSMutableURLRequest *request = [[NSURLRequest requestForObject:self] mutableCopy];
+    [request setValue:nil forHTTPHeaderField:@"Content-Type"];
     [request setHTTPMethod:@"DELETE"];
     [request setHTTPBody:nil];
     
