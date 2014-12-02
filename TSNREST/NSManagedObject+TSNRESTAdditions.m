@@ -181,24 +181,11 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
             [request addValue:obj forHTTPHeaderField:key];
         }];
     
-    [[TSNRESTManager sharedManager] runAutoAuthenticatingRequest:request completion:^(BOOL success, BOOL newData, BOOL retrying) {
+    NSURLSessionDataTask *task = [NSURLSessionDataTask dataTaskWithRequest:request success:nil failure:nil finally:^(NSData *data, NSURLResponse *response, NSError *error) {
         if (completion)
             completion();
-        [[TSNRESTManager sharedManager] endLoading:[NSString stringWithFormat:@"refreshWithCompletion for class %@", NSStringFromClass(self.class)]];
-    }];
-    
-    /*
-    NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        NSLog(@"Sending response to handler: (Status code %li).", (long)[(NSHTTPURLResponse *)response statusCode]);
-        [[TSNRESTManager sharedManager] handleResponse:response withData:data error:error object:nil completion:^(id object, BOOL success) {
-            if (completion)
-                completion();
-            [[TSNRESTManager sharedManager] endLoading:@"refreshWithCompletion"];
-        }];
     }];
     [task resume];
-     */
-
 }
 
 + (void)findOnServerByAttribute:(NSString *)objectAttribute value:(NSString *)value completion:(void (^)(NSArray *results))completion

@@ -8,6 +8,7 @@
 
 #import "NSArray+TSNRESTAdditions.h"
 #import "TSNRESTParser.h"
+#import "NSURLSessionDataTask+TSNRESTDataTask.h"
 
 @implementation NSArray (TSNRESTAdditions)
 
@@ -120,16 +121,17 @@
         NSLog(@"Refreshing group of %@ with URL: %@", NSStringFromClass([map classToMap]), url);
 #endif
         
-        NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
         NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
         
-        NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-            [[TSNRESTManager sharedManager] handleResponse:response
-                                                  withData:data
-                                                     error:error
-                                                    object:nil
-                                                completion:nil];
-        }];
+        NSURLSessionDataTask *task = [NSURLSessionDataTask dataTaskWithRequest:request success:^(NSData *data, NSURLResponse *response, NSError *error) {
+#if DEBUG
+            NSLog(@"Succeeded in fetching data from %@", response.URL.absoluteString);
+#endif
+        } failure:^(NSData *data, NSURLResponse *response, NSError *error, NSInteger statusCode) {
+#if DEBUG
+            NSLog(@"Failed in fetching data from %@", response.URL.absoluteString);
+#endif
+        } finally:nil];
         [task resume];
     });
 }
