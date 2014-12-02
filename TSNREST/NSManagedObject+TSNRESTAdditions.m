@@ -11,6 +11,7 @@
 #import "TSNRESTObjectMap.h"
 #import "NSObject+PropertyClass.h"
 #import <objc/runtime.h>
+#import "NSManagedObject+TSNRESTSerializer.h"
 
 static void * InFlightPropertyKey = &InFlightPropertyKey;
 
@@ -23,29 +24,6 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
 - (void)setInFlight:(BOOL)inFlight {
     objc_setAssociatedObject(self, InFlightPropertyKey, [NSNumber numberWithBool:inFlight], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
-
-/*
-+ (void)addMagicGetters
-{
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        Class class = [self class];
-        for (NSString *propertyName in [[self class] propertyNames])
-        {
-            if ([propertyName isEqualToString:@"inFlight"] || [propertyName isEqualToString:@"dirty"] || [propertyName isEqualToString:@"systemId"])
-                continue;
-            
-            SEL selector = NSSelectorFromString(propertyName);
-            class_getInstanceMethod([self class], selector);
-            
-            RSSwizzleInstanceMethod([class class], selector, RSSWReturnType(id), nil, RSSWReplacement({
-                NSLog(@"Swizzle the shizzle");
-                return RSSWCallOriginal();
-            }), 0, nil);
-        }
-    });
-}
- */
 
 - (id)get:(NSString *)propertyKey
 {
@@ -178,15 +156,12 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
 
 - (NSDictionary *)dictionaryRepresentation
 {
-    return [[TSNRESTManager sharedManager] dictionaryFromObject:self withObjectMap:[[TSNRESTManager sharedManager] objectMapForClass:[self class]] optionalKeys:nil];
+    return [self dictionaryRepresentationWithOptionalKeys:nil excludingKeys:nil];
 }
 
 - (NSString *)JSONRepresentation
 {
-    NSError *error = [[NSError alloc] init];
-    NSData *JSONData = [NSJSONSerialization dataWithJSONObject:[self dictionaryRepresentation] options:0 error:&error];
-    NSString *JSONString = [[NSString alloc] initWithData:JSONData encoding:NSUTF8StringEncoding];
-    return JSONString;
+    return [self jsonStringRepresentation];
 }
 
 + (void)refresh

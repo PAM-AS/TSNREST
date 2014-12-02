@@ -11,12 +11,16 @@
 #import "NSObject+PropertyClass.h"
 #import "NSDate+SAMAdditions.h"
 #import "NSString+TSNRESTAdditions.h"
+#import "NSManagedObject+TSNRESTSerializer.h"
+#import "NSURLRequest+TSNRESTConveniences.h"
+#import "NSURLSessionDataTask+TSNRESTDataTask.h"
+#import "NSManagedObject+TSNRESTDeletion.h"
 
 @interface TSNRESTManager ()
 
 @property (atomic) int loadingRetainCount;
 
-@property (nonatomic, strong) NSMutableArray *requestQueue;
+@property (nonatomic, strong) NSMutableSet *requestQueue;
 
 #warning workaround timer
 @property (nonatomic) NSTimer *resetLoadingTimer;
@@ -36,7 +40,8 @@
     // executes a block object once and only once for the lifetime of an application
     dispatch_once(&p, ^{
         _sharedObject = [[self alloc] init];
-        [(TSNRESTManager *)_sharedObject setRequestQueue:[[NSMutableArray alloc] init]];
+        [(TSNRESTManager *)_sharedObject setRequestQueue:[[NSMutableSet alloc] init]];
+        [[NSNotificationCenter defaultCenter] addObserver:_sharedObject selector:@selector(loginSucceeded) name:@"LoginSucceeded" object:nil];
     });
     
     // returns the same object each time
@@ -109,6 +114,15 @@
     return _ISO8601Formatter;
 }
 
+#pragma mark - Session
+- (NSURLSession *)URLSession {
+    return [NSURLSession sharedSession]; // We currently use the shared session, but this is a convenient override point.
+}
+
+- (void)reAuthenticate {
+    [TSNRESTLogin loginWithDefaultRefreshTokenAndUserClass:[self.delegate userClass] url:[self.delegate authURL]];
+}
+
 #pragma mark - Functions
 - (void)addObjectMap:(TSNRESTObjectMap *)objectMap
 {
@@ -163,82 +177,15 @@
 
 - (void)deleteObjectFromServer:(id)object completion:(void (^)(id object, BOOL success))completion
 {
-    NSNumber *systemId = [object valueForKey:@"systemId"];
-    if (!systemId)
-    {
-        [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
-            [[object MR_inContext:localContext] MR_deleteEntity];
-        } completion:^(BOOL success, NSError *error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (completion)
-                    completion(object, YES);
-            });
-        }];
-        return;
-    }
-    
-    TSNRESTObjectMap *objectMap = [self objectMapForClass:[object class]];
-    
-    NSURLSession *session = [NSURLSession sharedSession];
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-    if (self.customHeaders)
-        [self.customHeaders enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-            [request addValue:obj forHTTPHeaderField:key];
-        }];
-    [request setHTTPMethod:@"DELETE"];
-    
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/%@/%@", self.baseURL, objectMap.serverPath, systemId]];
-    [request setURL:url];
-    
-#if DEBUG
-    NSLog(@"Sending delete action for %@ to %@", systemId, [url absoluteString]);
-#endif
-    
-    NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        if ([(NSHTTPURLResponse *)response statusCode] == 404) // Assume object isn't on server yet. Delete locally.
-        {
-            dispatch_async([[TSNRESTManager sharedManager] serialQueue], ^{
-#if DEBUG
-                NSLog(@"Object attempted deleted, assume success (404).");
-#endif
-                [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
-                    [[object MR_inContext:localContext] MR_deleteEntity];
-                } completion:^(BOOL success, NSError *error) {
-                    if (completion)
-                        completion(object, YES);
-                }];
-            });
-        }
-        else if ([(NSHTTPURLResponse *)response statusCode] < 200 || [(NSHTTPURLResponse *)response statusCode] > 204)
-        {
-#if DEBUG
-            NSLog(@"Deletion of object failed (Status code %li).", (long)[(NSHTTPURLResponse *)response statusCode]);
-            if (error)
-                NSLog(@"Error: %@", [error localizedDescription]);
-            
-            NSLog(@"Response: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
-#endif
-            
-            if (completion)
-                completion(object, NO);
-        }
-        else
-        {
-            dispatch_async([[TSNRESTManager sharedManager] serialQueue], ^{
-                NSLog(@"Object successfully deleted.");
-                [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
-                    [[object MR_inContext:localContext] MR_deleteEntity];
-                } completion:^(BOOL success, NSError *error) {
-                    if (completion)
-                        completion(object, YES);
-                }];
-            });
-        }
-    }];
-    [dataTask resume];
+    [object deleteFromServerWithCompletion:completion];
 }
 
 #pragma mark - Network helpers
+- (void)addRequestToAuthQueue:(NSDictionary *)request
+{
+    [self.requestQueue addObject:request];
+}
+
 - (void)runAutoAuthenticatingRequest:(NSURLRequest *)request completion:(void (^)(BOOL success, BOOL newData, BOOL retrying))completion
 {
     /*
@@ -328,11 +275,19 @@
     }
 }
 
+- (void)loginSucceeded
+{
+    self.isAuthenticating = NO;
+    [self runQueuedRequests];
+}
+
 - (void)runQueuedRequests
 {
     if (self.isAuthenticating)
     {
+#if DEBUG
         NSLog(@"Can't run queued requests, still not done authenticating.");
+#endif
         return;
     }
     
@@ -344,7 +299,7 @@
         NSLog(@"Running %lu requests from queue", (unsigned long)self.requestQueue.count);
 #endif
     
-        requestQueue = [NSArray arrayWithArray:self.requestQueue];
+        requestQueue = [self.requestQueue allObjects];
     }
     
     for (NSDictionary *dictionary in requestQueue)
@@ -359,7 +314,16 @@
             
             [request setAllHTTPHeaderFields:self.customHeaders];
             
-            NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:[dictionary objectForKey:@"completion"]];
+            // Legacy completion block support
+            if ([dictionary objectForKey:@"completion"]) {
+                void (^completionBlock)(NSData *, NSURLResponse *, NSError *) = [dictionary objectForKey:@"completion"];
+                [dictionary setValue:^(NSData *data, NSURLResponse *response, NSError *error){
+                    completionBlock(data, response, error);
+                } forKey:@"finallyBlock"];
+            }
+            
+            
+            NSURLSessionDataTask *task = [NSURLSessionDataTask dataTaskWithRequest:request success:[dictionary objectForKey:@"successBlock"] failure:[dictionary objectForKey:@"failureBlock"] finally:[dictionary objectForKey:@"finallyBlock"]];
             [task resume];
         }
     }
@@ -510,84 +474,7 @@
 
 - (NSDictionary *)dictionaryFromObject:(id)object withObjectMap:(TSNRESTObjectMap *)objectMap optionalKeys:(NSArray *)optionalKeys
 {
-    NSMutableDictionary *dataDict = [[NSMutableDictionary alloc] init];
-    
-    if ([object isDeleted] || [object hasBeenDeleted])
-        return @{};
-    
-    if ([object valueForKey:@"systemId"])
-        [dataDict setValue:[object valueForKey:@"systemId"] forKey:@"id"];
-    if ([object respondsToSelector:NSSelectorFromString(@"uuid")] && [object valueForKey:@"uuid"])
-        [dataDict setValue:[object valueForKey:@"uuid"] forKey:@"uuid"];
-    
-    // Fill data dict - the dict that we convert to JSON
-    [objectMap.objectToWeb enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-        // We get the value of the object (the actual data), and set the web key from the objectToWeb dictionary value.
-        
-        Class classType = [object classOfPropertyNamed:key];
-        
-        if (objectMap.reverseMappingBlock) // Check for custom mapping block and run it.
-        {
-            objectMap.reverseMappingBlock(object, dataDict);
-        }
-        
-        if ([[objectMap readOnlyKeys] containsObject:key]) // Readonly. Skip.
-        {
-            return;
-        }
-        
-        /* Check optionals.
-         optionalKeys in objectmap specifies which are optional,
-         optionalKeys as parameter to this function specifies which one we want to send anyway.
-         */
-        if ([[objectMap optionalKeys] containsObject:key] && (!optionalKeys || ![optionalKeys containsObject:key]))
-        {
-            return;
-        }
-        
-        if ([[objectMap enumMaps] valueForKey:key])
-        {
-            NSLog(@"Found enum map for %@!", key);
-            NSDictionary *enumMap = [[objectMap enumMaps] valueForKey:key];
-            NSString *value = [enumMap objectForKey:[(NSManagedObject *)object valueForKey:key]];
-            if ([object respondsToSelector:NSSelectorFromString(key)] && [object valueForKey:key] && value)
-                [dataDict setObject:value forKey:obj];
-            
-        }
-        else if (classType == [NSString class] || classType == [NSNumber class])
-        {
-            if ([object respondsToSelector:NSSelectorFromString(key)] && [object valueForKey:key])
-                [dataDict setObject:[(NSManagedObject *)object valueForKey:key] forKey:obj];
-        }
-        else if (classType == [NSDate class] && [object valueForKey:key])
-        {
-            NSDate *date = [object valueForKey:key];
-            [dataDict setObject:[self.ISO8601Formatter stringFromDate:date] forKey:obj];
-        }
-        else if ([classType isSubclassOfClass:[NSManagedObject class]] && [[object valueForKey:key] respondsToSelector:NSSelectorFromString(@"systemId")] && [[object valueForKey:key] valueForKey:@"systemId"])
-        {
-            NSNumber *systemId = [[object valueForKey:key] valueForKey:@"systemId"];
-            if (systemId)
-                [dataDict setObject:systemId forKey:obj];
-        }
-        else if ([obj isKindOfClass:[NSArray class]])
-        {
-            for (NSString *string in obj)
-            {
-                id objectForKey = [(NSManagedObject *)object valueForKey:key];
-                if (string && objectForKey)
-                    [dataDict setObject:objectForKey forKey:string];
-            }
-        }
-        
-        NSLog(@"Adding %@:%@ to dict (class: %@)", key, obj, NSStringFromClass(classType));
-        
-        // Hack to create bools
-        if ([objectMap.booleans objectForKey:key])
-            [dataDict setObject:[NSNumber numberWithBool:[[dataDict objectForKey:obj] boolValue]] forKey:obj];
-    }];
-    NSLog(@"Created dict: %@", dataDict);
-    return [NSDictionary dictionaryWithDictionary:dataDict];
+    return [object dictionaryRepresentationWithOptionalKeys:optionalKeys excludingKeys:nil];
 }
 
 - (NSURLRequest *)requestForObject:(id)object
@@ -597,52 +484,7 @@
 
 - (NSURLRequest *)requestForObject:(id)object optionalKeys:(NSArray *)optionalKeys
 {
-    [[(NSManagedObject *)object managedObjectContext] refreshObject:object mergeChanges:NO];
-    NSLog(@"Persisting object %@ (context: %@)", [object class], [object managedObjectContext]);
-    TSNRESTObjectMap *objectMap = [self objectMapForClass:[object class]];
-    NSLog(@"ObjectMap: %@", objectMap);
-    NSDictionary *dataDict = [self dictionaryFromObject:object withObjectMap:objectMap optionalKeys:optionalKeys];
-    
-    NSData *JSONData = nil;
-    if (dataDict.count > 0)
-    {
-        NSDictionary *wrapper = [[NSDictionary alloc] initWithObjectsAndKeys:dataDict, [NSStringFromClass([object class]) stringByConvertingCamelCaseToUnderscore], nil];
-        NSError *error = [[NSError alloc] init];
-        JSONData = [NSJSONSerialization dataWithJSONObject:wrapper options:0 error:&error];
-        NSString *JSONString = [[NSString alloc] initWithData:JSONData encoding:NSUTF8StringEncoding];
-        NSLog(@"Created JSON string from object: %@", JSONString);
-    }
-    
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-    [request addValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-    if (self.customHeaders)
-        [self.customHeaders enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-            [request addValue:obj forHTTPHeaderField:key];
-        }];
-    if (JSONData)
-    {
-        NSLog(@"Sending JSON: %@", [[NSString alloc] initWithData:JSONData encoding:NSUTF8StringEncoding]);
-        [request setHTTPMethod:@"POST"];
-        [request setHTTPBody:JSONData];
-    }
-    
-    NSURL *url = [NSURL URLWithString:self.baseURL];
-    if (objectMap.serverPath)
-        url = [url URLByAppendingPathComponent:objectMap.serverPath];
-    else
-        return nil;
-    
-    if ([object valueForKey:@"systemId"] && [[object valueForKey:@"systemId"] isKindOfClass:[NSNumber class]])
-    {
-        NSString *pathComponent = [NSString stringWithFormat:@"%@", [object valueForKey:@"systemId"]];
-        if (pathComponent)
-            url = [url URLByAppendingPathComponent:pathComponent];
-    }
-    
-    [request setURL:url];
-    
-    NSLog(@"URL: %@", [[request URL] absoluteString]);
-    return request;
+    return [NSURLRequest requestForObject:object optionalKeys:optionalKeys];
 }
 
 - (void)resetDataStore

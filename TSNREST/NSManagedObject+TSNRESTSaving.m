@@ -9,6 +9,7 @@
 #import "NSManagedObject+TSNRESTSaving.h"
 #import "NSManagedObject+TSNRESTValidation.h"
 #import "TSNRESTManager.h"
+#import "NSURLSessionDataTask+TSNRESTDataTask.h"
 
 @implementation NSManagedObject (TSNRESTSaving)
 
@@ -33,7 +34,7 @@
         // Catch changes made externally
         [self.managedObjectContext MR_saveToPersistentStoreAndWait];
         
-        if (self.isDeleted || [self hasBeenDeleted])
+        if (self.isDeleted)
         {
 #if DEBUG
             NSLog(@"Skipping saving of product, since it has been deleted.");
@@ -50,6 +51,7 @@
 #if DEBUG
             NSLog(@"Skipping save of %@ %@ because object already is in flight.", NSStringFromClass([self class]), [self valueForKey:@"systemId"]);
 #endif
+#warning Find a way to not call the successBlock here. It's not technically correct.
             if (successBlock)
                 successBlock(self);
             if (finallyBlock)
@@ -67,8 +69,6 @@
             return;
         }
         
-        NSURLSession *currentSession = [NSURLSession sharedSession];
-        
         if ([self respondsToSelector:NSSelectorFromString(@"uuid")])
         {
             if (![self valueForKey:@"uuid"])
@@ -80,22 +80,27 @@
         
         [[TSNRESTManager sharedManager] startLoading:@"persistWithCompletion:session:"];
         NSURLRequest *request = [[TSNRESTManager sharedManager] requestForObject:self optionalKeys:optionalKeys];
-        NSURLSessionDataTask *dataTask = [currentSession dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-            [[TSNRESTManager sharedManager] handleResponse:response withData:data error:error object:self completion:^(id object, BOOL success) {
-                [[TSNRESTManager sharedManager] endLoading:@"persistWithCompletion:session:"];
-                self.inFlight = NO;
-                [self.managedObjectContext MR_saveToPersistentStoreWithCompletion:nil];
-                if (success && successBlock)
-                {
-                    successBlock(self);
-                }
-                else if (failureBlock && !success)
-                {
+        NSURLSessionDataTask *dataTask = [NSURLSessionDataTask dataTaskWithRequest:request success:^(NSData *data, NSURLResponse *response, NSError *error) {
+            if ([self respondsToSelector:NSSelectorFromString(@"dirty")])
+            [self setValue:@0 forKey:@"dirty"];
+            [self.managedObjectContext MR_saveOnlySelfAndWait];
+            if (successBlock)
+                successBlock(self);
+            if (finallyBlock)
+                finallyBlock(self);
+        } failure:^(NSData *data, NSURLResponse *response, NSError *error, NSInteger statusCode) {
+            if (statusCode == 404) {
+                [self deleteFromServer];
+                if (finallyBlock)
+                    finallyBlock(nil);
+            }
+            else {
+                if (failureBlock)
                     failureBlock(self);
-                }
                 if (finallyBlock)
                     finallyBlock(self);
-            }];
+            }
+            
 #if DEBUG
             if (error)
             {
@@ -104,7 +109,9 @@
                 NSLog(@"Error: %@", [error userInfo]);
             }
 #endif
-        }];
+            
+        } finally:nil];
+
         [dataTask resume];
         
     });
