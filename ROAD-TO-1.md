@@ -9,7 +9,7 @@ It will take the good parts from Ember Data, while maintaining the advantages of
 For 0.4.0 we'll start working towards the goals staded above. The first major change will be splitting categories into specific features, instead of being <objectType>+TSNRESTAdditions. Currently, many of the files have become too large for comfort.
 
 ## Blocking bugs and missing features
-* Fix loading retain bugs by refactoring all requests to a custom subclass or object
+* ~~Fix loading retain bugs by refactoring all requests to a custom subclass or object~~
 * Support custom serializers and deserializers instead of mappingBlocks and reverseMappingBlocks
 * Refactor global settings into a separate object, like in WKWebView
 * support ?fields and saving fields (`[object saveFields:@[…]]`)
