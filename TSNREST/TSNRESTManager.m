@@ -23,9 +23,6 @@
 @property (nonatomic, strong) NSMutableSet *requestQueue;
 @property (nonatomic, strong) NSMutableSet *currentRequests;
 
-#warning workaround timer
-@property (nonatomic) NSTimer *resetLoadingTimer;
-
 @end
 
 @implementation TSNRESTManager
@@ -48,32 +45,6 @@
     
     // returns the same object each time
     return _sharedObject;
-}
-
-- (void)startLoading:(NSString *)identifier
-{
-    if (self.loadingRetainCount == 0)
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"startLoadingAnimation" object:nil];
-        });
-    self.loadingRetainCount++;
-#if DEBUG
-    NSLog(@"LoadingRetain: %i New loading starts: %@", self.loadingRetainCount, identifier);
-#endif
-    [self checkResetLoadingTimer];
-}
-
-- (void)endLoading:(NSString *)identifier
-{
-    self.loadingRetainCount--;
-    if (self.loadingRetainCount == 0)
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"stopLoadingAnimation" object:nil];
-        });
-#if DEBUG
-    NSLog(@"LoadingRetain: %i Loading done: %@", self.loadingRetainCount, identifier);
-#endif
-    [self checkResetLoadingTimer];
 }
 
 - (void)addRequestToLoading:(NSURLRequest *)request {
@@ -100,26 +71,6 @@
             });
         }
     }
-}
-
-- (void)checkResetLoadingTimer
-{
-    NSLog(@"Scheduling resetTimer");
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if (self.resetLoadingTimer)
-            [self.resetLoadingTimer invalidate];
-        if (self.loadingRetainCount != 0)
-        {
-            self.resetLoadingTimer = [NSTimer scheduledTimerWithTimeInterval:30 target:self selector:@selector(resetLoading) userInfo:nil repeats:NO];
-        }
-        [self.resetLoadingTimer setTolerance:2];
-    });
-}
-
-- (void)resetLoading
-{
-    self.loadingRetainCount = 0;
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"stopLoadingAnimation" object:nil];
 }
 
 #pragma mark - Getters & setters
@@ -432,10 +383,6 @@
             [TSNRESTLogin loginWithDefaultRefreshTokenAndUserClass:nil url:[self.delegate authURL]];
         if (completion && !queued)
             completion(object, NO);
-        else
-        {
-            [[TSNRESTManager sharedManager] endLoading:@"handleResponse generic (no completion block provided)"];
-        }
         
         [[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:@"prev401"];
         [[NSUserDefaults standardUserDefaults] synchronize];
@@ -471,10 +418,6 @@
         [[NSNotificationCenter defaultCenter] postNotificationName:@"APIRequestFailed" object:Nil userInfo:failDict];
         if (completion)
             completion(nil, NO);
-        else
-        {
-            [[TSNRESTManager sharedManager] endLoading:@"handleResponse generic (no completion block provided)"];
-        }
     }
     else
     {
@@ -493,10 +436,6 @@
             
             if (completion)
                 completion(object, YES);
-            else
-            {
-                [[TSNRESTManager sharedManager] endLoading:@"handleResponse generic (no completion block provided)"];
-            }
             [[NSNotificationCenter defaultCenter] postNotificationName:@"modelUpdated" object:nil];
         } forObject:object];
     }

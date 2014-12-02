@@ -118,8 +118,6 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
     
-    [[TSNRESTManager sharedManager] startLoading:[NSString stringWithFormat:@"refreshWithCompletion for %@ %@", NSStringFromClass(self.class), [self valueForKey:@"systemId"]]];
-    
     NSURLSessionDataTask *task = [NSURLSessionDataTask dataTaskWithRequest:request success:^(NSData *data, NSURLResponse *response, NSError *error) {
         if (completion)
             completion(self, YES);

@@ -79,7 +79,6 @@
             }
         }
         
-        [[TSNRESTManager sharedManager] startLoading:@"persistWithCompletion:session:"];
         NSURLRequest *request = [[TSNRESTManager sharedManager] requestForObject:self optionalKeys:optionalKeys];
         NSURLSessionDataTask *dataTask = [NSURLSessionDataTask dataTaskWithRequest:request success:^(NSData *data, NSURLResponse *response, NSError *error) {
             if ([self respondsToSelector:NSSelectorFromString(@"dirty")])

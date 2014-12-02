@@ -41,8 +41,6 @@
 
 + (id)sharedManager;
 
-- (void)startLoading:(NSString *)identifier DEPRECATED_ATTRIBUTE;
-- (void)endLoading:(NSString *)identifier DEPRECATED_ATTRIBUTE;
 - (void)addRequestToLoading:(NSURLRequest *)request;
 - (void)removeRequestFromLoading:(NSURLRequest *)request;
 - (BOOL)isLoading;
