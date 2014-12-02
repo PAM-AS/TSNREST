@@ -11,6 +11,7 @@
 #import "TSNRESTManager.h"
 #import "NSURLSessionDataTask+TSNRESTDataTask.h"
 #import "NSManagedObject+TSNRESTDeletion.h"
+#import "MagicalRecord.h"
 
 @implementation NSManagedObject (TSNRESTSaving)
 
@@ -74,15 +75,19 @@
         {
             if (![self valueForKey:@"uuid"])
             {
-                [self setValue:[[NSUUID UUID] UUIDString] forKey:@"uuid"];
-                [self.managedObjectContext MR_saveOnlySelfAndWait];
+                [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+                    [[self MR_inContext:localContext] setValue:[[NSUUID UUID] UUIDString] forKey:@"uuid"];
+                }];
             }
         }
         
         NSURLRequest *request = [[TSNRESTManager sharedManager] requestForObject:self optionalKeys:optionalKeys];
         NSURLSessionDataTask *dataTask = [NSURLSessionDataTask dataTaskWithRequest:request success:^(NSData *data, NSURLResponse *response, NSError *error) {
-            if ([self respondsToSelector:NSSelectorFromString(@"dirty")])
-            [self setValue:@0 forKey:@"dirty"];
+            if ([self respondsToSelector:NSSelectorFromString(@"dirty")]) {
+                [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+                    [[self MR_inContext:localContext] setValue:@0 forKey:@"dirty"];
+                }];
+            }
             [self.managedObjectContext MR_saveOnlySelfAndWait];
             if (successBlock)
                 successBlock(self);
