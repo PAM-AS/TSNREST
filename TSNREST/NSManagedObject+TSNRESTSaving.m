@@ -10,6 +10,7 @@
 #import "NSManagedObject+TSNRESTValidation.h"
 #import "TSNRESTManager.h"
 #import "NSURLSessionDataTask+TSNRESTDataTask.h"
+#import "NSManagedObject+TSNRESTDeletion.h"
 
 @implementation NSManagedObject (TSNRESTSaving)
 

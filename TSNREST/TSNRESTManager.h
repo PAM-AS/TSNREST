@@ -14,6 +14,7 @@
 #import "TSNRESTLogin.h"
 #import "NSURL+TSNRESTAdditions.h"
 #import "NJISO8601Formatter.h"
+#import "NSManagedObject+TSNRESTDeletion.h"
 
 @protocol TSNRESTManagerDelegate <NSObject>
 

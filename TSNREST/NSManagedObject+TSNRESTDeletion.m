@@ -58,7 +58,7 @@
     } completion:^(BOOL contextDidSave, NSError *error) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if (completion)
-            completion(self, YES);
+                completion(self, YES);
         });
     }];
 }

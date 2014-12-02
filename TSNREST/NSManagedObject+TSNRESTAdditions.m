@@ -12,6 +12,7 @@
 #import "NSObject+PropertyClass.h"
 #import <objc/runtime.h>
 #import "NSManagedObject+TSNRESTSerializer.h"
+#import "NSURLSessionDataTask+TSNRESTDataTask.h"
 
 static void * InFlightPropertyKey = &InFlightPropertyKey;
 
@@ -49,23 +50,6 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
     return nil;
 }
 
-
-- (void)deleteFromServer
-{
-    [[TSNRESTManager sharedManager] deleteObjectFromServer:self];
-}
-
-- (void)deleteFromServerWithCompletion:(void (^)(id object, BOOL success))completion
-{
-    [[TSNRESTManager sharedManager] deleteObjectFromServer:self completion:completion];
-}
-
-- (BOOL)hasBeenDeleted
-{
-    NSError *error = [[NSError alloc] init];
-    return (![self.managedObjectContext existingObjectWithID:[self objectID] error:&error] || [self isDeleted]);
-}
-
 - (void)faultIfNeeded
 {
     [self faultIfNeededWithCompletion:nil];
@@ -94,17 +78,24 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
     NSLog(@"Checking deletion for %@ (%@) at %@", NSStringFromClass(self.class), [self valueForKey:@"systemId"], url);
 #endif
     
-    NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
     
-    NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        if ([(NSHTTPURLResponse *)response statusCode] == 404)
-            [self MR_deleteEntity];
-        dispatch_async(dispatch_get_main_queue(), ^{
+    NSURLSessionDataTask *task = [NSURLSessionDataTask dataTaskWithRequest:request success:^(NSData *data, NSURLResponse *response, NSError *error) {
+        completion(NO);
+    } failure:^(NSData *data, NSURLResponse *response, NSError *error, NSInteger statusCode) {
+        if (statusCode == 404) {
+            [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+                [self MR_deleteEntity];
+            } completion:^(BOOL contextDidSave, NSError *error) {
+                if (completion)
+                    completion(YES);
+            }];
+        }
+        else {
             if (completion)
-                completion([(NSHTTPURLResponse *)response statusCode] == 404);
-        });
-    }];
+                completion(NO);
+        }
+    } finally:nil];
     [task resume];
 }
 
@@ -121,22 +112,21 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
     TSNRESTObjectMap *map = [[TSNRESTManager sharedManager] objectMapForClass:self.class];
     NSString *url = [[(NSString *)[[TSNRESTManager sharedManager] baseURL] stringByAppendingPathComponent:map.serverPath] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@", [self valueForKey:@"systemId"]]];
     
+#if DEBUG
     NSLog(@"URL: %@", url);
+#endif
     
-    NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
     
     [[TSNRESTManager sharedManager] startLoading:[NSString stringWithFormat:@"refreshWithCompletion for %@ %@", NSStringFromClass(self.class), [self valueForKey:@"systemId"]]];
     
-    NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        [[TSNRESTManager sharedManager] handleResponse:response withData:data error:error object:self completion:^(id object, BOOL success) {
-            if (completion)
-            {
-                [[TSNRESTManager sharedManager] endLoading:[NSString stringWithFormat:@"refreshWithCompletion for %@ %@", NSStringFromClass(self.class), [self valueForKey:@"systemId"]]];
-                completion(nil, success);
-            }
-        }];
-    }];
+    NSURLSessionDataTask *task = [NSURLSessionDataTask dataTaskWithRequest:request success:^(NSData *data, NSURLResponse *response, NSError *error) {
+        if (completion)
+            completion(self, YES);
+    } failure:^(NSData *data, NSURLResponse *response, NSError *error, NSInteger statusCode) {
+        if (completion)
+            completion(self, NO);
+    } finally:nil];
     [task resume];
 }
 
@@ -154,16 +144,6 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
     return [NSArray arrayWithArray:names];
 }
 
-- (NSDictionary *)dictionaryRepresentation
-{
-    return [self dictionaryRepresentationWithOptionalKeys:nil excludingKeys:nil];
-}
-
-- (NSString *)JSONRepresentation
-{
-    return [self jsonStringRepresentation];
-}
-
 + (void)refresh
 {
     [self refreshWithCompletion:nil];
@@ -174,7 +154,6 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
     // Send NSNotificationCenter push that model will be updated. Send model class as user data.
     
     TSNRESTManager *manager = [TSNRESTManager sharedManager];
-    [manager startLoading:[NSString stringWithFormat:@"refreshWithCompletion for class %@", NSStringFromClass(self.class)]];
     
     TSNRESTObjectMap *objectMap = [manager objectMapForClass:[self class]];
     if (!objectMap)
@@ -279,10 +258,9 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
     
     NSLog(@"Asking server for %@", url);
     
-    NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
     NSURLRequest *request = [NSURLRequest requestWithURL:url];
 
-    NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+    NSURLSessionDataTask *task = [NSURLSessionDataTask dataTaskWithRequest:request success:nil failure:nil finally:^(NSData *data, NSURLResponse *response, NSError *error) {
         NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
         [TSNRESTParser parseAndPersistDictionary:dict withCompletion:^{
             // If object, we need to check against the object, not it's ID

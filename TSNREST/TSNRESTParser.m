@@ -9,6 +9,7 @@
 #import "TSNRESTParser.h"
 #import "NSObject+PropertyClass.h"
 #import "NSDate+SAMAdditions.h"
+#import "NSManagedObject+TSNRESTSerializer.h"
 
 @implementation TSNRESTParser
 
@@ -47,7 +48,7 @@
                         NSLog(@"First write to object (recently created), so setting ID for object %@", object);
 #endif
                         id localObject = nil;
-                        if (![localObject hasBeenDeleted])
+                        if (![localObject isDeleted])
                             localObject = [object MR_inContext:localContext];
                         id systemId = [[jsonData objectAtIndex:0] valueForKey:@"id"];
                         if (systemId)
@@ -90,7 +91,7 @@
                     else if (jsonData.count != 1) {
                         NSLog(@"Got more or less than 1 object in return. Continuing to parsing. (got %li)", (unsigned long)jsonData.count);
                     }
-                    else if ([object hasBeenDeleted]) {
+                    else if ([object isDeleted]) {
                         NSLog(@"Object has recently been deleted, can't be updated.");
                     }
 #endif
@@ -106,7 +107,7 @@
             }
             
 #if DEBUG
-            NSLog(@"Parsing %lu arrays (%i objects) took %f", (unsigned long)dict.count, objects, [NSDate timeIntervalSinceReferenceDate] - start);
+            NSLog(@"Parsing %lu arrays (%li objects) took %f", (unsigned long)dict.count, (long)objects, [NSDate timeIntervalSinceReferenceDate] - start);
 #endif
         } completion:^(BOOL contextDidSave, NSError *error) {
             [self doneWithCompletion:completion dict:dict];

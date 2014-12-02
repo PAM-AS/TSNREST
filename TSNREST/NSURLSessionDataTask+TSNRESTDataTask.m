@@ -14,7 +14,7 @@
 
 + (NSURLSessionDataTask *)dataTaskWithRequest:(NSURLRequest *)request success:(void (^)(NSData *data, NSURLResponse *response, NSError *error))successBlock failure:(void (^)(NSData *data, NSURLResponse *response, NSError *error, NSInteger statusCode))failureBlock finally:(void (^)(NSData *data, NSURLResponse *response, NSError *error))finallyBlock
 {
-    TSNRESTManager *manager = [TSNRESTManager sharedManager];
+    __block TSNRESTManager *manager = [TSNRESTManager sharedManager];
     [manager addRequestToLoading:request];
     return [[manager URLSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         NSInteger statusCode = [(NSHTTPURLResponse *)response statusCode];

@@ -61,7 +61,7 @@
     else
     {
 #if DEBUG
-        NSLog(@"Faulting %u objects of type %@", tempArray.count, NSStringFromClass([tempArray.firstObject class]));
+        NSLog(@"Faulting %lu objects of type %@", (unsigned long)tempArray.count, NSStringFromClass([tempArray.firstObject class]));
 #endif
     }
     

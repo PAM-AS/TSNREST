@@ -17,11 +17,6 @@
 
 - (id)get:(NSString *)propertyKey;
 
-- (void)deleteFromServer;
-- (void)deleteFromServerWithCompletion:(void (^)(id object, BOOL success))completion;
-
-- (BOOL)hasBeenDeleted DEPRECATED_ATTRIBUTE; // Use isDeleted from CoreData.
-
 - (void)faultIfNeeded;
 - (void)faultIfNeededWithCompletion:(void (^)(id object, BOOL success))completion;
 - (void)checkForDeletion:(void (^)(BOOL hasBeenDeleted))completion;
@@ -29,8 +24,6 @@
 - (void)refreshWithCompletion:(void (^)(id object, BOOL success))completion;
 
 + (NSArray *)propertyNames;
-- (NSDictionary *)dictionaryRepresentation DEPRECATED_ATTRIBUTE;
-- (NSString *)JSONRepresentation DEPRECATED_ATTRIBUTE;
 
 + (void)refresh;
 + (void)refreshWithCompletion:(void (^)())completion;
