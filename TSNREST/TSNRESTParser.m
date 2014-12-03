@@ -27,8 +27,9 @@
 {
 #if DEBUG
     __block NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
-    __block NSInteger objects = 0;
 #endif
+    
+    __block NSInteger objects = 0;
     
     dispatch_async([[TSNRESTManager sharedManager] serialQueue], ^{
         [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
@@ -38,9 +39,7 @@
                 if (map)
                 {
                     NSArray *jsonData = [dict objectForKey:dictKey];
-#if DEBUG
                     objects += jsonData.count;
-#endif
                     
                     if (object && [object valueForKey:@"systemId"] == nil && [map classToMap] == [object class] && jsonData.count == 1)
                     {
@@ -62,7 +61,7 @@
                                 NSLog(@"Found existing object. Appending it's data to our object, then deleting it (%@).", [existingObject valueForKey:@"systemId"]);
 #endif
                                 NSDictionary *data = [(NSManagedObject *)existingObject dictionaryRepresentation];
-                                [self mapDict:data toObject:localObject withMap:map inContext:localContext];
+                                [self mapDict:data toObject:localObject withMap:map inContext:localContext optimize:NO];
                                 [existingObject MR_deleteEntity];
                             }
                             else if (localObject)
@@ -96,7 +95,7 @@
                     }
 #endif
                     
-                    [self parseAndPersistArray:jsonData withObjectMap:map context:localContext];
+                    [self parseAndPersistArray:jsonData withObjectMap:map context:localContext optimize:(objects > 100)];
                 }
                 else
                 {
@@ -132,17 +131,8 @@
     });
 }
 
-+ (BOOL)parseAndPersistArray:(NSArray *)array withObjectMap:(TSNRESTObjectMap *)map context:(NSManagedObjectContext *)localContext
++ (void)parseAndPersistArray:(NSArray *)array withObjectMap:(TSNRESTObjectMap *)map context:(NSManagedObjectContext *)localContext optimize:(BOOL)optimize
 {
-    NSLog(@"Starting Magic block in parseAndPersistArray for map %@", NSStringFromClass([map classToMap]));
-    [self parseAndPersistArray:array withObjectMap:map inContext:localContext];
-    NSLog(@"Stopping Magic block in parseAndPersistArray for map %@", NSStringFromClass([map classToMap]));
-    return YES;
-}
-
-+ (void)parseAndPersistArray:(NSArray *)array withObjectMap:(TSNRESTObjectMap *)map inContext:(NSManagedObjectContext *)localContext
-{
-    
 #if DEBUG
     NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
 #endif
@@ -244,7 +234,7 @@
             }
         }
         
-        [TSNRESTParser mapDict:jsonObject toObject:object withMap:map inContext:localContext];
+        [TSNRESTParser mapDict:jsonObject toObject:object withMap:map inContext:localContext optimize:optimize];
         
         jsonObject = [newEnumerator nextObject];
     }
@@ -254,7 +244,7 @@
 #endif
 }
 
-+ (void)mapDict:(NSDictionary *)dict toObject:(id)globalobject withMap:(TSNRESTObjectMap *)map inContext:(NSManagedObjectContext *)context
++ (void)mapDict:(NSDictionary *)dict toObject:(id)globalobject withMap:(TSNRESTObjectMap *)map inContext:(NSManagedObjectContext *)context optimize:(BOOL)optimize
 {
     id object = [globalobject MR_inContext:context];
 #if DEBUG
@@ -267,7 +257,7 @@
         NSLog(@"Adding %@ %@", NSStringFromClass([map classToMap]), [dict objectForKey:@"id"]);
 #endif
     
-    if ([object respondsToSelector:NSSelectorFromString(@"updatedAt")] && (![object respondsToSelector:NSSelectorFromString(@"dirty")] || ![[object valueForKey:@"dirty"] isEqualToNumber:@2]))
+    if (optimize && [object respondsToSelector:NSSelectorFromString(@"updatedAt")] && (![object respondsToSelector:NSSelectorFromString(@"dirty")] || ![[object valueForKey:@"dirty"] isEqualToNumber:@2]))
     {
         NSDate *objectDate = [object valueForKey:@"updatedAt"];
         NSDate *webDate = [[[TSNRESTManager sharedManager] ISO8601Formatter] dateFromString:[dict objectForKey:[[map objectToWeb] valueForKey:@"updatedAt"]]];
@@ -321,7 +311,7 @@
 #if DEBUG
                 NSLog(@"Found object map for %@", oMap.serverPath);
 #endif
-                [self parseAndPersistArray:[dict valueForKey:webKey] withObjectMap:oMap inContext:context];
+                [self parseAndPersistArray:[dict valueForKey:webKey] withObjectMap:oMap context:context optimize:optimize];
             }
         }
         else if ([[object classOfPropertyNamed:key] isSubclassOfClass:[NSManagedObject class]] && [dict valueForKey:webKey] != [NSNull null])
