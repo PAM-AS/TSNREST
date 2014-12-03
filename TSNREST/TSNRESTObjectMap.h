@@ -23,6 +23,7 @@
 @property (nonatomic,strong) NSMutableDictionary *objectToWeb;
 @property (nonatomic,strong) NSMutableDictionary *booleans;
 @property (nonatomic,strong) NSMutableDictionary *enumMaps;
+@property (nonatomic,strong) NSMutableDictionary *keyClasses;
 @property (nonatomic,strong) NSArray *readOnlyKeys;
 @property (nonatomic,strong) NSArray *optionalKeys;
 
@@ -43,8 +44,9 @@
 - (void)mapCamelCasedObjectKeysToUnderscoreWebKeys:(NSArray *)keys;
 
 // Extras
--(void)addBoolean:(NSString *)boolean; // Tells TSNREST to convert boolean to NSNumber for Core Data
--(void)addEnumMap:(NSDictionary *)enumMap forKey:(NSString *)key;
+- (void)addBoolean:(NSString *)boolean; // Tells TSNREST to convert boolean to NSNumber for Core Data
+- (void)addEnumMap:(NSDictionary *)enumMap forKey:(NSString *)key;
+- (void)addClass:(Class)classType forKey:(NSString *)key;
 /*
  Planning to replace addBoolean: with runtime check later.
  */

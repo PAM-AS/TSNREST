@@ -8,7 +8,7 @@
 
 #import "NSURLRequest+TSNRESTConveniences.h"
 #import "TSNRESTManager.h"
-#import "NSString+TSNRESTAdditions.h"
+#import "NSString+TSNRESTCasing.h"
 #import "NSManagedObject+TSNRESTSerializer.h"
 
 @implementation NSURLRequest (TSNRESTConveniences)

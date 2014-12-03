@@ -40,6 +40,9 @@
         }
         else {
             NSDictionary *responseDict = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
+#if DEBUG
+            NSLog(@"Got response from server: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+#endif
             if (parseResult) {
                 [TSNRESTParser parseAndPersistDictionary:responseDict withCompletion:^{
                     if (successBlock)

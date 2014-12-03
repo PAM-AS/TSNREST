@@ -10,7 +10,7 @@
 #import "TSNRESTParser.h"
 #import "NSObject+PropertyClass.h"
 #import "NSDate+SAMAdditions.h"
-#import "NSString+TSNRESTAdditions.h"
+#import "NSString+TSNRESTCasing.h"
 #import "NSManagedObject+TSNRESTSerializer.h"
 #import "NSURLRequest+TSNRESTConveniences.h"
 #import "NSURLSessionDataTask+TSNRESTDataTask.h"

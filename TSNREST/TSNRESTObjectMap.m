@@ -7,7 +7,7 @@
 //
 
 #import "TSNRESTObjectMap.h"
-#import "NSString+TSNRESTAdditions.h"
+#import "NSString+TSNRESTCasing.h"
 
 @implementation TSNRESTObjectMap
 
@@ -88,6 +88,12 @@
     if (!self.enumMaps)
         self.enumMaps = [[NSMutableDictionary alloc] init];
     [self.enumMaps setObject:enumMap forKey:key];
+}
+
+- (void)addClass:(Class)classType forKey:(NSString *)key {
+    if (!self.keyClasses)
+        self.keyClasses = [[NSMutableDictionary alloc] init];
+    [self.keyClasses setObject:classType forKey:key];
 }
 
 /*

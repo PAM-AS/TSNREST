@@ -1,14 +1,14 @@
 //
-//  NSString+TSNRESTAdditions.m
-//  shopapp
+//  NSString+TSNRESTCasing.m
+//  Pods
 //
-//  Created by Thomas Sunde Nielsen on 21.02.14.
-//  Copyright (c) 2014 PAM. All rights reserved.
+//  Created by Thomas Sunde Nielsen on 03.12.14.
+//
 //
 
-#import "NSString+TSNRESTAdditions.h"
+#import "NSString+TSNRESTCasing.h"
 
-@implementation NSString (TSNRESTAdditions)
+@implementation NSString (TSNRESTCasing)
 
 - (NSString *)stringByConvertingCamelCaseToUnderscore
 {
@@ -21,6 +21,15 @@
         string = [string stringByReplacingCharactersInRange:range withString:[NSString stringWithFormat:@"_%@", [[string substringWithRange:range] lowercaseString]]];
     }
     return string;
+}
+
+- (NSString *)camelCasedString {
+    NSArray *strings = [self componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@" -_"]];
+    NSMutableString *camelCased = [[NSMutableString alloc] initWithCapacity:self.length];
+    for (NSString *string in strings) {
+        [camelCased appendString:[string stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:[[string substringToIndex:1] uppercaseString]]];
+    }
+    return [NSString stringWithString:camelCased];
 }
 
 @end
