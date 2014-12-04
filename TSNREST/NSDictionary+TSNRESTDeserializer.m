@@ -113,8 +113,12 @@
         else if ([[object classOfPropertyNamed:key] isSubclassOfClass:[NSSet class]] && [[self valueForKey:webKey] isKindOfClass:[NSArray class]]) {
             // Remove existing
             NSSet *existing = [object valueForKey:key];
+            
+            // http://stackoverflow.com/questions/7017281/performselector-may-cause-a-leak-because-its-selector-is-unknown
             SEL removeSelector = NSSelectorFromString([NSString stringWithFormat:@"remove%@:", [key camelCasedString]]);
-            [object performSelector:removeSelector withObject:existing];
+            IMP imp = [object methodForSelector:removeSelector];
+            void (*func)(id, SEL, NSSet *) = (void *)imp;
+            func(object, removeSelector, existing);
             
             // Create set to insert
             NSArray *ids = [self valueForKey:webKey];
@@ -129,7 +133,9 @@
             // Insert new set if count is more than 0.
             if (objects.count > 0) {
                 SEL addSelector = NSSelectorFromString([NSString stringWithFormat:@"add%@:", [key camelCasedString]]);
-                [object performSelector:addSelector withObject:objects];
+                IMP imp = [object methodForSelector:addSelector];
+                void (*func)(id, SEL, NSSet *) = (void *)imp;
+                func(object, addSelector, objects);
             }
         }
         
