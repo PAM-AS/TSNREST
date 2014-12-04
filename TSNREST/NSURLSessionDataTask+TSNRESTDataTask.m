@@ -22,7 +22,18 @@
     return [[manager URLSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         NSInteger statusCode = [(NSHTTPURLResponse *)response statusCode];
         if (statusCode == 401) { // Not authenticated
-            [manager addRequestToAuthQueue:@{@"request":request,@"successBlock":successBlock,@"failureBlock":failureBlock,@"finallyBlock":finallyBlock}];
+            if (request)
+            {
+                NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
+                [dict setObject:request forKey:@"request"];
+                if (successBlock)
+                    [dict setObject:successBlock forKey:@"successBlock"];
+                if (failureBlock)
+                    [dict setObject:failureBlock forKey:@"failureBlock"];
+                if (finallyBlock)
+                    [dict setObject:finallyBlock forKey:@"finallyBlock"];
+                [manager addRequestToAuthQueue:[NSDictionary dictionaryWithDictionary:dict]];
+            }
             [manager reAuthenticate];
             [manager removeRequestFromLoading:request];
         }
