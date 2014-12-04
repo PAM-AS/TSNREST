@@ -18,7 +18,7 @@
         context = [NSManagedObjectContext MR_contextForCurrentThread];
     NSManagedObject *object = [self MR_findFirstByAttribute:@"systemId" withValue:systemid inContext:context];
     if (!object) {
-        [self MR_createEntityInContext:context];
+        object = [self MR_createEntityInContext:context];
         [object setValue:systemid forKey:@"systemId"];
     }
     return object;
