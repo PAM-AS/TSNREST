@@ -32,9 +32,7 @@
         [camelCased appendString:[string stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:[[string substringToIndex:1] uppercaseString]]];
     }
     
-    NSString *result = [NSString stringWithString:camelCased];
-    camelCased = nil;
-    return result;
+    return [NSString stringWithString:camelCased];
 }
 
 @end
