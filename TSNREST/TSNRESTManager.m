@@ -435,12 +435,12 @@
     return [object dictionaryRepresentationWithOptionalKeys:optionalKeys excludingKeys:nil];
 }
 
-- (NSURLRequest *)requestForObject:(id)object
+- (NSURLRequest *)requestForObject:(NSManagedObject *)object
 {
     return [self requestForObject:object optionalKeys:nil];
 }
 
-- (NSURLRequest *)requestForObject:(id)object optionalKeys:(NSArray *)optionalKeys
+- (NSURLRequest *)requestForObject:(NSManagedObject *)object optionalKeys:(NSArray *)optionalKeys
 {
     return [NSURLRequest requestForObject:object optionalKeys:optionalKeys];
 }
