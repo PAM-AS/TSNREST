@@ -24,7 +24,7 @@
     if (self.isDeleted)
         return @{};
     
-    NSMutableDictionary *dataDict = [[NSMutableDictionary alloc] init];
+    __block NSMutableDictionary *dataDict = [[NSMutableDictionary alloc] init];
     
     // Special snowflakes
     if ([self valueForKey:@"systemId"])

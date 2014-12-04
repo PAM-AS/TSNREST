@@ -73,7 +73,7 @@
         
         
         // Check if this is an embedded record
-        else if ([[self valueForKey:webKey] isKindOfClass:[NSArray class]] && [[[self valueForKey:webKey] objectAtIndex:0] isKindOfClass:[NSDictionary class]])
+        else if ([[self valueForKey:webKey] isKindOfClass:[NSArray class]] && [(NSArray *)[self valueForKey:webKey] count] > 0 && [[[self valueForKey:webKey] objectAtIndex:0] isKindOfClass:[NSDictionary class]])
         {
             TSNRESTObjectMap *oMap = [[TSNRESTManager sharedManager] objectMapForServerPath:webKey];
             if (oMap)

@@ -26,6 +26,11 @@
     TSNRESTManager *manager = [TSNRESTManager sharedManager];
     
     [[object managedObjectContext] refreshObject:object mergeChanges:NO];
+    
+    if (!object) {
+        return nil;
+    }
+    
     TSNRESTObjectMap *objectMap = [manager objectMapForClass:[object class]];
 
     NSDictionary *dataDict = [object dictionaryRepresentation];
