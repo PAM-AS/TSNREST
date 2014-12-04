@@ -25,11 +25,16 @@
 
 - (NSString *)camelCasedString {
     NSArray *strings = [self componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@" -_"]];
+    if (!strings || strings.count == 0)
+        return self;
     NSMutableString *camelCased = [[NSMutableString alloc] initWithCapacity:self.length];
     for (NSString *string in strings) {
         [camelCased appendString:[string stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:[[string substringToIndex:1] uppercaseString]]];
     }
-    return [NSString stringWithString:camelCased];
+    
+    NSString *result = [NSString stringWithString:camelCased];
+    camelCased = nil;
+    return result;
 }
 
 @end

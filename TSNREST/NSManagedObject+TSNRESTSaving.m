@@ -115,7 +115,9 @@
 #if DEBUG
             if (error)
             {
-                NSLog(@"Data: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+                NSString *dataString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+                NSLog(@"Data: %@", dataString);
+                dataString = nil;
                 NSLog(@"Response: %@", response);
                 NSLog(@"Error: %@", [error userInfo]);
             }

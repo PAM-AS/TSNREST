@@ -29,7 +29,7 @@
 
 @interface TSNRESTManager : NSObject
 
-@property (nonatomic, weak) id <TSNRESTManagerDelegate> delegate;
+@property (nonatomic, assign) id <TSNRESTManagerDelegate> delegate;
 
 @property (nonatomic, strong) NJISO8601Formatter *ISO8601Formatter;
 

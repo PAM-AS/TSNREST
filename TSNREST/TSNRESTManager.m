@@ -279,11 +279,7 @@
     for (NSDictionary *dictionary in requestQueue)
     {
         if ([[dictionary objectForKey:@"request"] isKindOfClass:[NSMutableURLRequest class]])
-        {
-            NSURLSession *session = [dictionary objectForKey:@"session"];
-            if (!session)
-                session = [NSURLSession sharedSession];
-            
+        {   
             NSMutableURLRequest *request = [dictionary objectForKey:@"request"];
             
             [request setAllHTTPHeaderFields:self.customHeaders];
