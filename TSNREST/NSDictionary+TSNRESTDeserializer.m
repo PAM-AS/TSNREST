@@ -121,7 +121,8 @@
             __block NSMutableSet *objects = [[NSMutableSet alloc] initWithCapacity:ids.count];
             [ids enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
                 NSNumber *systemId = (NSNumber *)obj;
-                NSManagedObject *relation = [(Class)[[map keyClasses] objectForKey:key] findOrCreateBySystemId:systemId inContext:context];
+                Class relationClass = (Class)[[map keyClasses] objectForKey:key];
+                NSManagedObject *relation = [relationClass findOrCreateBySystemId:systemId inContext:context];
                 [objects addObject:relation];
             }];
             
