@@ -13,6 +13,7 @@
 #import "NSManagedObject+TSNRESTDeletion.h"
 #import "MagicalRecord.h"
 #import "TSNRESTParser.h"
+#import "NSURLRequest+TSNRESTConveniences.h"
 
 @implementation NSManagedObject (TSNRESTSaving)
 
@@ -83,7 +84,7 @@
             }
         }
         
-        NSURLRequest *request = [[TSNRESTManager sharedManager] requestForObject:self optionalKeys:optionalKeys];
+        NSURLRequest *request = [NSURLRequest requestForObject:self optionalKeys:optionalKeys];
         NSURLSessionDataTask *dataTask = [NSURLSessionDataTask dataTaskWithRequest:request success:^(NSData *data, NSURLResponse *response, NSError *error) {
             if ([self respondsToSelector:NSSelectorFromString(@"dirty")]) {
                 [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {

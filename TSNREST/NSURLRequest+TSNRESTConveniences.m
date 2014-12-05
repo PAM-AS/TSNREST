@@ -33,7 +33,7 @@
     
     TSNRESTObjectMap *objectMap = [manager objectMapForClass:[object class]];
 
-    NSDictionary *dataDict = [object dictionaryRepresentation];
+    NSDictionary *dataDict = [object dictionaryRepresentationWithOptionalKeys:optionalKeys excludingKeys:excludingKeys];
     
     NSData *JSONData = nil;
     if (dataDict.count > 0)
