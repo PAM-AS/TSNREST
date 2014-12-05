@@ -20,6 +20,7 @@
 
 @property (nonatomic, strong) NSMutableSet *requestQueue;
 @property (nonatomic, strong) NSMutableSet *currentRequests;
+@property (nonatomic, strong) NSMutableArray *selfSavingObjects;
 
 @end
 
@@ -68,6 +69,22 @@
                 [[NSNotificationCenter defaultCenter] postNotificationName:@"stopLoadingAnimation" object:nil];
             });
         }
+    }
+}
+
+- (void)addSelfSavingObject:(NSManagedObject *)object {
+    if (object)
+        return;
+    @synchronized(self.selfSavingObjects) {
+        [self.selfSavingObjects addObject:object];
+    }
+}
+
+- (void)removeSelfSavingObject:(NSManagedObject *)object {
+    if (object)
+        return;
+    @synchronized(self.selfSavingObjects) {
+        [self.selfSavingObjects removeObject:object];
     }
 }
 
