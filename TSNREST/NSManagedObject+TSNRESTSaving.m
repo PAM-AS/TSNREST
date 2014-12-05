@@ -32,8 +32,12 @@
     [self saveAndPersistWithSuccess:successBlock failure:failureBlock finally:finallyBlock optionalKeys:nil];
 }
 
-- (void)saveAndPersistWithSuccess:(void (^)(id object))successBlock failure:(void (^)(id object))failureBlock finally:(void (^)(id object))finallyBlock optionalKeys:(NSArray *)optionalKeys
+- (void)saveAndPersistWithSuccess:(void (^)(id object))yayBlock failure:(void (^)(id object))failBlock finally:(void (^)(id object))doneBlock optionalKeys:(NSArray *)optionalKeys
 {
+    __block void(^successBlock)(id) = yayBlock;
+    __block void(^failureBlock)(id) = failBlock;
+    __block void(^finallyBlock)(id) = doneBlock;
+    
     [[TSNRESTManager sharedManager] addSelfSavingObject:self];
     dispatch_async([[TSNRESTManager sharedManager] serialQueue], ^{
         // Catch changes made externally
