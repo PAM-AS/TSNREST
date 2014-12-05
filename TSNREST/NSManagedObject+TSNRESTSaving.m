@@ -34,6 +34,7 @@
 
 - (void)saveAndPersistWithSuccess:(void (^)(id object))successBlock failure:(void (^)(id object))failureBlock finally:(void (^)(id object))finallyBlock optionalKeys:(NSArray *)optionalKeys
 {
+    [[TSNRESTManager sharedManager] addSelfSavingObject:self];
     dispatch_async([[TSNRESTManager sharedManager] serialQueue], ^{
         // Catch changes made externally
         [self.managedObjectContext MR_saveToPersistentStoreAndWait];
@@ -47,6 +48,7 @@
                 failureBlock(nil);
             if (finallyBlock)
                 finallyBlock(nil);
+            [[TSNRESTManager sharedManager] removeSelfSavingObject:self];
             return;
         }
         
@@ -60,6 +62,7 @@
                 successBlock(self);
             if (finallyBlock)
                 finallyBlock(self);
+            [[TSNRESTManager sharedManager] removeSelfSavingObject:self];
             return;
         }
         
@@ -69,6 +72,7 @@
                 failureBlock(nil);
             if (finallyBlock)
                 finallyBlock(nil);
+            [[TSNRESTManager sharedManager] removeSelfSavingObject:self];
             return;
         }
         
@@ -127,10 +131,10 @@
         } finally:^(NSData *data, NSURLResponse *response, NSError *error) {
             NSLog(@"No longer in flight.");
             self.inFlight = NO;
+            [[TSNRESTManager sharedManager] removeSelfSavingObject:self];
         }];
-
-        [dataTask resume];
         
+        [dataTask resume];
     });
 }
 

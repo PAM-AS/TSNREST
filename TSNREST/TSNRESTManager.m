@@ -39,6 +39,7 @@
         _sharedObject = [[self alloc] init];
         [(TSNRESTManager *)_sharedObject setRequestQueue:[[NSMutableSet alloc] init]];
         [(TSNRESTManager *)_sharedObject setCurrentRequests:[[NSMutableSet alloc] init]];
+        [(TSNRESTManager *)_sharedObject setSelfSavingObjects:[[NSMutableArray alloc] init]];
         [[NSNotificationCenter defaultCenter] addObserver:_sharedObject selector:@selector(loginSucceeded) name:@"LoginSucceeded" object:nil];
     });
     
@@ -73,7 +74,7 @@
 }
 
 - (void)addSelfSavingObject:(NSManagedObject *)object {
-    if (object)
+    if (!object)
         return;
     @synchronized(self.selfSavingObjects) {
         [self.selfSavingObjects addObject:object];
@@ -81,7 +82,7 @@
 }
 
 - (void)removeSelfSavingObject:(NSManagedObject *)object {
-    if (object)
+    if (!object)
         return;
     @synchronized(self.selfSavingObjects) {
         [self.selfSavingObjects removeObject:object];
