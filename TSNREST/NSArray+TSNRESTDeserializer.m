@@ -17,9 +17,6 @@
     NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
 #endif
     
-    // Core Data is strange. https://github.com/magicalpanda/MagicalRecord/issues/25
-    [localContext MR_saveToPersistentStoreAndWait];
-    
     NSArray *existingObjects = [[map classToMap] MR_findAllInContext:localContext];
     
     NSArray *existingIds = [existingObjects valueForKey:@"systemId"];

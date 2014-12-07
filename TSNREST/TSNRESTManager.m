@@ -134,9 +134,8 @@
 
 - (TSNRESTObjectMap *)objectMapForServerPath:(NSString *)path
 {
-    for (NSString *key in self.objectMaps)
+    for (TSNRESTObjectMap *map in self.objectMaps.allValues)
     {
-        TSNRESTObjectMap *map = [self.objectMaps objectForKey:key];
         if ([map.serverPath isEqualToString:path])
             return map;
     }
@@ -146,9 +145,8 @@
 
 - (TSNRESTObjectMap *)objectMapForPushKey:(NSString *)path
 {
-    for (NSString *key in self.objectMaps)
+    for (TSNRESTObjectMap *map in self.objectMaps.allValues)
     {
-        TSNRESTObjectMap *map = [self.objectMaps objectForKey:key];
         if ([map.pushKey isEqualToString:path])
             return map;
     }
