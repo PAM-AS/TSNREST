@@ -90,13 +90,6 @@
 }
 
 #pragma mark - Getters & setters
-- (dispatch_queue_t)serialQueue
-{
-    if (!_serialQueue)
-        _serialQueue = dispatch_queue_create("as.pam.pam.serialQueue", DISPATCH_QUEUE_SERIAL);
-    return _serialQueue;
-}
-
 - (BOOL)isLoading
 {
     return (self.currentRequests.count > 0);
@@ -401,17 +394,15 @@
             NSLog(@"Error: %@", [error localizedDescription]);
         if (object)
         {
-            dispatch_async([[TSNRESTManager sharedManager] serialQueue], ^{
-                [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
-                    id contextObject = [object MR_inContext:localContext];
-                    if ([contextObject respondsToSelector:NSSelectorFromString(@"dirty")])
-                        [contextObject setValue:@1 forKey:@"dirty"];
-                } completion:^(BOOL success, NSError *error) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [[NSNotificationCenter defaultCenter] postNotificationName:@"modelUpdated" object:nil];
-                    });
-                }];
-            });
+            [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+                id contextObject = [object MR_inContext:localContext];
+                if ([contextObject respondsToSelector:NSSelectorFromString(@"dirty")])
+                    [contextObject setValue:@1 forKey:@"dirty"];
+            } completion:^(BOOL success, NSError *error) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [[NSNotificationCenter defaultCenter] postNotificationName:@"modelUpdated" object:nil];
+                });
+            }];
         }
         
         NSMutableDictionary *failDict = [[NSMutableDictionary alloc] init];
@@ -430,12 +421,10 @@
     {
         if (object && [object respondsToSelector:NSSelectorFromString(@"dirty")])
         {
-            dispatch_sync([[TSNRESTManager sharedManager] serialQueue], ^{
-                [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
-                    id contextObject = [object MR_inContext:localContext];
-                    [contextObject setValue:@0 forKey:@"dirty"];
-                }];
-            });
+            [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+                id contextObject = [object MR_inContext:localContext];
+                [contextObject setValue:@0 forKey:@"dirty"];
+            }];
         }
         
         [TSNRESTParser parseAndPersistDictionary:responseDict withCompletion:^{
