@@ -72,6 +72,9 @@
         
         if (!object.isValid)
         {
+#if DEBUG
+            NSLog(@"Skipping object of type %@ because it's invalid.", NSStringFromClass([object class]));
+#endif
             if (failureBlock)
                 failureBlock(object);
             if (finallyBlock)

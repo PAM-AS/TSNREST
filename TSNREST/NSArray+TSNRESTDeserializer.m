@@ -18,7 +18,7 @@
 #endif
     
     // Core Data is strange. https://github.com/magicalpanda/MagicalRecord/issues/25
-    [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
+    [localContext MR_saveToPersistentStoreAndWait];
     
     NSArray *existingObjects = [[map classToMap] MR_findAllInContext:localContext];
     
