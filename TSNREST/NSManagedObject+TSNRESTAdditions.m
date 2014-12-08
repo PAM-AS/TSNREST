@@ -119,6 +119,10 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
     
     NSURLSessionDataTask *task = [NSURLSessionDataTask dataTaskWithRequest:request success:^(NSData *data, NSURLResponse *response, NSError *error) {
+        [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+            if ([self respondsToSelector:NSSelectorFromString(@"dirty")])
+                [[self MR_inContext:localContext] setValue:@0 forKey:@"dirty"];
+        }];
         if (completion)
             completion(self, YES);
     } failure:^(NSData *data, NSURLResponse *response, NSError *error, NSInteger statusCode) {
