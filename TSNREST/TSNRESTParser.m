@@ -30,10 +30,52 @@
 #if DEBUG
     __block NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
 #endif
-    
+
     __block NSInteger objects = 0;
     
     [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+        /*
+         Strategy for not having to delete temporary objects: Always parse objects of type self first, and create the object that way.
+         */
+        
+        if (object && ![object isDeleted] && [object valueForKey:@"systemId"] == nil) {
+            for (NSString *dictKey in dict)
+            {
+                TSNRESTObjectMap *map = [[TSNRESTManager sharedManager] objectMapForServerPath:dictKey];
+                if (map && [map classToMap] == [object class]) {
+                    NSArray *jsonData = [dict objectForKey:dictKey];
+                    if (jsonData.count == 1) {
+                        NSNumber *systemId = [[jsonData objectAtIndex:0] valueForKey:@"id"];
+                        if (systemId) {
+                            NSManagedObject *localObject = [object MR_inContext:localContext];
+                            [localObject setValue:systemId forKey:@"systemId"];
+                            [localContext MR_saveOnlySelfAndWait];
+                            [[object managedObjectContext] refreshObject:object mergeChanges:NO];
+#if DEBUG
+                            NSLog(@"Created object %@", [object valueForKey:@"systemId"]);
+#endif
+                        }
+#if DEBUG
+                        else {
+                            NSLog(@"Returned object didn't have a valid ID, skipping updating the object.");
+                        }
+#endif
+                    }
+#if DEBUG
+                    else {
+                        NSLog(@"Got more than one object of the type we saved Can't know which, skipping updating saved object.");
+                    }
+#endif
+                }
+            }
+        }
+#if DEBUG
+        else {
+            NSLog(@"No valid object to update, proceeding to parse as usual.");
+        }
+#endif
+        
+        
         for (NSString *dictKey in dict)
         {
             TSNRESTObjectMap *map = [[TSNRESTManager sharedManager] objectMapForServerPath:dictKey];
@@ -41,69 +83,14 @@
             {
                 NSArray *jsonData = [dict objectForKey:dictKey];
                 objects += jsonData.count;
-                
-                if (object && [object valueForKey:@"systemId"] == nil && [map classToMap] == [object class] && jsonData.count == 1)
-                {
-#if DEBUG
-                    NSLog(@"First write to object (recently created), so setting ID for object %@", object);
-#endif
-                    id localObject = nil;
-                    if (![localObject isDeleted])
-                        localObject = [object MR_inContext:localContext];
-                    id systemId = [[jsonData objectAtIndex:0] valueForKey:@"id"];
-                    if (systemId)
-                    {
-                        id existingObject = [[localObject class] MR_findFirstByAttribute:@"systemId" withValue:systemId inContext:localContext];
-                        
-                        // Not quite sure why this catches things that the Core Data query above does not, but we need it to avoid bugs.
-                        if (existingObject && localObject)
-                        {
-#if DEBUG
-                            NSLog(@"Found existing object. Appending it's data to our object, then deleting it (%@).", [existingObject valueForKey:@"systemId"]);
-#endif
-                            NSDictionary *data = [(NSManagedObject *)existingObject dictionaryRepresentation];
-                            [data mapToObject:localObject withMap:map inContext:localContext optimize:NO];
-                            [existingObject MR_deleteEntity];
-                        }
-                        else if (localObject)
-                        {
-                            NSLog(@"No existing object. Setting id (%@) to input object", systemId);
-                            [[localObject MR_inContext:localContext] setValue:systemId forKey:@"systemId"];
-                        }
-                    }
-                    else
-                    {
-                        NSLog(@"No existing object, and no id. Skipping any further action.");
-                    }
-                    NSLog(@"Done setting ID: %@", localObject);
-                }
-                
-#if DEBUG
-                else if (!object) {
-                    NSLog(@"Got no object as input, skipping setting of id");
-                }
-                else if ([object valueForKey:@"systemId"] != nil) {
-                    NSLog(@"Input object already has ID %@, continuing to update", [object valueForKey:@"systemId"]);
-                }
-                else if ([map classToMap] != [object class]) {
-                    NSLog(@"Got wrong objectmap (%@ != %@), skipping setting id", NSStringFromClass([map classToMap]), NSStringFromClass([object class]));
-                }
-                else if (jsonData.count != 1) {
-                    NSLog(@"Got more or less than 1 object in return. Continuing to parsing. (got %li)", (unsigned long)jsonData.count);
-                }
-                else if ([object isDeleted]) {
-                    NSLog(@"Object has recently been deleted, can't be updated.");
-                }
-#endif
-                
                 [jsonData deserializeWithMap:map inContext:localContext optimize:objects > 100];
             }
+#if DEBUG
             else
             {
-#if DEBUG
-                NSLog(@"No object map found. Bailing out.");
-#endif
+                NSLog(@"No object map found for %@. Bailing out.", dictKey);
             }
+#endif
         }
         
 #if DEBUG
