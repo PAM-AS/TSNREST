@@ -52,7 +52,7 @@
                             [localContext MR_saveOnlySelfAndWait];
                             [[object managedObjectContext] refreshObject:object mergeChanges:NO];
 #if DEBUG
-                            NSLog(@"Created object %@", [object valueForKey:@"systemId"]);
+                            NSLog(@"Set id %@ to newly created object of class %@", [object valueForKey:@"systemId"], NSStringFromClass([object class]));
 #endif
                         }
 #if DEBUG
