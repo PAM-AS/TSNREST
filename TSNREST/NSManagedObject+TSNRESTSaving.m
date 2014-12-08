@@ -111,6 +111,7 @@
         
         NSError *jsonError = [[NSError alloc] init];
         NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
+        NSLog(@"Firing parser from TSNRESTSaving");
         [TSNRESTParser parseAndPersistDictionary:jsonDict withCompletion:^{
             if (successBlock)
                 successBlock(object);
@@ -145,7 +146,7 @@
         NSLog(@"No longer in flight.");
         object.inFlight = NO;
         [[TSNRESTManager sharedManager] removeSelfSavingObject:object];
-    }];
+    } parseResult:NO]; // We trigger parsing ourselves so we can pass the object.
     
     [dataTask resume];
 }
