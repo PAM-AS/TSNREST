@@ -22,7 +22,7 @@
     
     NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:interval block:pollBlock repeats:YES];
     [self.pollers setObject:timer forKey:key];
-    return nil;
+    return timer;
 }
 
 - (void)removePollerForKey:(NSString *)key {
