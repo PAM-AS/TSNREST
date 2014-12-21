@@ -12,6 +12,7 @@
 
 - (NSTimer *)addPollerForKey:(NSString *)key poll:(void (^)())pollBlock interval:(NSTimeInterval)interval;
 - (void)removePollerForKey:(NSString *)key;
+- (void)removeAllPollers;
 - (NSTimer *)timerForKey:(NSString *)key;
 
 @end

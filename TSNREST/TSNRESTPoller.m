@@ -31,6 +31,12 @@
     [self.pollers removeObjectForKey:key];
 }
 
+- (void)removeAllPollers {
+    for (NSString *key in self.pollers) {
+        [self removePollerForKey:key];
+    }
+}
+
 - (NSTimer *)timerForKey:(NSString *)key {
     return [self.pollers objectForKey:key];
 }
