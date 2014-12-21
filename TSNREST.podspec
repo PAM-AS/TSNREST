@@ -15,4 +15,5 @@ Pod::Spec.new do |s|
   s.dependency 'SAMCategories', '~> 0.4.0'
   s.dependency 'Reachability', '~> 3.1.0'
   s.dependency 'RSSwizzle', '~> 0.1.0'
+  s.dependency 'NSTimer-Blocks', '~> 0.0.1'
 end
