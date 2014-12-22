@@ -15,6 +15,7 @@
 #import "NSURL+TSNRESTAdditions.h"
 #import "NJISO8601Formatter.h"
 #import "NSManagedObject+TSNRESTDeletion.h"
+#import "TSNRESTPoller.h"
 
 @protocol TSNRESTManagerDelegate <NSObject>
 
@@ -32,6 +33,7 @@
 @property (nonatomic, assign) id <TSNRESTManagerDelegate> delegate;
 
 @property (nonatomic, strong) NJISO8601Formatter *ISO8601Formatter;
+@property (nonatomic, strong, readonly) TSNRESTPoller *poller;
 
 @property (atomic) BOOL isAuthenticating;
 @property (nonatomic, strong) NSString *baseURL;
