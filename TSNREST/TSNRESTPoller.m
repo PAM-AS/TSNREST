@@ -17,6 +17,12 @@
 
 @implementation TSNRESTPoller
 
+- (id)init {
+    self = [super init];
+    self.pollers = [NSMutableDictionary new];
+    return self;
+}
+
 - (NSTimer *)addPollerForKey:(NSString *)key poll:(void (^)())pollBlock interval:(NSTimeInterval)interval {
     [self removePollerForKey:key];
     
@@ -32,13 +38,15 @@
 }
 
 - (void)removeAllPollers {
-    for (NSString *key in self.pollers) {
-        [self removePollerForKey:key];
-    }
+    [self.pollers removeAllObjects];
 }
 
 - (NSTimer *)timerForKey:(NSString *)key {
     return [self.pollers objectForKey:key];
+}
+
+- (NSUInteger)countOfActiveTimers {
+    return self.pollers.count;
 }
 
 @end

@@ -14,5 +14,6 @@
 - (void)removePollerForKey:(NSString *)key;
 - (void)removeAllPollers;
 - (NSTimer *)timerForKey:(NSString *)key;
+- (NSUInteger)countOfActiveTimers;
 
 @end

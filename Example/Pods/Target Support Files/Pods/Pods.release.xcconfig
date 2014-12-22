@@ -1,0 +1,6 @@
+GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
+HEADER_SEARCH_PATHS = "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/ISO8601" "${PODS_ROOT}/Headers/Public/MagicalRecord" "${PODS_ROOT}/Headers/Public/MagicalRecord/MagicalRecord" "${PODS_ROOT}/Headers/Public/NSTimer-Blocks" "${PODS_ROOT}/Headers/Public/RSSwizzle" "${PODS_ROOT}/Headers/Public/Reachability" "${PODS_ROOT}/Headers/Public/SAMCategories" "${PODS_ROOT}/Headers/Public/TSNREST"
+OTHER_CFLAGS = $(inherited) -isystem "${PODS_ROOT}/Headers/Public" -isystem "${PODS_ROOT}/Headers/Public/ISO8601" -isystem "${PODS_ROOT}/Headers/Public/MagicalRecord" -isystem "${PODS_ROOT}/Headers/Public/MagicalRecord/MagicalRecord" -isystem "${PODS_ROOT}/Headers/Public/NSTimer-Blocks" -isystem "${PODS_ROOT}/Headers/Public/RSSwizzle" -isystem "${PODS_ROOT}/Headers/Public/Reachability" -isystem "${PODS_ROOT}/Headers/Public/SAMCategories" -isystem "${PODS_ROOT}/Headers/Public/TSNREST"
+OTHER_LDFLAGS = -ObjC -l"Pods-ISO8601" -l"Pods-MagicalRecord" -l"Pods-NSTimer-Blocks" -l"Pods-RSSwizzle" -l"Pods-Reachability" -l"Pods-SAMCategories" -l"Pods-TSNREST" -framework "CoreData" -framework "CoreGraphics" -framework "Foundation" -framework "QuartzCore" -framework "SystemConfiguration" -framework "UIKIT" -framework "UIKit"
+OTHER_LIBTOOLFLAGS = $(OTHER_LDFLAGS)
+PODS_ROOT = ${SRCROOT}/Pods
