@@ -68,6 +68,28 @@
     XCTAssert(self.poller.countOfActiveTimers == 0, @"Could not remove all pollers (count is %li)", self.poller.countOfActiveTimers);
 }
 
+- (void)testThatPollerCanReturnCorrectPoller {
+    NSString *key = @"testKey";
+    NSTimer *timer = [self.poller addPollerForKey:key poll:^{
+        NSLog(@"Pong");
+    } interval:1];
+    XCTAssertNotNil(timer, @"addPollerForKey:poll:interval: didn't return a timer");
+    XCTAssertEqual(timer, [self.poller timerForKey:key], @"timerForKey: didn't return the correct timer (returned %@)", [self.poller timerForKey:key]);
+}
+
+- (void)testThatPollerOverwritesOldPollersWithSameKey {
+    NSString *key = @"testKey";
+    NSTimer *firstTimer = [self.poller addPollerForKey:key poll:^{
+        NSLog(@"Ping");
+    } interval:1];
+    NSTimer *secondTimer = [self.poller addPollerForKey:key poll:^{
+        NSLog(@"Pong");
+    } interval:1];
+    XCTAssertNotEqual(firstTimer, secondTimer, @"Second timer didn't overwrite the first, they are alike.");
+    XCTAssert(self.poller.countOfActiveTimers == 1, @"Count of timers is wrong. It's %li, but should be 1", self.poller.countOfActiveTimers);
+    XCTAssertEqual(secondTimer, [self.poller timerForKey:key], @"timerForKey: didn't return the second timer (returned %@)", [self.poller timerForKey:key]);
+}
+
 //
 //- (void)testPerformanceExample {
 //    // This is an example of a performance test case.
