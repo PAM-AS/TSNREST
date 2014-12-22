@@ -8,6 +8,7 @@
     <entity name="Product" representedClassName="Product" syncable="YES">
         <attribute name="createdAt" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="descr" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="dirty" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <attribute name="inventory" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="priceGross" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
@@ -22,7 +23,7 @@
         <relationship name="products" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Product" inverseName="shop" inverseEntity="Product" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Product" positionX="-63" positionY="-18" width="128" height="180"/>
+        <element name="Product" positionX="-63" positionY="-18" width="128" height="195"/>
         <element name="Shop" positionX="-54" positionY="-9" width="128" height="88"/>
         <element name="Brand" positionX="-36" positionY="9" width="128" height="88"/>
     </elements>

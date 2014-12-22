@@ -17,10 +17,10 @@
 		E9E5EC651A481D1B00BEFF3A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E9E5EC641A481D1B00BEFF3A /* Images.xcassets */; };
 		E9E5EC681A481D1B00BEFF3A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = E9E5EC661A481D1B00BEFF3A /* LaunchScreen.xib */; };
 		E9E5EC7E1A481DB800BEFF3A /* PollerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E9E5EC7D1A481DB800BEFF3A /* PollerTests.m */; };
-		E9E5EC971A48995300BEFF3A /* Shop.m in Sources */ = {isa = PBXBuildFile; fileRef = E9E5EC961A48995300BEFF3A /* Shop.m */; };
-		E9E5EC9A1A48995400BEFF3A /* Brand.m in Sources */ = {isa = PBXBuildFile; fileRef = E9E5EC991A48995400BEFF3A /* Brand.m */; };
-		E9E5EC9D1A48995400BEFF3A /* Product.m in Sources */ = {isa = PBXBuildFile; fileRef = E9E5EC9C1A48995400BEFF3A /* Product.m */; };
 		E9E5EC9F1A489FAB00BEFF3A /* MapTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E9E5EC9E1A489FAB00BEFF3A /* MapTests.m */; };
+		E9E5ECA21A48AADE00BEFF3A /* Product.m in Sources */ = {isa = PBXBuildFile; fileRef = E9E5ECA11A48AADE00BEFF3A /* Product.m */; };
+		E9E5ECA51A48AADF00BEFF3A /* Shop.m in Sources */ = {isa = PBXBuildFile; fileRef = E9E5ECA41A48AADF00BEFF3A /* Shop.m */; };
+		E9E5ECA81A48AADF00BEFF3A /* Brand.m in Sources */ = {isa = PBXBuildFile; fileRef = E9E5ECA71A48AADF00BEFF3A /* Brand.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,13 +51,13 @@
 		E9E5EC6D1A481D1B00BEFF3A /* ExampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ExampleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E9E5EC721A481D1B00BEFF3A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E9E5EC7D1A481DB800BEFF3A /* PollerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PollerTests.m; sourceTree = "<group>"; };
-		E9E5EC951A48995300BEFF3A /* Shop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Shop.h; sourceTree = "<group>"; };
-		E9E5EC961A48995300BEFF3A /* Shop.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Shop.m; sourceTree = "<group>"; };
-		E9E5EC981A48995400BEFF3A /* Brand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Brand.h; sourceTree = "<group>"; };
-		E9E5EC991A48995400BEFF3A /* Brand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Brand.m; sourceTree = "<group>"; };
-		E9E5EC9B1A48995400BEFF3A /* Product.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Product.h; sourceTree = "<group>"; };
-		E9E5EC9C1A48995400BEFF3A /* Product.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Product.m; sourceTree = "<group>"; };
 		E9E5EC9E1A489FAB00BEFF3A /* MapTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapTests.m; sourceTree = "<group>"; };
+		E9E5ECA01A48AADE00BEFF3A /* Product.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Product.h; sourceTree = "<group>"; };
+		E9E5ECA11A48AADE00BEFF3A /* Product.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Product.m; sourceTree = "<group>"; };
+		E9E5ECA31A48AADF00BEFF3A /* Shop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Shop.h; sourceTree = "<group>"; };
+		E9E5ECA41A48AADF00BEFF3A /* Shop.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Shop.m; sourceTree = "<group>"; };
+		E9E5ECA61A48AADF00BEFF3A /* Brand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Brand.h; sourceTree = "<group>"; };
+		E9E5ECA71A48AADF00BEFF3A /* Brand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Brand.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -164,12 +164,12 @@
 		E9E5EC941A4898E300BEFF3A /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				E9E5EC9B1A48995400BEFF3A /* Product.h */,
-				E9E5EC9C1A48995400BEFF3A /* Product.m */,
-				E9E5EC981A48995400BEFF3A /* Brand.h */,
-				E9E5EC991A48995400BEFF3A /* Brand.m */,
-				E9E5EC951A48995300BEFF3A /* Shop.h */,
-				E9E5EC961A48995300BEFF3A /* Shop.m */,
+				E9E5ECA61A48AADF00BEFF3A /* Brand.h */,
+				E9E5ECA71A48AADF00BEFF3A /* Brand.m */,
+				E9E5ECA31A48AADF00BEFF3A /* Shop.h */,
+				E9E5ECA41A48AADF00BEFF3A /* Shop.m */,
+				E9E5ECA01A48AADE00BEFF3A /* Product.h */,
+				E9E5ECA11A48AADE00BEFF3A /* Product.m */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -341,13 +341,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E9E5EC9D1A48995400BEFF3A /* Product.m in Sources */,
-				E9E5EC971A48995300BEFF3A /* Shop.m in Sources */,
 				E9E5EC5A1A481D1B00BEFF3A /* AppDelegate.m in Sources */,
+				E9E5ECA21A48AADE00BEFF3A /* Product.m in Sources */,
 				E9E5EC5D1A481D1B00BEFF3A /* Example.xcdatamodeld in Sources */,
-				E9E5EC9A1A48995400BEFF3A /* Brand.m in Sources */,
 				E9E5EC601A481D1B00BEFF3A /* ViewController.m in Sources */,
+				E9E5ECA81A48AADF00BEFF3A /* Brand.m in Sources */,
 				E9E5EC571A481D1B00BEFF3A /* main.m in Sources */,
+				E9E5ECA51A48AADF00BEFF3A /* Shop.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

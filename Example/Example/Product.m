@@ -20,6 +20,7 @@
 @dynamic priceGross;
 @dynamic visible;
 @dynamic createdAt;
+@dynamic dirty;
 @dynamic shop;
 @dynamic brand;
 

@@ -20,6 +20,7 @@
 @property (nonatomic, retain) NSNumber * priceGross;
 @property (nonatomic, retain) NSNumber * visible;
 @property (nonatomic, retain) NSDate * createdAt;
+@property (nonatomic, retain) NSNumber * dirty;
 @property (nonatomic, retain) Shop *shop;
 @property (nonatomic, retain) Brand *brand;
 

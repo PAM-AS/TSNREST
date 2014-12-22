@@ -131,7 +131,7 @@ static const char *getPropertyType(objc_property_t property) {
                                                         encoding:[NSString defaultCStringEncoding]];
             NSString *propertyType = [NSString stringWithCString:propType
                                                         encoding:[NSString defaultCStringEncoding]];
-            if ([propertyName isEqualToString:@"systemId"]) {
+            if ([propertyName isEqualToString:@"systemId"] || [propertyName isEqualToString:@"dirty"]) {
                 continue;
             }
             else if ([propertyType isEqualToString:@"NSString"] ||
