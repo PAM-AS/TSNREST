@@ -90,6 +90,15 @@
     XCTAssertEqual(secondTimer, [self.poller timerForKey:key], @"timerForKey: didn't return the second timer (returned %@)", [self.poller timerForKey:key]);
 }
 
+- (void)testThatPollerGetsInvalidatedWhenRemoved {
+    NSString *key = @"testKey";
+    NSTimer *firstTimer = [self.poller addPollerForKey:key poll:^{
+        NSLog(@"Ping");
+    } interval:1];
+    [self.poller removePollerForKey:key];
+    XCTAssert(!firstTimer.isValid, @"Poller didn't invalidate the timer when removing it.");
+}
+
 //
 //- (void)testPerformanceExample {
 //    // This is an example of a performance test case.

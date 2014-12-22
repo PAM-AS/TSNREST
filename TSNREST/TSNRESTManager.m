@@ -18,6 +18,8 @@
 
 @interface TSNRESTManager ()
 
+@property (nonatomic, strong) TSNRESTPoller *poller; // Need a setter internally.
+
 @property (nonatomic, strong) NSMutableSet *requestQueue;
 @property (nonatomic, strong) NSMutableSet *currentRequests;
 @property (nonatomic, strong) NSMutableArray *selfSavingObjects;
@@ -100,6 +102,12 @@
     if (!_ISO8601Formatter)
         _ISO8601Formatter = [[NJISO8601Formatter alloc] init];
     return _ISO8601Formatter;
+}
+
+- (TSNRESTPoller *)poller {
+    if (!_poller)
+        _poller = [[TSNRESTPoller alloc] init];
+    return _poller;
 }
 
 #pragma mark - Session
