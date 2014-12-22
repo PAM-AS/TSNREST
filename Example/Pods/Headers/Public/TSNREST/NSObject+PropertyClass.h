@@ -1,0 +1,1 @@
+../../../../../TSNREST/NSObject+PropertyClass.h
