@@ -9,13 +9,13 @@
 #import <XCTest/XCTest.h>
 #import "TSNRESTPoller.h"
 
-@interface PollerTest : XCTestCase
+@interface PollerTests : XCTestCase
 
 @property (nonatomic, strong) TSNRESTPoller *poller;
 
 @end
 
-@implementation PollerTest
+@implementation PollerTests
 
 - (void)setUp {
     [super setUp];

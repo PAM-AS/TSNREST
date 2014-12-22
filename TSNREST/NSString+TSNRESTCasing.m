@@ -35,4 +35,9 @@
     return [NSString stringWithString:camelCased];
 }
 
+- (NSString *)decapitalizedString {
+    NSRange range = NSMakeRange(0, 1);
+    return [self stringByReplacingCharactersInRange:range withString:[[self substringWithRange:range] lowercaseString]];
+}
+
 @end

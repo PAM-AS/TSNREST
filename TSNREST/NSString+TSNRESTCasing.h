@@ -14,5 +14,6 @@
 
 // CamelCases strings as smartly as possible, including spaces, dashes and underscores. Also keeps existing CamelCasing.
 - (NSString *)camelCasedString;
+- (NSString *)decapitalizedString;
 
 @end
