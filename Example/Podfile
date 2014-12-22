@@ -1,0 +1,8 @@
+link_with ['Example', 'ExampleTests']
+source 'https://github.com/CocoaPods/Specs.git'
+platform :ios, '7.0'
+
+pod 'MagicalRecord', :git => 'https://github.com/magicalpanda/MagicalRecord.git', :tag => 'v2.3.0-beta.5'
+pod 'ISO8601', :git => 'https://github.com/PAM-AS/iso8601.git'
+pod 'TSNREST', :path => '../'
+

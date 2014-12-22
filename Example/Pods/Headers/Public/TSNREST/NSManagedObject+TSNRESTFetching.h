@@ -1,0 +1,1 @@
+../../../../../TSNREST/NSManagedObject+TSNRESTFetching.h
