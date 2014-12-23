@@ -10,6 +10,7 @@
 #import "NSManagedObject+MagicalFinders.h"
 #import "NSManagedObject+MagicalRecord.h"
 #import "NSManagedObjectContext+MagicalThreading.h"
+#import "TSNRESTManager.h"
 
 @implementation NSManagedObject (TSNRESTFetching)
 

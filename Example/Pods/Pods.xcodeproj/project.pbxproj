@@ -29,11 +29,8 @@
 		1C863FCB908E9CCF5171B95A /* MagicalRecord+Actions.m in Sources */ = {isa = PBXBuildFile; fileRef = C2303259132D0886286A86E4 /* MagicalRecord+Actions.m */; };
 		1CEFF5CA1E3B72DCD50F96E1 /* Pods-ISO8601-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 48A6752A4C2EC0F4C5482FF3 /* Pods-ISO8601-dummy.m */; };
 		1EA925BE6465F82B12078EC0 /* NSManagedObjectContext+MagicalSaves.h in Headers */ = {isa = PBXBuildFile; fileRef = 368F4D1E9EF6CDD1215309F7 /* NSManagedObjectContext+MagicalSaves.h */; };
-		1F9A2616D8453F4522A82012 /* Pods-TSNREST-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 2340708D7A018A914D1B4982 /* Pods-TSNREST-dummy.m */; };
-		2252E9BEB2C4A010FAFAADA9 /* TSNRESTLogin.m in Sources */ = {isa = PBXBuildFile; fileRef = A582D1D25261A3F0DCE54950 /* TSNRESTLogin.m */; };
 		23E63D148A1B78C0D7EB98FD /* NSManagedObject+TSNRESTValidation.h in Headers */ = {isa = PBXBuildFile; fileRef = 96782B33129E383D5F139233 /* NSManagedObject+TSNRESTValidation.h */; };
 		24C253E65EB40C71187909F8 /* UIDevice+SAMAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 917EBEE7D357C08C1AF91D9B /* UIDevice+SAMAdditions.h */; };
-		24DDC50D52E117AA42C10DF6 /* NSManagedObject+TSNRESTSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = AB9AA938FCBB14ECE5557D69 /* NSManagedObject+TSNRESTSerializer.m */; };
 		27076A45FAEB8A780D99A843 /* NSEntityDescription+MagicalDataImport.m in Sources */ = {isa = PBXBuildFile; fileRef = 95D0B510ABC0E3EE86DF4552 /* NSEntityDescription+MagicalDataImport.m */; };
 		2887DA6888D523FCA47AAE02 /* NJISO8601Parser.m in Sources */ = {isa = PBXBuildFile; fileRef = B856FF37681B03A59064675E /* NJISO8601Parser.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		29D5DDFB9A62FD948D682CCA /* NSRelationshipDescription+MagicalDataImport.m in Sources */ = {isa = PBXBuildFile; fileRef = C715932BD4A0564D346A1071 /* NSRelationshipDescription+MagicalDataImport.m */; };
@@ -42,7 +39,6 @@
 		33899C4DEE4A25BAAEBB3B20 /* UIColor+SAMAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 96F5DCA11597154D20D23486 /* UIColor+SAMAdditions.h */; };
 		34D87C51A2A54EAF44A6A1FF /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 58D71963B02FB09DB460108C /* Reachability.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0"; }; };
 		355C1CFA8CE8478C7AB7C275 /* NJISO8601Parser.h in Headers */ = {isa = PBXBuildFile; fileRef = 443E3A1800DEB2CAF2E8CA9A /* NJISO8601Parser.h */; };
-		367B6073D1179A9D6A407015 /* TSNRESTParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E35A89FC556B5AD2E1F1958 /* TSNRESTParser.m */; };
 		394C6E24FE78222B0BB66B32 /* MagicalRecord+Options.m in Sources */ = {isa = PBXBuildFile; fileRef = D452DFB0622F5AE1CA35CBB3 /* MagicalRecord+Options.m */; };
 		3DEBAAA7C83D41227E1ACE01 /* NSSet+TSNRESTAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 29116B2398D82D4C3DAE4B99 /* NSSet+TSNRESTAdditions.h */; };
 		3E9DD6A87113DC0272753F28 /* MagicalRecord+Setup.m in Sources */ = {isa = PBXBuildFile; fileRef = D62C312B668D846A43B49D3C /* MagicalRecord+Setup.m */; };
@@ -58,7 +54,6 @@
 		5015CFF4759D2ADC3EFA091F /* NSManagedObject+TSNRESTAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 6527CE795A5392CB41D2F9AF /* NSManagedObject+TSNRESTAdditions.h */; };
 		516DEDAACAABF83339034F99 /* NSManagedObject+MagicalRequests.m in Sources */ = {isa = PBXBuildFile; fileRef = BABE02582ED716CA49A2D82A /* NSManagedObject+MagicalRequests.m */; };
 		53AE4AEF1CB174EE067FB255 /* NSDictionary+SAMAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 9AB0BAAC98952943569D28D4 /* NSDictionary+SAMAdditions.h */; };
-		53E91692A98CCD0671470B1B /* NSURLSessionDataTask+TSNRESTDataTask.m in Sources */ = {isa = PBXBuildFile; fileRef = C9269E291E3C2C0F8DEC697A /* NSURLSessionDataTask+TSNRESTDataTask.m */; };
 		5502D7F022CF96BCE1871B8D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 423E544733C5EA7CDA9D3740 /* Foundation.framework */; };
 		57262696D49449B865A59371 /* NSURL+TSNRESTAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = D3C98B24A2283ADE3D68BC61 /* NSURL+TSNRESTAdditions.h */; };
 		5A105E5BC6E0BF2CB02812B5 /* Pods-MagicalRecord-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F1B54A58948E7FC8486FA43 /* Pods-MagicalRecord-dummy.m */; };
@@ -69,14 +64,11 @@
 		634BA9CF456C8B20BFC844CA /* NSData+SAMAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = C3FBEEA00C19D4FC435E9A94 /* NSData+SAMAdditions.h */; };
 		63755B57CF88DEBCE48F1DD4 /* NSAttributeDescription+MagicalDataImport.h in Headers */ = {isa = PBXBuildFile; fileRef = CC8BE9C4B2B8FDE12E665F63 /* NSAttributeDescription+MagicalDataImport.h */; };
 		649062A3CC734A780402B94F /* NSArray+SAMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 826188D620C8D13E4470D4FB /* NSArray+SAMAdditions.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0"; }; };
-		6634BD8A1C3BD817B2B37569 /* NSString+TSNRESTCasing.m in Sources */ = {isa = PBXBuildFile; fileRef = 384400A9029E0FA58DE01CE3 /* NSString+TSNRESTCasing.m */; };
 		6BE13670F1743DDDB177E0C9 /* Reachability.h in Headers */ = {isa = PBXBuildFile; fileRef = 934E1554FF6C980242630E1F /* Reachability.h */; };
 		6C669222053DD9C1424C2B3E /* Pods-RSSwizzle-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B06BA8A3AD9F82D940EA90F /* Pods-RSSwizzle-dummy.m */; };
-		6E2CEE70CC3AC021485007FC /* NSURL+TSNRESTAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E34E0DEDE8114D7E630FE9C /* NSURL+TSNRESTAdditions.m */; };
 		6E90E94F86B0B88E7DF19836 /* NSRelationshipDescription+MagicalDataImport.h in Headers */ = {isa = PBXBuildFile; fileRef = EA9F6E2C6171FFAB037C68DB /* NSRelationshipDescription+MagicalDataImport.h */; };
 		6FF9205B99B7DD63FE41EE8A /* UIView+SAMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 86B308C2137ED9E03E8C6D5C /* UIView+SAMAdditions.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0"; }; };
 		71818CC77F934EE21A5FD30B /* NSNumber+SAMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = E30EE70099E79D7EBDA4E8F6 /* NSNumber+SAMAdditions.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0"; }; };
-		73AA4716293D53E4546655CE /* NSURLRequest+TSNRESTConveniences.m in Sources */ = {isa = PBXBuildFile; fileRef = CF100B77F8BDF02DB5C5ACDF /* NSURLRequest+TSNRESTConveniences.m */; };
 		752EAD494F76C7C9E8EFC741 /* NSManagedObject+MagicalAggregation.m in Sources */ = {isa = PBXBuildFile; fileRef = 432C2435C8379D7E7C28CCF9 /* NSManagedObject+MagicalAggregation.m */; };
 		75FE3639D0179C10DDE9A790 /* NSURL+SAMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = A08AF7C141D1BF082C6E77E0 /* NSURL+SAMAdditions.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0"; }; };
 		787BB27687AB846E5FEF733F /* UIDevice+SAMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = C7771AC97AFF312F8855B720 /* UIDevice+SAMAdditions.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0"; }; };
@@ -87,7 +79,6 @@
 		7C27306E53E4E9D77E43C693 /* NSManagedObject+TSNRESTSaving.h in Headers */ = {isa = PBXBuildFile; fileRef = 243A13F54684ACE077C7500B /* NSManagedObject+TSNRESTSaving.h */; };
 		7D8A1D66C252CE85C4112E9F /* MagicalRecord+ShorthandSupport.m in Sources */ = {isa = PBXBuildFile; fileRef = AAB2BDF235CA5392686AC165 /* MagicalRecord+ShorthandSupport.m */; };
 		80ACC1643FBE3F33C178A43E /* RSSwizzle.h in Headers */ = {isa = PBXBuildFile; fileRef = 991C3B47735F64281C8D4D16 /* RSSwizzle.h */; };
-		816D8555CD5239832D8BE45D /* NSDictionary+TSNRESTDeserializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 165C78A7A5B314D1FFDDB08B /* NSDictionary+TSNRESTDeserializer.m */; };
 		81E6ACF661FD39FCE89CBA25 /* MagicalRecord+iCloud.m in Sources */ = {isa = PBXBuildFile; fileRef = C5B301996066EC01307E9D42 /* MagicalRecord+iCloud.m */; };
 		8200D74C518DAC4E5149ED1E /* TSNRESTManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 56133826D59CAFD41DAE2C46 /* TSNRESTManager.h */; };
 		8270266FEC787146C4FAC33E /* NSObject+SAMAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 64FF8DBD7C1141CC5CADCC89 /* NSObject+SAMAdditions.h */; };
@@ -97,7 +88,6 @@
 		8904DD8CB5303EF8B699501E /* NSManagedObject+TSNRESTFetching.h in Headers */ = {isa = PBXBuildFile; fileRef = 1696C4556689C14D24DEDD72 /* NSManagedObject+TSNRESTFetching.h */; };
 		8B226661EAA13B9317563B95 /* NSString+SAMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = A213F51DEA7FED804FEC81A7 /* NSString+SAMAdditions.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0"; }; };
 		8B4CEB5DBC7D90A5F6B5FAE1 /* NSURLSessionDataTask+TSNRESTDataTask.h in Headers */ = {isa = PBXBuildFile; fileRef = 9D677D235DE8E541C32A15E8 /* NSURLSessionDataTask+TSNRESTDataTask.h */; };
-		8CA07F1891859625D9BBDB5B /* NSManagedObject+TSNRESTValidation.m in Sources */ = {isa = PBXBuildFile; fileRef = 1FAA7105DA5206CCF65E05AF /* NSManagedObject+TSNRESTValidation.m */; };
 		8CC03FE2F90CCD8A30891EF5 /* NSManagedObjectContext+MagicalThreading.m in Sources */ = {isa = PBXBuildFile; fileRef = C5B8CA49560D706F7267A8C6 /* NSManagedObjectContext+MagicalThreading.m */; };
 		8DBA78E7A958B6A0A3150A71 /* NSNumber+SAMAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 0B762DEF08FE420BD4314DF2 /* NSNumber+SAMAdditions.h */; };
 		8E1705CCFFC6EC776C486A7E /* NSArray+TSNRESTAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 065631E43967A1ACC54D7A61 /* NSArray+TSNRESTAdditions.h */; };
@@ -106,17 +96,13 @@
 		94167456C6A69D2DF5FE7A2B /* MagicalRecord+ShorthandSupport.h in Headers */ = {isa = PBXBuildFile; fileRef = ABF2DBB73CB67978F9F6B1A3 /* MagicalRecord+ShorthandSupport.h */; };
 		96663AD9B17B0AE459F5904E /* MagicalRecord.h in Headers */ = {isa = PBXBuildFile; fileRef = 187533BCAD70E32A5C1F24DE /* MagicalRecord.h */; };
 		96F7EEE0BA3A9FA1C457BFE5 /* NSString+TSNRESTCasing.h in Headers */ = {isa = PBXBuildFile; fileRef = E2E078C4A37256A70FE2FC09 /* NSString+TSNRESTCasing.h */; };
-		98585A7AEF03FBA7160C4DE1 /* TSNRESTPoller.m in Sources */ = {isa = PBXBuildFile; fileRef = 898A0164726F36F489D93A8E /* TSNRESTPoller.m */; };
-		9A6CC6771C7AC66219F4CAAE /* NSManagedObject+TSNRESTFetching.m in Sources */ = {isa = PBXBuildFile; fileRef = 33D8E0F376E766F7E8C07BD2 /* NSManagedObject+TSNRESTFetching.m */; };
 		A472DE08FF3915B55E955F8F /* NSManagedObjectContext+MagicalSaves.m in Sources */ = {isa = PBXBuildFile; fileRef = 9FDEA525AA4B3C560C5DFCAC /* NSManagedObjectContext+MagicalSaves.m */; };
-		A4D9E820AA9D859EAB852F6A /* TSNRESTObjectMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 81E3FF3DDD9F5F8086F15CDB /* TSNRESTObjectMap.m */; };
 		A54DBA8C7AAD7458827BF38B /* Pods-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = C6CEE287E76E726DFD7D6543 /* Pods-dummy.m */; };
 		AF72D5CC36652FFE8D6A8E84 /* NSManagedObject+MagicalDataImport.h in Headers */ = {isa = PBXBuildFile; fileRef = 27A9842555D7B800F896938D /* NSManagedObject+MagicalDataImport.h */; };
 		B06292A4EDAF2F68ECBE68F8 /* NSObject+MagicalDataImport.m in Sources */ = {isa = PBXBuildFile; fileRef = F4367BAFD68D91FE2FB33E52 /* NSObject+MagicalDataImport.m */; };
 		B11B08DE748AC1BB528B4DFA /* MagicalRecord+ErrorHandling.m in Sources */ = {isa = PBXBuildFile; fileRef = E837649EA5E4AF8D1A750C3B /* MagicalRecord+ErrorHandling.m */; };
 		B33B4E293C5F5A9528012549 /* NSDate+SAMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = FE6DC7FD34416DC345434E25 /* NSDate+SAMAdditions.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0"; }; };
 		B592E33AF517FBD587F465A7 /* NSManagedObjectModel+MagicalRecord.h in Headers */ = {isa = PBXBuildFile; fileRef = AEF8496C77A96F77984C4928 /* NSManagedObjectModel+MagicalRecord.h */; };
-		B78922EFB918138D2F6A9D11 /* NSManagedObject+TSNRESTSaving.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DA6A436C25DE501A651C477 /* NSManagedObject+TSNRESTSaving.m */; };
 		BD35167479F28383A4E4BD9F /* MagicalRecord+Setup.h in Headers */ = {isa = PBXBuildFile; fileRef = 79E065969909B3F81847B15D /* MagicalRecord+Setup.h */; };
 		BE5949B118AC4D9C87CAB078 /* MagicalRecordShorthand.h in Headers */ = {isa = PBXBuildFile; fileRef = 70A025EE8A3511CD58D92708 /* MagicalRecordShorthand.h */; };
 		BEFF7ECDC9BFC0D5C0345F31 /* TSNRESTLogin.h in Headers */ = {isa = PBXBuildFile; fileRef = 6338B7465E3432411730492B /* TSNRESTLogin.h */; };
@@ -127,9 +113,7 @@
 		C25BCBF95C9D2891D8CCAD6F /* UIView+SAMAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = E147C3002377DA05FEC49EFE /* UIView+SAMAdditions.h */; };
 		C467F1EBCC099163F5FA5928 /* NSManagedObjectModel+MagicalRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 0F417C00C30B5716DE88D8ED /* NSManagedObjectModel+MagicalRecord.m */; };
 		C49DD95AA311F4818020A6B0 /* NSArray+TSNRESTDeserializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 1AF64B9F0220F9790B60E6B0 /* NSArray+TSNRESTDeserializer.h */; };
-		C5F779DFAAAEC0EA9B3C2F13 /* NSSet+TSNRESTAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = F5727910E71C0995436F3BF4 /* NSSet+TSNRESTAdditions.m */; };
 		C772FD059E10A6ED4D55EAED /* NSManagedObject+TSNRESTDeletion.h in Headers */ = {isa = PBXBuildFile; fileRef = 12B1BD4A05E3779C156E3193 /* NSManagedObject+TSNRESTDeletion.h */; };
-		C7D27C0C7761E84EA205FFC4 /* NSObject+PropertyClass.m in Sources */ = {isa = PBXBuildFile; fileRef = 29E33EC4A4D6F83024E26518 /* NSObject+PropertyClass.m */; };
 		C9BA73A3BAF19CF9C6BBF7BF /* UIScreen+SAMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DDA6BF6C6B59390545E2A4A /* UIScreen+SAMAdditions.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0"; }; };
 		CE617C081F2795F253708DD0 /* NSManagedObjectContext+MagicalObserving.h in Headers */ = {isa = PBXBuildFile; fileRef = 04B939E7991A2F82C224CC78 /* NSManagedObjectContext+MagicalObserving.h */; };
 		D19B70BAE60E2A9D8B4F917D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 423E544733C5EA7CDA9D3740 /* Foundation.framework */; };
@@ -141,7 +125,6 @@
 		DF0B2C83D23EB72C1ED9F8DC /* UIApplication+SAMAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = C9AF7A434B8E9BC358B0FA18 /* UIApplication+SAMAdditions.h */; };
 		DFA485FDFD476070F5317126 /* UIControl+SAMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 7288EF0996243BBEC7D1E518 /* UIControl+SAMAdditions.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0"; }; };
 		DFB8491AA323173498646DFE /* UIKIT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5593B67AEC6EB1AC5373003D /* UIKIT.framework */; };
-		E0F4B9218ABE4A31E630F40A /* NSManagedObject+TSNRESTDeletion.m in Sources */ = {isa = PBXBuildFile; fileRef = D4EDFD3C849A170C49051E0C /* NSManagedObject+TSNRESTDeletion.m */; };
 		E0F5459AB10DEDF328286A5F /* RSSwizzle.m in Sources */ = {isa = PBXBuildFile; fileRef = 50E06DB65BECED4A779AB38B /* RSSwizzle.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0"; }; };
 		E1372DBA824D25D667F213BF /* NSURLRequest+TSNRESTConveniences.h in Headers */ = {isa = PBXBuildFile; fileRef = 0A07A4E376CE3929FAFFC4EF /* NSURLRequest+TSNRESTConveniences.h */; };
 		E1987A98556B4E7C2916E73A /* NSManagedObject+MagicalFinders.m in Sources */ = {isa = PBXBuildFile; fileRef = DD757A879777587A5C1D32A6 /* NSManagedObject+MagicalFinders.m */; };
@@ -150,18 +133,35 @@
 		E5F8FA14DFF6FED299AF0838 /* NSPersistentStore+MagicalRecord.h in Headers */ = {isa = PBXBuildFile; fileRef = 9FE3CDEB827ED3D35DBE0470 /* NSPersistentStore+MagicalRecord.h */; };
 		E739DC4EBD097F59E2F0C868 /* UIViewController+SAMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C9521FC7AA87924548611D9 /* UIViewController+SAMAdditions.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0"; }; };
 		E8085A7F71E96F772E038CCE /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D8C75705C612ABDC975A45 /* CoreGraphics.framework */; };
+		E95D87271A497E880098B7C5 /* NSArray+TSNRESTAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 0953DD94C6455DF229EAA242 /* NSArray+TSNRESTAdditions.m */; };
+		E95D87281A497E880098B7C5 /* NSArray+TSNRESTDeserializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6097A7D8A36783C1D0911CAF /* NSArray+TSNRESTDeserializer.m */; };
+		E95D87291A497E880098B7C5 /* NSDictionary+TSNRESTDeserializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 165C78A7A5B314D1FFDDB08B /* NSDictionary+TSNRESTDeserializer.m */; };
+		E95D872A1A497E880098B7C5 /* NSManagedObject+TSNRESTAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 88D46B45A404BF297BC41C80 /* NSManagedObject+TSNRESTAdditions.m */; };
+		E95D872B1A497E880098B7C5 /* NSManagedObject+TSNRESTDeletion.m in Sources */ = {isa = PBXBuildFile; fileRef = D4EDFD3C849A170C49051E0C /* NSManagedObject+TSNRESTDeletion.m */; };
+		E95D872C1A497E880098B7C5 /* NSManagedObject+TSNRESTFetching.m in Sources */ = {isa = PBXBuildFile; fileRef = 33D8E0F376E766F7E8C07BD2 /* NSManagedObject+TSNRESTFetching.m */; };
+		E95D872D1A497E880098B7C5 /* NSManagedObject+TSNRESTSaving.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DA6A436C25DE501A651C477 /* NSManagedObject+TSNRESTSaving.m */; };
+		E95D872E1A497E880098B7C5 /* NSManagedObject+TSNRESTSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = AB9AA938FCBB14ECE5557D69 /* NSManagedObject+TSNRESTSerializer.m */; };
+		E95D872F1A497E880098B7C5 /* NSManagedObject+TSNRESTValidation.m in Sources */ = {isa = PBXBuildFile; fileRef = 1FAA7105DA5206CCF65E05AF /* NSManagedObject+TSNRESTValidation.m */; };
+		E95D87301A497E880098B7C5 /* NSObject+PropertyClass.m in Sources */ = {isa = PBXBuildFile; fileRef = 29E33EC4A4D6F83024E26518 /* NSObject+PropertyClass.m */; };
+		E95D87311A497E880098B7C5 /* NSSet+TSNRESTAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = F5727910E71C0995436F3BF4 /* NSSet+TSNRESTAdditions.m */; };
+		E95D87321A497E880098B7C5 /* NSString+TSNRESTCasing.m in Sources */ = {isa = PBXBuildFile; fileRef = 384400A9029E0FA58DE01CE3 /* NSString+TSNRESTCasing.m */; };
+		E95D87331A497E880098B7C5 /* NSURL+TSNRESTAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E34E0DEDE8114D7E630FE9C /* NSURL+TSNRESTAdditions.m */; };
+		E95D87341A497E880098B7C5 /* NSURLRequest+TSNRESTConveniences.m in Sources */ = {isa = PBXBuildFile; fileRef = CF100B77F8BDF02DB5C5ACDF /* NSURLRequest+TSNRESTConveniences.m */; };
+		E95D87351A497E880098B7C5 /* NSURLSessionDataTask+TSNRESTDataTask.m in Sources */ = {isa = PBXBuildFile; fileRef = C9269E291E3C2C0F8DEC697A /* NSURLSessionDataTask+TSNRESTDataTask.m */; };
+		E95D87361A497E880098B7C5 /* TSNRESTLogin.m in Sources */ = {isa = PBXBuildFile; fileRef = A582D1D25261A3F0DCE54950 /* TSNRESTLogin.m */; };
+		E95D87371A497E880098B7C5 /* TSNRESTManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0745978E2B324875F96DA2F1 /* TSNRESTManager.m */; };
+		E95D87381A497E880098B7C5 /* TSNRESTManagerConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = E9E5ECAA1A49762000BEFF3A /* TSNRESTManagerConfiguration.m */; };
+		E95D87391A497E880098B7C5 /* TSNRESTObjectMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 81E3FF3DDD9F5F8086F15CDB /* TSNRESTObjectMap.m */; };
+		E95D873A1A497E880098B7C5 /* TSNRESTParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E35A89FC556B5AD2E1F1958 /* TSNRESTParser.m */; };
+		E95D873B1A497E880098B7C5 /* TSNRESTPoller.m in Sources */ = {isa = PBXBuildFile; fileRef = 898A0164726F36F489D93A8E /* TSNRESTPoller.m */; };
 		E9E5ECAB1A49762000BEFF3A /* TSNRESTManagerConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = E9E5ECA91A49762000BEFF3A /* TSNRESTManagerConfiguration.h */; };
 		E9E5ECAC1A49762000BEFF3A /* TSNRESTManagerConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = E9E5ECAA1A49762000BEFF3A /* TSNRESTManagerConfiguration.m */; };
-		E9E5ECAD1A49762000BEFF3A /* TSNRESTManagerConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = E9E5ECAA1A49762000BEFF3A /* TSNRESTManagerConfiguration.m */; };
-		EAEFDD4797A730A26517EA54 /* NSArray+TSNRESTDeserializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6097A7D8A36783C1D0911CAF /* NSArray+TSNRESTDeserializer.m */; };
 		EBF0AEC60BA207BBD063F4DC /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 423E544733C5EA7CDA9D3740 /* Foundation.framework */; };
 		ED166FDDB1E642188CB23A1C /* NSObject+SAMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2ED3EC6701ACA3FC328519FB /* NSObject+SAMAdditions.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0"; }; };
 		EF48FC05FED48EDFD3F00F4D /* NSTimer+Blocks.m in Sources */ = {isa = PBXBuildFile; fileRef = 13752FE9A302910835186693 /* NSTimer+Blocks.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		F12398834F3F75B909D492C5 /* NSString+MagicalDataImport.h in Headers */ = {isa = PBXBuildFile; fileRef = 1EDDD2C4743C549BF7BFD784 /* NSString+MagicalDataImport.h */; };
 		F2DF8356810A59AA1BB2C7D8 /* TSNRESTObjectMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 483F4180D399D0BFDD5E5460 /* TSNRESTObjectMap.h */; };
 		F40DC99C252540A42997EF0A /* NSManagedObject+MagicalAggregation.h in Headers */ = {isa = PBXBuildFile; fileRef = 79235591F7D1C549D3612109 /* NSManagedObject+MagicalAggregation.h */; };
-		F426FBFF98B6383550001C11 /* TSNRESTManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0745978E2B324875F96DA2F1 /* TSNRESTManager.m */; };
-		F509E6F79CB0473AAF9DFA6A /* NSManagedObject+TSNRESTAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 88D46B45A404BF297BC41C80 /* NSManagedObject+TSNRESTAdditions.m */; };
 		F50E1D99605C85044CEC7B98 /* NSManagedObjectContext+MagicalObserving.m in Sources */ = {isa = PBXBuildFile; fileRef = F36C72C8DBC4318EE8CF6EC3 /* NSManagedObjectContext+MagicalObserving.m */; };
 		F533475A5E8A19D528274D06 /* NSTimer+Blocks.h in Headers */ = {isa = PBXBuildFile; fileRef = 9D554A7BB3B3EA56B45ECC9B /* NSTimer+Blocks.h */; };
 		F535FAC2301BD9047ED68A85 /* NSPersistentStore+MagicalRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 3BC15F4235FFE2FFC8F37347 /* NSPersistentStore+MagicalRecord.m */; };
@@ -171,7 +171,6 @@
 		F9D31D63BC86E71558ECA11F /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29E852F7254416E15C694EBE /* SystemConfiguration.framework */; };
 		FE6747DF163B9BDE29A0F10B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 423E544733C5EA7CDA9D3740 /* Foundation.framework */; };
 		FF7893731993A51A9B4DA048 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 423E544733C5EA7CDA9D3740 /* Foundation.framework */; };
-		FF85EDA00DBE84BD41F9B4C5 /* NSArray+TSNRESTAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 0953DD94C6455DF229EAA242 /* NSArray+TSNRESTAdditions.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -826,6 +825,8 @@
 				A582D1D25261A3F0DCE54950 /* TSNRESTLogin.m */,
 				56133826D59CAFD41DAE2C46 /* TSNRESTManager.h */,
 				0745978E2B324875F96DA2F1 /* TSNRESTManager.m */,
+				E9E5ECA91A49762000BEFF3A /* TSNRESTManagerConfiguration.h */,
+				E9E5ECAA1A49762000BEFF3A /* TSNRESTManagerConfiguration.m */,
 				483F4180D399D0BFDD5E5460 /* TSNRESTObjectMap.h */,
 				81E3FF3DDD9F5F8086F15CDB /* TSNRESTObjectMap.m */,
 				5566589B51AB07704DE3C834 /* TSNRESTParser.h */,
@@ -833,8 +834,6 @@
 				88A8C59594C7038469F6EB2E /* TSNRESTPoller.h */,
 				898A0164726F36F489D93A8E /* TSNRESTPoller.m */,
 				2A30723A2CF597C0BE32BAB9 /* Support Files */,
-				E9E5ECA91A49762000BEFF3A /* TSNRESTManagerConfiguration.h */,
-				E9E5ECAA1A49762000BEFF3A /* TSNRESTManagerConfiguration.m */,
 			);
 			name = TSNREST;
 			path = ../..;
@@ -1246,28 +1245,27 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FF85EDA00DBE84BD41F9B4C5 /* NSArray+TSNRESTAdditions.m in Sources */,
-				EAEFDD4797A730A26517EA54 /* NSArray+TSNRESTDeserializer.m in Sources */,
-				816D8555CD5239832D8BE45D /* NSDictionary+TSNRESTDeserializer.m in Sources */,
-				F509E6F79CB0473AAF9DFA6A /* NSManagedObject+TSNRESTAdditions.m in Sources */,
-				E9E5ECAD1A49762000BEFF3A /* TSNRESTManagerConfiguration.m in Sources */,
-				E0F4B9218ABE4A31E630F40A /* NSManagedObject+TSNRESTDeletion.m in Sources */,
-				9A6CC6771C7AC66219F4CAAE /* NSManagedObject+TSNRESTFetching.m in Sources */,
-				B78922EFB918138D2F6A9D11 /* NSManagedObject+TSNRESTSaving.m in Sources */,
-				24DDC50D52E117AA42C10DF6 /* NSManagedObject+TSNRESTSerializer.m in Sources */,
-				8CA07F1891859625D9BBDB5B /* NSManagedObject+TSNRESTValidation.m in Sources */,
-				C7D27C0C7761E84EA205FFC4 /* NSObject+PropertyClass.m in Sources */,
-				C5F779DFAAAEC0EA9B3C2F13 /* NSSet+TSNRESTAdditions.m in Sources */,
-				6634BD8A1C3BD817B2B37569 /* NSString+TSNRESTCasing.m in Sources */,
-				6E2CEE70CC3AC021485007FC /* NSURL+TSNRESTAdditions.m in Sources */,
-				73AA4716293D53E4546655CE /* NSURLRequest+TSNRESTConveniences.m in Sources */,
-				53E91692A98CCD0671470B1B /* NSURLSessionDataTask+TSNRESTDataTask.m in Sources */,
-				1F9A2616D8453F4522A82012 /* Pods-TSNREST-dummy.m in Sources */,
-				2252E9BEB2C4A010FAFAADA9 /* TSNRESTLogin.m in Sources */,
-				F426FBFF98B6383550001C11 /* TSNRESTManager.m in Sources */,
-				A4D9E820AA9D859EAB852F6A /* TSNRESTObjectMap.m in Sources */,
-				367B6073D1179A9D6A407015 /* TSNRESTParser.m in Sources */,
-				98585A7AEF03FBA7160C4DE1 /* TSNRESTPoller.m in Sources */,
+				E95D87271A497E880098B7C5 /* NSArray+TSNRESTAdditions.m in Sources */,
+				E95D87281A497E880098B7C5 /* NSArray+TSNRESTDeserializer.m in Sources */,
+				E95D87291A497E880098B7C5 /* NSDictionary+TSNRESTDeserializer.m in Sources */,
+				E95D872A1A497E880098B7C5 /* NSManagedObject+TSNRESTAdditions.m in Sources */,
+				E95D872B1A497E880098B7C5 /* NSManagedObject+TSNRESTDeletion.m in Sources */,
+				E95D872C1A497E880098B7C5 /* NSManagedObject+TSNRESTFetching.m in Sources */,
+				E95D872D1A497E880098B7C5 /* NSManagedObject+TSNRESTSaving.m in Sources */,
+				E95D872E1A497E880098B7C5 /* NSManagedObject+TSNRESTSerializer.m in Sources */,
+				E95D872F1A497E880098B7C5 /* NSManagedObject+TSNRESTValidation.m in Sources */,
+				E95D87301A497E880098B7C5 /* NSObject+PropertyClass.m in Sources */,
+				E95D87311A497E880098B7C5 /* NSSet+TSNRESTAdditions.m in Sources */,
+				E95D87321A497E880098B7C5 /* NSString+TSNRESTCasing.m in Sources */,
+				E95D87331A497E880098B7C5 /* NSURL+TSNRESTAdditions.m in Sources */,
+				E95D87341A497E880098B7C5 /* NSURLRequest+TSNRESTConveniences.m in Sources */,
+				E95D87351A497E880098B7C5 /* NSURLSessionDataTask+TSNRESTDataTask.m in Sources */,
+				E95D87361A497E880098B7C5 /* TSNRESTLogin.m in Sources */,
+				E95D87371A497E880098B7C5 /* TSNRESTManager.m in Sources */,
+				E95D87381A497E880098B7C5 /* TSNRESTManagerConfiguration.m in Sources */,
+				E95D87391A497E880098B7C5 /* TSNRESTObjectMap.m in Sources */,
+				E95D873A1A497E880098B7C5 /* TSNRESTParser.m in Sources */,
+				E95D873B1A497E880098B7C5 /* TSNRESTPoller.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
