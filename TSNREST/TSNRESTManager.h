@@ -16,6 +16,7 @@
 #import "NJISO8601Formatter.h"
 #import "NSManagedObject+TSNRESTDeletion.h"
 #import "TSNRESTPoller.h"
+#import "TSNRESTManagerConfiguration.h"
 
 @protocol TSNRESTManagerDelegate <NSObject>
 
@@ -32,13 +33,12 @@
 
 @property (nonatomic, assign) id <TSNRESTManagerDelegate> delegate;
 
+@property (nonatomic, strong) TSNRESTManagerConfiguration *configuration;
 @property (nonatomic, strong) NJISO8601Formatter *ISO8601Formatter;
 @property (nonatomic, strong, readonly) TSNRESTPoller *poller;
 
 @property (atomic) BOOL isAuthenticating;
-@property (nonatomic, strong) NSString *baseURL;
-@property (nonatomic, strong) NSMutableDictionary *objectMaps;
-@property (nonatomic, strong) NSMutableDictionary *customHeaders;
+@property (nonatomic, strong) NSString *baseURL DEPRECATED_ATTRIBUTE;
 
 + (id)sharedManager;
 
@@ -50,6 +50,7 @@
 - (BOOL)isLoading;
 
 - (NSURLSession *)URLSession;
+- (NSDictionary *)customHeaders;
 - (void)reAuthenticate;
 
 - (void)addObjectMap:(TSNRESTObjectMap *)objectMap;

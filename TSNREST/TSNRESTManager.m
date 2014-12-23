@@ -23,6 +23,8 @@
 @property (nonatomic, strong) NSMutableSet *requestQueue;
 @property (nonatomic, strong) NSMutableSet *currentRequests;
 @property (nonatomic, strong) NSMutableArray *selfSavingObjects;
+@property (nonatomic, strong) NSMutableDictionary *customHeaders;
+@property (nonatomic, strong) NSMutableDictionary *objectMaps;
 
 @end
 
@@ -97,6 +99,12 @@
     return (self.currentRequests.count > 0);
 }
 
+- (TSNRESTManagerConfiguration *)configuration {
+    if (!_configuration)
+        _configuration = [[TSNRESTManagerConfiguration alloc] init];
+    return _configuration;
+}
+
 - (NJISO8601Formatter *)ISO8601Formatter
 {
     if (!_ISO8601Formatter)
@@ -108,6 +116,18 @@
     if (!_poller)
         _poller = [[TSNRESTPoller alloc] init];
     return _poller;
+}
+
+- (void)setBaseURL:(NSString *)baseURL {
+    [self.configuration setBaseURL:[NSURL URLWithString:baseURL]];
+}
+
+- (NSString *)baseURL {
+    return self.configuration.baseURL.absoluteString;
+}
+
+- (NSDictionary *)customHeaders {
+    return [NSDictionary dictionaryWithDictionary:_customHeaders];
 }
 
 #pragma mark - Session
@@ -129,9 +149,9 @@
 
 - (void)setGlobalHeader:(NSString *)header forKey:(NSString *)key
 {
-    if (!self.customHeaders)
-        self.customHeaders = [[NSMutableDictionary alloc] init];
-    [self.customHeaders setObject:header forKey:key];
+    if (!_customHeaders)
+        _customHeaders = [[NSMutableDictionary alloc] init];
+    [_customHeaders setObject:header forKey:key];
 }
 
 - (TSNRESTObjectMap *)objectMapForClass:(Class)classToFind

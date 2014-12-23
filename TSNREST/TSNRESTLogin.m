@@ -133,13 +133,16 @@
             
             [TSNRESTParser parseAndPersistDictionary:dataDict withCompletion:^{
                 // + (id) findFirstByAttribute:(NSString *)attribute withValue:(id)searchValue;
+                NSString *idKey = [(TSNRESTManagerConfiguration *)[[TSNRESTManager sharedManager] configuration] localIdName];
                 id user = nil;
                 if (userId)
-                    user = [userClass MR_findFirstByAttribute:@"systemId" withValue:userId];
+                    user = [userClass MR_findFirstByAttribute:idKey withValue:userId];
                 else
                     user = [userClass MR_findFirst];
                 
-                NSLog(@"Login succeeded for user: %@", [user valueForKey:@"systemId"]);
+#if DEBUG
+                NSLog(@"Login succeeded for user: %@", [user valueForKey:idKey]);
+#endif
                 if (userClass)
                 {
                     NSMutableDictionary *userDict = [[NSMutableDictionary alloc] init];

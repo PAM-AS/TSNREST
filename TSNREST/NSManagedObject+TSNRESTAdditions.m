@@ -60,7 +60,10 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
     SEL dirtyIdSelector = sel_registerName("dirty");
     if ([self respondsToSelector:dirtyIdSelector] && [[self valueForKey:@"dirty"] isEqualToNumber:@2])
     {
-        NSLog(@"Triggering fault on %@ %@ (dirty is %@)", NSStringFromClass(self.class), [self valueForKey:@"systemId"], [self valueForKey:@"dirty"]);
+#if DEBUG
+        NSString *idKey = [(TSNRESTManagerConfiguration *)[[TSNRESTManager sharedManager] configuration] localIdName];
+        NSLog(@"Triggering fault on %@ %@ (dirty is %@)", NSStringFromClass(self.class), [self valueForKey:idKey], [self valueForKey:@"dirty"]);
+#endif
         [self refreshWithCompletion:completion];
     }
     else if (completion)
@@ -71,11 +74,12 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
 
 - (void)checkForDeletion:(void (^)(BOOL hasBeenDeleted))completion
 {
+    NSString *idKey = [(TSNRESTManagerConfiguration *)[[TSNRESTManager sharedManager] configuration] localIdName];
     TSNRESTObjectMap *map = [[TSNRESTManager sharedManager] objectMapForClass:self.class];
-    NSString *url = [[(NSString *)[[TSNRESTManager sharedManager] baseURL] stringByAppendingPathComponent:map.serverPath] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@", [self valueForKey:@"systemId"]]];
+    NSString *url = [[(NSString *)[[TSNRESTManager sharedManager] baseURL] stringByAppendingPathComponent:map.serverPath] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@", [self valueForKey:idKey]]];
     
 #if DEBUG
-    NSLog(@"Checking deletion for %@ (%@) at %@", NSStringFromClass(self.class), [self valueForKey:@"systemId"], url);
+    NSLog(@"Checking deletion for %@ (%@) at %@", NSStringFromClass(self.class), [self valueForKey:idKey], url);
 #endif
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
@@ -106,11 +110,12 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
 
 - (void)refreshWithCompletion:(void (^)(id object, BOOL success))completion
 {
+    NSString *idKey = [(TSNRESTManagerConfiguration *)[[TSNRESTManager sharedManager] configuration] localIdName];
 #if DEBUG
-    NSLog(@"Refreshing %@ %@", NSStringFromClass(self.class), [self valueForKey:@"systemId"]);
+    NSLog(@"Refreshing %@ %@", NSStringFromClass(self.class), [self valueForKey:idKey]);
 #endif
     TSNRESTObjectMap *map = [[TSNRESTManager sharedManager] objectMapForClass:self.class];
-    NSString *url = [[(NSString *)[[TSNRESTManager sharedManager] baseURL] stringByAppendingPathComponent:map.serverPath] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@", [self valueForKey:@"systemId"]]];
+    NSString *url = [[(NSString *)[[TSNRESTManager sharedManager] baseURL] stringByAppendingPathComponent:map.serverPath] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@", [self valueForKey:idKey]]];
     
 #if DEBUG
     NSLog(@"URL: %@", url);
@@ -214,7 +219,8 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
             id referenceObject = nil;
             if ([[(NSObject *)self classOfPropertyNamed:objectAttribute] isSubclassOfClass:[NSManagedObject class]])
             {
-                referenceObject = [[(NSObject *)self classOfPropertyNamed:objectAttribute] MR_findFirstByAttribute:@"systemId" withValue:value];
+                NSString *idKey = [(TSNRESTManagerConfiguration *)[[TSNRESTManager sharedManager] configuration] localIdName];
+                referenceObject = [[(NSObject *)self classOfPropertyNamed:objectAttribute] MR_findFirstByAttribute:idKey withValue:value];
                 predicate = [NSPredicate predicateWithFormat:@"%K = %@", objectAttribute, referenceObject];
             }
             else

@@ -60,7 +60,8 @@
     if (self.inFlight)
     {
 #if DEBUG
-        NSLog(@"Skipping save of %@ %@ because object already is in flight.", NSStringFromClass([self class]), [self valueForKey:@"systemId"]);
+        NSString *idKey = [(TSNRESTManagerConfiguration *)[[TSNRESTManager sharedManager] configuration] localIdName];
+        NSLog(@"Skipping save of %@ %@ because object already is in flight.", NSStringFromClass([self class]), [self valueForKey:idKey]);
 #endif
         __block NSManagedObject *object = self;
 #warning Find a way to not call the successBlock here. It's not technically correct.

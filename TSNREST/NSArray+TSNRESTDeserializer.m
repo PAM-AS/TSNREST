@@ -19,7 +19,8 @@
     
     NSArray *existingObjects = [[map classToMap] MR_findAllInContext:localContext];
     
-    NSArray *existingIds = [existingObjects valueForKey:@"systemId"];
+    NSString *idKey = [(TSNRESTManagerConfiguration *)[[TSNRESTManager sharedManager] configuration] localIdName];
+    NSArray *existingIds = [existingObjects valueForKey:idKey];
     NSSet *newSet = [NSSet setWithArray:[self valueForKey:@"id"]?:@[]];
     NSMutableSet *existingSet = [NSMutableSet setWithArray:existingIds?:@[]];
     [existingSet intersectSet:newSet];
@@ -45,7 +46,7 @@
         }
     }
     
-    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"systemId" ascending:YES];
+    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:idKey ascending:YES];
     NSEnumerator *existingEnumerator = [[existingObjects sortedArrayUsingDescriptors:@[sortDescriptor]] objectEnumerator];
     
     sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"id" ascending:YES];
@@ -59,20 +60,20 @@
         
         // while (id != id)
         // nextObject
-        while (existingObject && [[jsonObject objectForKey:@"id"] intValue] > [[existingObject valueForKey:@"systemId"] intValue]) {
+        while (existingObject && [[jsonObject objectForKey:@"id"] intValue] > [[existingObject valueForKey:idKey] intValue]) {
             existingObject = [existingEnumerator nextObject];
         }
         
         id object = nil;
         
 #if DEBUG
-        if (![[existingObject valueForKey:@"systemId"] isEqualToNumber:[jsonObject objectForKey:@"id"]])
+        if (![[existingObject valueForKey:idKey] isEqualToNumber:[jsonObject objectForKey:@"id"]])
         {
-            NSLog(@"Moment of creation (not update): Existing object class: %@ id? %@ new object id: %@", NSStringFromClass([existingObject class]), [existingObject valueForKey:@"systemId"], [jsonObject objectForKey:@"id"]);
+            NSLog(@"Moment of creation (not update): Existing object class: %@ id? %@ new object id: %@", NSStringFromClass([existingObject class]), [existingObject valueForKey:idKey], [jsonObject objectForKey:@"id"]);
         }
 #endif
         
-        if (existingObject && [[existingObject valueForKey:@"systemId"] integerValue] == [[jsonObject objectForKey:@"id"] integerValue])
+        if (existingObject && [[existingObject valueForKey:idKey] integerValue] == [[jsonObject objectForKey:@"id"] integerValue])
         {
             object = existingObject;
         }
@@ -87,13 +88,13 @@
                 // Core Data is strange. https://github.com/magicalpanda/MagicalRecord/issues/25
                 [localContext MR_saveOnlySelfAndWait];
                 
-                existingObject = [map.classToMap MR_findFirstByAttribute:@"systemId" withValue:[jsonObject objectForKey:@"id"] inContext:localContext];
+                existingObject = [map.classToMap MR_findFirstByAttribute:idKey withValue:[jsonObject objectForKey:@"id"] inContext:localContext];
                 
 #if DEBUG
-                NSLog(@"Found this in the store: %@ (%@)", existingObject, [existingObject valueForKey:@"systemId"]);
+                NSLog(@"Found this in the store: %@ (%@)", existingObject, [existingObject valueForKey:idKey]);
 #endif
                 
-                if (existingObject && [[existingObject valueForKey:@"systemId"] integerValue] == [[jsonObject objectForKey:@"id"] integerValue])
+                if (existingObject && [[existingObject valueForKey:idKey] integerValue] == [[jsonObject objectForKey:@"id"] integerValue])
                 {
 #if DEBUG
                     NSLog(@"Payoff! Object really did exist.");
@@ -106,7 +107,7 @@
                     NSLog(@"Nope. No object. Quite sure.");
 #endif
                     object = [[map classToMap] MR_createInContext:localContext];
-                    [object setValue:[jsonObject objectForKey:@"id"] forKey:@"systemId"];
+                    [object setValue:[jsonObject objectForKey:@"id"] forKey:idKey];
                 }
             }
         }

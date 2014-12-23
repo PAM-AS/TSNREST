@@ -21,7 +21,8 @@
 }
 
 - (void)deleteFromServerWithCompletion:(void (^)(id object, BOOL success))completion {
-    NSNumber *systemId = [self valueForKey:@"systemId"];
+    NSString *idKey = [(TSNRESTManagerConfiguration *)[[TSNRESTManager sharedManager] configuration] localIdName];
+    NSNumber *systemId = [self valueForKey:idKey];
     if (!systemId)
     {
 #if DEBUG

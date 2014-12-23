@@ -16,9 +16,10 @@
 
 - (NSManagedObject *)mapToObject:(NSManagedObject *)inputObject withMap:(TSNRESTObjectMap *)map inContext:(NSManagedObjectContext *)context optimize:(BOOL)optimize {
     NSManagedObject *object = [inputObject MR_inContext:context];
+    NSString *idKey = [(TSNRESTManagerConfiguration *)[[TSNRESTManager sharedManager] configuration] localIdName];
 #if DEBUG
     if (object)
-        NSLog(@"Updating %@ %@ (%@)", NSStringFromClass([map classToMap]), [self objectForKey:@"id"], [object valueForKey:@"systemId"]);
+        NSLog(@"Updating %@ %@ (%@)", NSStringFromClass([map classToMap]), [self objectForKey:@"id"], [object valueForKey:idKey]);
     else
         NSLog(@"Adding %@ %@", NSStringFromClass([map classToMap]), [self objectForKey:@"id"]);
 #endif
@@ -36,9 +37,9 @@
         }
     }
     
-    // SystemId custom
-    if ([object respondsToSelector:NSSelectorFromString(@"systemId")])
-        [object setValue:[self objectForKey:@"id"] forKey:@"systemId"];
+    // id custom
+    if ([object respondsToSelector:NSSelectorFromString(idKey)])
+        [object setValue:[self objectForKey:@"id"] forKey:idKey];
     if ([object respondsToSelector:NSSelectorFromString(@"dirty")])
     {
         if ([[object valueForKey:@"dirty"] integerValue] == 1)
@@ -87,16 +88,16 @@
         else if ([[object classOfPropertyNamed:key] isSubclassOfClass:[NSManagedObject class]] && [self valueForKey:webKey] != [NSNull null])
         {
             NSManagedObject *classObject = nil;
-            classObject = [[object classOfPropertyNamed:key] MR_findFirstByAttribute:@"systemId" withValue:[self valueForKey:webKey] inContext:context];
+            classObject = [[object classOfPropertyNamed:key] MR_findFirstByAttribute:idKey withValue:[self valueForKey:webKey] inContext:context];
             
             if (!classObject) // Create a new, empty object and set system id
             {
 #if DEBUG
-                NSLog(@"Created new %@ with id %@ and added it to %@ %@", [object classOfPropertyNamed:key], [self valueForKey:webKey], NSStringFromClass([object class]), [object valueForKey:@"systemId"]);
+                NSLog(@"Created new %@ with id %@ and added it to %@ %@", [object classOfPropertyNamed:key], [self valueForKey:webKey], NSStringFromClass([object class]), [object valueForKey:idKey]);
 #endif
                 classObject = [[object classOfPropertyNamed:key] MR_createEntityInContext:context];
-                if ([classObject respondsToSelector:NSSelectorFromString(@"systemId")])
-                    [classObject setValue:[self valueForKey:webKey] forKey:@"systemId"];
+                if ([classObject respondsToSelector:NSSelectorFromString(idKey)])
+                    [classObject setValue:[self valueForKey:webKey] forKey:idKey];
                 if ([classObject respondsToSelector:NSSelectorFromString(@"dirty")]) // Object needs to load fault
                     [classObject setValue:@2 forKey:@"dirty"];
 #if DEBUG
