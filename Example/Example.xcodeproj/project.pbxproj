@@ -10,6 +10,7 @@
 		44363DBCC796DEB97F1584C8 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A96F95E680DC953D0C86581 /* libPods.a */; };
 		861907DE6D57575A412D13D0 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A96F95E680DC953D0C86581 /* libPods.a */; };
 		E95D873D1A4980890098B7C5 /* ConfigTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E95D873C1A4980890098B7C5 /* ConfigTests.m */; };
+		E95D873F1A4987CA0098B7C5 /* ManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E95D873E1A4987CA0098B7C5 /* ManagerTests.m */; };
 		E9E5EC571A481D1B00BEFF3A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E9E5EC561A481D1B00BEFF3A /* main.m */; };
 		E9E5EC5A1A481D1B00BEFF3A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E9E5EC591A481D1B00BEFF3A /* AppDelegate.m */; };
 		E9E5EC5D1A481D1B00BEFF3A /* Example.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = E9E5EC5B1A481D1B00BEFF3A /* Example.xcdatamodeld */; };
@@ -35,6 +36,7 @@
 		2A96F95E680DC953D0C86581 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		CDE6188E3DB7C4DDB55FB8D7 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		E95D873C1A4980890098B7C5 /* ConfigTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigTests.m; sourceTree = "<group>"; };
+		E95D873E1A4987CA0098B7C5 /* ManagerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ManagerTests.m; sourceTree = "<group>"; };
 		E9E5EC511A481D1B00BEFF3A /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E9E5EC551A481D1B00BEFF3A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E9E5EC561A481D1B00BEFF3A /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -139,6 +141,7 @@
 				E9E5EC7D1A481DB800BEFF3A /* PollerTest.m */,
 				E9E5EC711A481D1B00BEFF3A /* Supporting Files */,
 				E95D873C1A4980890098B7C5 /* ConfigTests.m */,
+				E95D873E1A4987CA0098B7C5 /* ManagerTests.m */,
 			);
 			path = ExampleTests;
 			sourceTree = "<group>";
@@ -330,6 +333,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E9E5EC7E1A481DB800BEFF3A /* PollerTest.m in Sources */,
+				E95D873F1A4987CA0098B7C5 /* ManagerTests.m in Sources */,
 				E95D873D1A4980890098B7C5 /* ConfigTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
