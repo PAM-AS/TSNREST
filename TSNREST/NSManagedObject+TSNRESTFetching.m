@@ -16,10 +16,11 @@
 + (NSManagedObject *)findOrCreateBySystemId:(NSNumber *)systemid inContext:(NSManagedObjectContext *)context {
     if (!context)
         context = [NSManagedObjectContext MR_contextForCurrentThread];
-    NSManagedObject *object = [self MR_findFirstByAttribute:@"systemId" withValue:systemid inContext:context];
+    NSString *idKey = [(TSNRESTManagerConfiguration *)[[TSNRESTManager sharedManager] configuration] localIdName];
+    NSManagedObject *object = [self MR_findFirstByAttribute:idKey withValue:systemid inContext:context];
     if (!object) {
         object = [self MR_createEntityInContext:context];
-        [object setValue:systemid forKey:@"systemId"];
+        [object setValue:systemid forKey:idKey];
     }
     return object;
 }

@@ -25,10 +25,11 @@
         return @{};
     
     __block NSMutableDictionary *dataDict = [[NSMutableDictionary alloc] init];
+    NSString *idKey = [(TSNRESTManagerConfiguration *)[[TSNRESTManager sharedManager] configuration] localIdName];
     
     // Special snowflakes
-    if ([self valueForKey:@"systemId"])
-        [dataDict setValue:[self valueForKey:@"systemId"] forKey:@"id"];
+    if ([self valueForKey:idKey])
+        [dataDict setValue:[self valueForKey:idKey] forKey:@"id"];
     if ([self respondsToSelector:NSSelectorFromString(@"uuid")] && [self valueForKey:@"uuid"])
         [dataDict setValue:[self valueForKey:@"uuid"] forKey:@"uuid"];
     
@@ -77,9 +78,9 @@
             NSDate *date = [self valueForKey:key];
             [dataDict setObject:[manager.ISO8601Formatter stringFromDate:date] forKey:obj];
         }
-        else if ([classType isSubclassOfClass:[NSManagedObject class]] && [[self valueForKey:key] respondsToSelector:NSSelectorFromString(@"systemId")] && [[self valueForKey:key] valueForKey:@"systemId"])
+        else if ([classType isSubclassOfClass:[NSManagedObject class]] && [[self valueForKey:key] respondsToSelector:NSSelectorFromString(idKey)] && [[self valueForKey:key] valueForKey:idKey])
         {
-            NSNumber *systemId = [[self valueForKey:key] valueForKey:@"systemId"];
+            NSNumber *systemId = [[self valueForKey:key] valueForKey:idKey];
             if (systemId)
             [dataDict setObject:systemId forKey:obj];
         }

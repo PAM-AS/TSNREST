@@ -65,9 +65,10 @@
     else
     return nil;
     
-    if ([object valueForKey:@"systemId"] && [[object valueForKey:@"systemId"] isKindOfClass:[NSNumber class]])
+    NSString *idKey = [(TSNRESTManagerConfiguration *)[[TSNRESTManager sharedManager] configuration] localIdName];
+    if ([object valueForKey:idKey] && [[object valueForKey:idKey] isKindOfClass:[NSNumber class]])
     {
-        NSString *pathComponent = [NSString stringWithFormat:@"%@", [object valueForKey:@"systemId"]];
+        NSString *pathComponent = [NSString stringWithFormat:@"%@", [object valueForKey:idKey]];
         if (pathComponent)
         url = [url URLByAppendingPathComponent:pathComponent];
     }

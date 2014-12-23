@@ -38,7 +38,8 @@
          Strategy for not having to delete temporary objects: Always parse objects of type self first, and create the object that way.
          */
         
-        if (object && ![object isDeleted] && [object valueForKey:@"systemId"] == nil) {
+        NSString *idKey = [(TSNRESTManagerConfiguration *)[[TSNRESTManager sharedManager] configuration] localIdName];
+        if (object && ![object isDeleted] && [object valueForKey:idKey] == nil) {
             for (NSString *dictKey in dict)
             {
                 TSNRESTObjectMap *map = [[TSNRESTManager sharedManager] objectMapForServerPath:dictKey];
@@ -48,11 +49,11 @@
                         NSNumber *systemId = [[jsonData objectAtIndex:0] valueForKey:@"id"];
                         if (systemId) {
                             NSManagedObject *localObject = [object MR_inContext:localContext];
-                            [localObject setValue:systemId forKey:@"systemId"];
+                            [localObject setValue:systemId forKey:idKey];
                             [localContext MR_saveOnlySelfAndWait];
                             [[object managedObjectContext] refreshObject:object mergeChanges:NO];
 #if DEBUG
-                            NSLog(@"Set id %@ to newly created object of class %@", [object valueForKey:@"systemId"], NSStringFromClass([object class]));
+                            NSLog(@"Set id %@ to newly created object of class %@", [object valueForKey:idKey], NSStringFromClass([object class]));
 #endif
                         }
 #if DEBUG

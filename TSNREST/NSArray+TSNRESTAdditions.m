@@ -46,7 +46,8 @@
         else if (![[object valueForKey:@"dirty"] isEqualToNumber:@2])
         {
 #if DEBUG
-            NSLog(@"%@ doesn't need faulting (dirty is not 2). Removing from faulting array.", [object valueForKey:@"systemId"]);
+            NSString *idKey = [(TSNRESTManagerConfiguration *)[[TSNRESTManager sharedManager] configuration] localIdName];
+            NSLog(@"%@ doesn't need faulting (dirty is not 2). Removing from faulting array.", [object valueForKey:idKey]);
 #endif
             [tempArray removeObject:object];
         }
@@ -82,14 +83,15 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSMutableString *ids = [[NSMutableString alloc] initWithString:@"?id="];
         
-        SEL systemidSelector = sel_registerName("systemId");
+        NSString *idKey = [(TSNRESTManagerConfiguration *)[[TSNRESTManager sharedManager] configuration] localIdName];
+        SEL systemidSelector = sel_registerName([idKey UTF8String]);
         for (id object in self)
         {
             if ([object respondsToSelector:systemidSelector])
             {
                 if (![[ids substringFromIndex:ids.length-1] isEqualToString:@"="])
                     [ids appendString:@","];
-                [ids appendString:[NSString stringWithFormat:@"%@", [object valueForKey:@"systemId"]]];
+                [ids appendString:[NSString stringWithFormat:@"%@", [object valueForKey:idKey]]];
             }
         }
         
