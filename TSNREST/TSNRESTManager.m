@@ -97,6 +97,12 @@
     return (self.currentRequests.count > 0);
 }
 
+- (TSNRESTManagerConfiguration *)configuration {
+    if (!_configuration)
+        _configuration = [[TSNRESTManagerConfiguration alloc] init];
+    return _configuration;
+}
+
 - (NJISO8601Formatter *)ISO8601Formatter
 {
     if (!_ISO8601Formatter)
@@ -108,6 +114,14 @@
     if (!_poller)
         _poller = [[TSNRESTPoller alloc] init];
     return _poller;
+}
+
+- (void)setBaseURL:(NSString *)baseURL {
+    [self.configuration setBaseURL:[NSURL URLWithString:baseURL]];
+}
+
+- (NSString *)baseURL {
+    return self.configuration.baseURL.absoluteString;
 }
 
 #pragma mark - Session
