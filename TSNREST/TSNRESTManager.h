@@ -40,7 +40,6 @@
 @property (atomic) BOOL isAuthenticating;
 @property (nonatomic, strong) NSString *baseURL DEPRECATED_ATTRIBUTE;
 @property (nonatomic, strong) NSMutableDictionary *objectMaps;
-@property (nonatomic, strong) NSMutableDictionary *customHeaders;
 
 + (id)sharedManager;
 
@@ -52,6 +51,7 @@
 - (BOOL)isLoading;
 
 - (NSURLSession *)URLSession;
+- (NSDictionary *)customHeaders;
 - (void)reAuthenticate;
 
 - (void)addObjectMap:(TSNRESTObjectMap *)objectMap;

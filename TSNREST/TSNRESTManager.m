@@ -23,6 +23,7 @@
 @property (nonatomic, strong) NSMutableSet *requestQueue;
 @property (nonatomic, strong) NSMutableSet *currentRequests;
 @property (nonatomic, strong) NSMutableArray *selfSavingObjects;
+@property (nonatomic, strong) NSMutableDictionary *customHeaders;
 
 @end
 
@@ -124,6 +125,10 @@
     return self.configuration.baseURL.absoluteString;
 }
 
+- (NSDictionary *)customHeaders {
+    return [NSDictionary dictionaryWithDictionary:_customHeaders];
+}
+
 #pragma mark - Session
 - (NSURLSession *)URLSession {
     return [NSURLSession sharedSession]; // We currently use the shared session, but this is a convenient override point.
@@ -143,9 +148,9 @@
 
 - (void)setGlobalHeader:(NSString *)header forKey:(NSString *)key
 {
-    if (!self.customHeaders)
-        self.customHeaders = [[NSMutableDictionary alloc] init];
-    [self.customHeaders setObject:header forKey:key];
+    if (!_customHeaders)
+        _customHeaders = [[NSMutableDictionary alloc] init];
+    [_customHeaders setObject:header forKey:key];
 }
 
 - (TSNRESTObjectMap *)objectMapForClass:(Class)classToFind
