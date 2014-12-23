@@ -39,7 +39,6 @@
 
 @property (atomic) BOOL isAuthenticating;
 @property (nonatomic, strong) NSString *baseURL DEPRECATED_ATTRIBUTE;
-@property (nonatomic, strong) NSMutableDictionary *objectMaps;
 
 + (id)sharedManager;
 

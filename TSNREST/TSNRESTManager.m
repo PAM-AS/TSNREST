@@ -24,6 +24,7 @@
 @property (nonatomic, strong) NSMutableSet *currentRequests;
 @property (nonatomic, strong) NSMutableArray *selfSavingObjects;
 @property (nonatomic, strong) NSMutableDictionary *customHeaders;
+@property (nonatomic, strong) NSMutableDictionary *objectMaps;
 
 @end
 
