@@ -43,6 +43,16 @@
     }
 }
 
+- (void)testThatAddingCustomHeaderFromNSUserDefaultsWorks {
+    NSString *testKey = @"testKey";
+    NSString *testValue = @"a value";
+    [[NSUserDefaults standardUserDefaults] setObject:testValue forKey:testKey];
+    TSNRESTManager *manager = [[TSNRESTManager alloc] init];
+    [manager setGlobalHeaderFromSettingsKey:testKey forKey:testKey];
+    
+    XCTAssertEqualObjects([manager.customHeaders objectForKey:testKey], testValue, @"Setting header from setting didn't work. Expected %@, got %@", testValue, [manager.customHeaders objectForKey:testKey]);
+}
+
 //- (void)testPerformanceExample {
 //    // This is an example of a performance test case.
 //    [self measureBlock:^{
