@@ -14,6 +14,7 @@
 		E95D87411A49D6D50098B7C5 /* DeserializerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E95D87401A49D6D50098B7C5 /* DeserializerTests.m */; };
 		E95D87431A49D8BD0098B7C5 /* SerializerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E95D87421A49D8BD0098B7C5 /* SerializerTests.m */; };
 		E95D87451A4C2A200098B7C5 /* Fixtures in Resources */ = {isa = PBXBuildFile; fileRef = E95D87441A4C2A200098B7C5 /* Fixtures */; };
+		E95D87471A4C465A0098B7C5 /* ObjectMapTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E95D87461A4C465A0098B7C5 /* ObjectMapTests.m */; };
 		E9E5EC571A481D1B00BEFF3A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E9E5EC561A481D1B00BEFF3A /* main.m */; };
 		E9E5EC5A1A481D1B00BEFF3A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E9E5EC591A481D1B00BEFF3A /* AppDelegate.m */; };
 		E9E5EC5D1A481D1B00BEFF3A /* Example.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = E9E5EC5B1A481D1B00BEFF3A /* Example.xcdatamodeld */; };
@@ -46,6 +47,7 @@
 		E95D87401A49D6D50098B7C5 /* DeserializerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeserializerTests.m; sourceTree = "<group>"; };
 		E95D87421A49D8BD0098B7C5 /* SerializerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SerializerTests.m; sourceTree = "<group>"; };
 		E95D87441A4C2A200098B7C5 /* Fixtures */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Fixtures; sourceTree = "<group>"; };
+		E95D87461A4C465A0098B7C5 /* ObjectMapTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ObjectMapTests.m; sourceTree = "<group>"; };
 		E9E5EC511A481D1B00BEFF3A /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E9E5EC551A481D1B00BEFF3A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E9E5EC561A481D1B00BEFF3A /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -161,6 +163,7 @@
 				E95D873E1A4987CA0098B7C5 /* ManagerTests.m */,
 				E95D87401A49D6D50098B7C5 /* DeserializerTests.m */,
 				E95D87421A49D8BD0098B7C5 /* SerializerTests.m */,
+				E95D87461A4C465A0098B7C5 /* ObjectMapTests.m */,
 			);
 			path = ExampleTests;
 			sourceTree = "<group>";
@@ -373,6 +376,7 @@
 				E95D87431A49D8BD0098B7C5 /* SerializerTests.m in Sources */,
 				E95D873F1A4987CA0098B7C5 /* ManagerTests.m in Sources */,
 				E95D873D1A4980890098B7C5 /* ConfigTests.m in Sources */,
+				E95D87471A4C465A0098B7C5 /* ObjectMapTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
