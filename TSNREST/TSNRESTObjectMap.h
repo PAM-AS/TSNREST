@@ -52,6 +52,7 @@
  Planning to replace addBoolean: with runtime check later.
  */
 
+- (void)setAutomaticServerPath;
 - (void)automapAllProperties;
 
 // Logging
