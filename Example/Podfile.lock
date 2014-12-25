@@ -1,4 +1,5 @@
 PODS:
+  - InflectorKit (0.0.1)
   - ISO8601 (0.1.9)
   - MagicalRecord (2.3.0-beta.5):
     - MagicalRecord/Core (= 2.3.0-beta.5)
@@ -8,6 +9,7 @@ PODS:
   - RSSwizzle (0.1.0)
   - SAMCategories (0.4.1)
   - TSNREST (0.4.1):
+    - InflectorKit (~> 0.0.1)
     - MagicalRecord
     - NSTimer-Blocks (~> 0.0.1)
     - Reachability (~> 3.1.0)
@@ -37,12 +39,13 @@ CHECKOUT OPTIONS:
     :tag: v2.3.0-beta.5
 
 SPEC CHECKSUMS:
+  InflectorKit: bb1f5c9feb01d17450b8bcdeb7ab1ef1832b2247
   ISO8601: 6ecc4833427a41e1a6152452fc5a3007d37710c5
   MagicalRecord: edcc27277d4c15874cc565fb5d91576c146cb2f1
   NSTimer-Blocks: 0a653b84ab33068a085f5c03c82c18be1f61eba9
   Reachability: 8e9635e3cb4f98e7f825e51147f677ecc694d0e7
   RSSwizzle: ab39962b7ec56d19c2318ec1127e253797121363
   SAMCategories: e5e2371b9143d66c6fc76dfd6e7c687ffbccf1e7
-  TSNREST: 51b9c85a3de21b639a4c4cff7fca4dd034a4c9c6
+  TSNREST: fa19f659315d9e44d23f40709f83524d751c34e7
 
 COCOAPODS: 0.35.0

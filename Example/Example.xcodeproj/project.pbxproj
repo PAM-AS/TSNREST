@@ -12,6 +12,8 @@
 		E95D873D1A4980890098B7C5 /* ConfigTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E95D873C1A4980890098B7C5 /* ConfigTests.m */; };
 		E95D873F1A4987CA0098B7C5 /* ManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E95D873E1A4987CA0098B7C5 /* ManagerTests.m */; };
 		E95D87411A49D6D50098B7C5 /* DeserializerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E95D87401A49D6D50098B7C5 /* DeserializerTests.m */; };
+		E95D87431A49D8BD0098B7C5 /* SerializerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E95D87421A49D8BD0098B7C5 /* SerializerTests.m */; };
+		E95D87451A4C2A200098B7C5 /* Fixtures in Resources */ = {isa = PBXBuildFile; fileRef = E95D87441A4C2A200098B7C5 /* Fixtures */; };
 		E9E5EC571A481D1B00BEFF3A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E9E5EC561A481D1B00BEFF3A /* main.m */; };
 		E9E5EC5A1A481D1B00BEFF3A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E9E5EC591A481D1B00BEFF3A /* AppDelegate.m */; };
 		E9E5EC5D1A481D1B00BEFF3A /* Example.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = E9E5EC5B1A481D1B00BEFF3A /* Example.xcdatamodeld */; };
@@ -19,7 +21,10 @@
 		E9E5EC631A481D1B00BEFF3A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E9E5EC611A481D1B00BEFF3A /* Main.storyboard */; };
 		E9E5EC651A481D1B00BEFF3A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E9E5EC641A481D1B00BEFF3A /* Images.xcassets */; };
 		E9E5EC681A481D1B00BEFF3A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = E9E5EC661A481D1B00BEFF3A /* LaunchScreen.xib */; };
-		E9E5EC7E1A481DB800BEFF3A /* PollerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = E9E5EC7D1A481DB800BEFF3A /* PollerTest.m */; };
+		E9E5EC7E1A481DB800BEFF3A /* PollerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E9E5EC7D1A481DB800BEFF3A /* PollerTests.m */; };
+		E9E5ECA21A48AADE00BEFF3A /* Product.m in Sources */ = {isa = PBXBuildFile; fileRef = E9E5ECA11A48AADE00BEFF3A /* Product.m */; };
+		E9E5ECA51A48AADF00BEFF3A /* Shop.m in Sources */ = {isa = PBXBuildFile; fileRef = E9E5ECA41A48AADF00BEFF3A /* Shop.m */; };
+		E9E5ECA81A48AADF00BEFF3A /* Brand.m in Sources */ = {isa = PBXBuildFile; fileRef = E9E5ECA71A48AADF00BEFF3A /* Brand.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,6 +44,8 @@
 		E95D873C1A4980890098B7C5 /* ConfigTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigTests.m; sourceTree = "<group>"; };
 		E95D873E1A4987CA0098B7C5 /* ManagerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ManagerTests.m; sourceTree = "<group>"; };
 		E95D87401A49D6D50098B7C5 /* DeserializerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeserializerTests.m; sourceTree = "<group>"; };
+		E95D87421A49D8BD0098B7C5 /* SerializerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SerializerTests.m; sourceTree = "<group>"; };
+		E95D87441A4C2A200098B7C5 /* Fixtures */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Fixtures; sourceTree = "<group>"; };
 		E9E5EC511A481D1B00BEFF3A /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E9E5EC551A481D1B00BEFF3A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E9E5EC561A481D1B00BEFF3A /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -52,7 +59,13 @@
 		E9E5EC671A481D1B00BEFF3A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		E9E5EC6D1A481D1B00BEFF3A /* ExampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ExampleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E9E5EC721A481D1B00BEFF3A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		E9E5EC7D1A481DB800BEFF3A /* PollerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PollerTest.m; sourceTree = "<group>"; };
+		E9E5EC7D1A481DB800BEFF3A /* PollerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PollerTests.m; sourceTree = "<group>"; };
+		E9E5ECA01A48AADE00BEFF3A /* Product.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Product.h; sourceTree = "<group>"; };
+		E9E5ECA11A48AADE00BEFF3A /* Product.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Product.m; sourceTree = "<group>"; };
+		E9E5ECA31A48AADF00BEFF3A /* Shop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Shop.h; sourceTree = "<group>"; };
+		E9E5ECA41A48AADF00BEFF3A /* Shop.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Shop.m; sourceTree = "<group>"; };
+		E9E5ECA61A48AADF00BEFF3A /* Brand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Brand.h; sourceTree = "<group>"; };
+		E9E5ECA71A48AADF00BEFF3A /* Brand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Brand.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -115,6 +128,8 @@
 		E9E5EC531A481D1B00BEFF3A /* Example */ = {
 			isa = PBXGroup;
 			children = (
+				E95D87441A4C2A200098B7C5 /* Fixtures */,
+				E9E5EC941A4898E300BEFF3A /* Models */,
 				E9E5EC581A481D1B00BEFF3A /* AppDelegate.h */,
 				E9E5EC591A481D1B00BEFF3A /* AppDelegate.m */,
 				E9E5EC5E1A481D1B00BEFF3A /* ViewController.h */,
@@ -140,11 +155,12 @@
 		E9E5EC701A481D1B00BEFF3A /* ExampleTests */ = {
 			isa = PBXGroup;
 			children = (
-				E9E5EC7D1A481DB800BEFF3A /* PollerTest.m */,
+				E9E5EC7D1A481DB800BEFF3A /* PollerTests.m */,
 				E9E5EC711A481D1B00BEFF3A /* Supporting Files */,
 				E95D873C1A4980890098B7C5 /* ConfigTests.m */,
 				E95D873E1A4987CA0098B7C5 /* ManagerTests.m */,
 				E95D87401A49D6D50098B7C5 /* DeserializerTests.m */,
+				E95D87421A49D8BD0098B7C5 /* SerializerTests.m */,
 			);
 			path = ExampleTests;
 			sourceTree = "<group>";
@@ -155,6 +171,19 @@
 				E9E5EC721A481D1B00BEFF3A /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		E9E5EC941A4898E300BEFF3A /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				E9E5ECA61A48AADF00BEFF3A /* Brand.h */,
+				E9E5ECA71A48AADF00BEFF3A /* Brand.m */,
+				E9E5ECA31A48AADF00BEFF3A /* Shop.h */,
+				E9E5ECA41A48AADF00BEFF3A /* Shop.m */,
+				E9E5ECA01A48AADE00BEFF3A /* Product.h */,
+				E9E5ECA11A48AADE00BEFF3A /* Product.m */,
+			);
+			name = Models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -243,6 +272,7 @@
 			files = (
 				E9E5EC631A481D1B00BEFF3A /* Main.storyboard in Resources */,
 				E9E5EC681A481D1B00BEFF3A /* LaunchScreen.xib in Resources */,
+				E95D87451A4C2A200098B7C5 /* Fixtures in Resources */,
 				E9E5EC651A481D1B00BEFF3A /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -325,9 +355,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				E9E5EC5A1A481D1B00BEFF3A /* AppDelegate.m in Sources */,
+				E9E5ECA21A48AADE00BEFF3A /* Product.m in Sources */,
 				E9E5EC5D1A481D1B00BEFF3A /* Example.xcdatamodeld in Sources */,
 				E9E5EC601A481D1B00BEFF3A /* ViewController.m in Sources */,
+				E9E5ECA81A48AADF00BEFF3A /* Brand.m in Sources */,
 				E9E5EC571A481D1B00BEFF3A /* main.m in Sources */,
+				E9E5ECA51A48AADF00BEFF3A /* Shop.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -336,7 +369,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				E95D87411A49D6D50098B7C5 /* DeserializerTests.m in Sources */,
-				E9E5EC7E1A481DB800BEFF3A /* PollerTest.m in Sources */,
+				E9E5EC7E1A481DB800BEFF3A /* PollerTests.m in Sources */,
+				E95D87431A49D8BD0098B7C5 /* SerializerTests.m in Sources */,
 				E95D873F1A4987CA0098B7C5 /* ManagerTests.m in Sources */,
 				E95D873D1A4980890098B7C5 /* ConfigTests.m in Sources */,
 			);
