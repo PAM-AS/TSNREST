@@ -12,6 +12,12 @@
 #define COCOAPODS_VERSION_MINOR_ISO8601 1
 #define COCOAPODS_VERSION_PATCH_ISO8601 9
 
+// InflectorKit
+#define COCOAPODS_POD_AVAILABLE_InflectorKit
+#define COCOAPODS_VERSION_MAJOR_InflectorKit 0
+#define COCOAPODS_VERSION_MINOR_InflectorKit 0
+#define COCOAPODS_VERSION_PATCH_InflectorKit 1
+
 // MagicalRecord
 #define COCOAPODS_POD_AVAILABLE_MagicalRecord
 #define COCOAPODS_VERSION_MAJOR_MagicalRecord 2
