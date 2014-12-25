@@ -57,7 +57,10 @@
 - (TSNRESTObjectMap *)objectMapForClass:(Class)classToFind;
 - (TSNRESTObjectMap *)objectMapForServerPath:(NSString *)path;
 - (TSNRESTObjectMap *)objectMapForPushKey:(NSString *)path;
+
+// Passing nil as header or a settingskey where no setting exists, will remove the header.
 - (void)setGlobalHeader:(NSString *)header forKey:(NSString *)key;
+- (void)setGlobalHeaderFromSettingsKey:(NSString *)settingsKey forKey:(NSString *)key;
 
 - (void)deleteObjectFromServer:(id)object DEPRECATED_ATTRIBUTE;
 - (void)deleteObjectFromServer:(id)object completion:(void (^)(id object, BOOL success))completion DEPRECATED_ATTRIBUTE;

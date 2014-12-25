@@ -151,7 +151,19 @@
 {
     if (!_customHeaders)
         _customHeaders = [[NSMutableDictionary alloc] init];
-    [_customHeaders setObject:header forKey:key];
+    if (header)
+        [_customHeaders setObject:header forKey:key];
+    else
+        [_customHeaders removeObjectForKey:key];
+}
+
+- (void)setGlobalHeaderFromSettingsKey:(NSString *)settingsKey forKey:(NSString *)key {
+    if ([[NSUserDefaults standardUserDefaults] objectForKey:settingsKey]) {
+        [self setGlobalHeader:[NSString stringWithFormat:@"%@", [[NSUserDefaults standardUserDefaults] objectForKey:settingsKey]] forKey:key];
+    }
+    else {
+        [self setGlobalHeader:nil forKey:key];
+    }
 }
 
 - (TSNRESTObjectMap *)objectMapForClass:(Class)classToFind
