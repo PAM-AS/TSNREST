@@ -51,6 +51,7 @@
     [manager setGlobalHeaderFromSettingsKey:testKey forKey:testKey];
     
     XCTAssertEqualObjects([manager.customHeaders objectForKey:testKey], testValue, @"Setting header from setting didn't work. Expected %@, got %@", testValue, [manager.customHeaders objectForKey:testKey]);
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:testKey];
 }
 
 //- (void)testPerformanceExample {
