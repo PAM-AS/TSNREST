@@ -12,8 +12,8 @@
 
 @interface TSNRESTParser : NSObject
 
-+ (BOOL)parseAndPersistDictionary:(NSDictionary *)dict;
-+ (BOOL)parseAndPersistDictionary:(NSDictionary *)dict withCompletion:(void (^)())completion;
-+ (BOOL)parseAndPersistDictionary:(NSDictionary *)dict withCompletion:(void (^)())completion forObject:(id)object;
++ (void)parseAndPersistDictionary:(NSDictionary *)dict;
++ (void)parseAndPersistDictionary:(NSDictionary *)dict withCompletion:(void (^)())completion;
++ (void)parseAndPersistDictionary:(NSDictionary *)dict withCompletion:(void (^)())completion forObject:(id)object;
 
 @end

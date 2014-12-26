@@ -15,17 +15,17 @@
 
 @implementation TSNRESTParser
 
-+ (BOOL)parseAndPersistDictionary:(NSDictionary *)dict
++ (void)parseAndPersistDictionary:(NSDictionary *)dict
 {
-    return [self parseAndPersistDictionary:dict withCompletion:nil];
+    [self parseAndPersistDictionary:dict withCompletion:nil];
 }
 
-+ (BOOL)parseAndPersistDictionary:(NSDictionary *)dict withCompletion:(void (^)())completion
++ (void)parseAndPersistDictionary:(NSDictionary *)dict withCompletion:(void (^)())completion
 {
-    return [self parseAndPersistDictionary:dict withCompletion:completion forObject:nil];
+    [self parseAndPersistDictionary:dict withCompletion:completion forObject:nil];
 }
 
-+ (BOOL)parseAndPersistDictionary:(NSDictionary *)dict withCompletion:(void (^)())completion forObject:(id)object
++ (void)parseAndPersistDictionary:(NSDictionary *)dict withCompletion:(void (^)())completion forObject:(id)object
 {
 #if DEBUG
     __block NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
@@ -100,8 +100,6 @@
     } completion:^(BOOL contextDidSave, NSError *error) {
         [self doneWithCompletion:completion dict:dict];
     }];
-    
-    return YES;
 }
 
 + (void)doneWithCompletion:(void (^)())completion dict:(NSDictionary *)dict

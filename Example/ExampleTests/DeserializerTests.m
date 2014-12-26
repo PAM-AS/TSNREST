@@ -11,6 +11,7 @@
 #import "Brand.h"
 #import "Product.h"
 #import "NSURLSessionDataTask+TSNRESTDataTask.h"
+#import "TSNRESTParser.h"
 
 @interface DeserializerTests : XCTestCase
 
@@ -84,10 +85,18 @@
     [self waitForExpectationsWithTimeout:1 handler:^(NSError *error) {
         NSUInteger expectedBrandCount = 8;
         XCTAssert([Brand MR_countOfEntities] == expectedBrandCount, @"Got wrong amount of brands (%li) in our db, expected %li, parsing failed.", [Brand MR_countOfEntities], expectedBrandCount);
+        [Brand MR_truncateAll];
         
         NSUInteger expectedProductCount = 10;
         XCTAssert([Product MR_countOfEntities] == expectedProductCount, @"Got wrong amount of products (%li) in our db, expected %li, parsing failed.", [Product MR_countOfEntities], expectedProductCount);
+        [Product MR_truncateAll];
     }];
+}
+
+- (void)testThatParsingNilDictDoesntAddToStore {
+    NSUInteger productCount = [Product MR_countOfEntities];
+    [TSNRESTParser parseAndPersistDictionary:nil];
+    XCTAssertEqual(productCount, [Product MR_countOfEntities], @"Parsing empty dict added products.");
 }
 
 //- (void)testPerformanceExample {
