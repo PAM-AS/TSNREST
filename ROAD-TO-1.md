@@ -13,7 +13,7 @@ For 0.4.0 we'll start working towards the goals staded above. The first major ch
 * Support custom serializers and deserializers instead of mappingBlocks and reverseMappingBlocks
 * ~~Refactor global settings into a separate object, like in WKWebView~~
 * support ?fields and saving fields (`[object saveFields:@[…]]`)
-* ~~Settings for camelCase and snake_case, and automatic switcing between them
-* Automatic mapping, with TSNRestObjectMap only handling edge-cases~~
+* Settings for camelCase and snake_case, and automatic switcing between them
+* ~~Automatic mapping, with TSNRestObjectMap only handling edge-cases~~
 * Don't require special core data fields (dirty, systemId) unless persisting from session to session
 * Support (de)serializing all types of relations (many-relations as well) automatically
