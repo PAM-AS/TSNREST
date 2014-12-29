@@ -5,6 +5,8 @@ TSNREST is ment to be a drop-in library for communicating with REST APIs. It wil
 
 It will take the good parts from Ember Data, while maintaining the advantages of being built on Core Data and MagicalRecord.
 
+This is a living document, and will be just as unpredictable as the App Store review process.
+
 ## 0.4.0
 For 0.4.0 we'll start working towards the goals staded above. The first major change will be splitting categories into specific features, instead of being <objectType>+TSNRESTAdditions. Currently, many of the files have become too large for comfort.
 
