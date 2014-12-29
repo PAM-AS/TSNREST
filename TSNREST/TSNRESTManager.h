@@ -66,16 +66,8 @@
  The completion block will currently return unsuccessful on the first request if this happens.
  */
 - (void)addRequestToAuthQueue:(NSDictionary *)request;
-- (void)runAutoAuthenticatingRequest:(NSURLRequest *)request completion:(void (^)(BOOL success, BOOL newData, BOOL retrying))completion DEPRECATED_ATTRIBUTE;
-
 - (void)flushQueuedRequests;
 
-// If no request dict is supplied, function will not retry after a potential reauthentication (401)
-- (void)handleResponse:(NSURLResponse *)response withData:(NSData *)data error:(NSError *)error object:(id)object completion:(void (^)(id object, BOOL success))completion DEPRECATED_ATTRIBUTE;
-- (void)handleResponse:(NSURLResponse *)response withData:(NSData *)data error:(NSError *)error object:(id)object completion:(void (^)(id object, BOOL success))completion requestDict:(NSDictionary *)requestDict DEPRECATED_ATTRIBUTE;
-
-- (NSDictionary *)dictionaryFromObject:(id)object withObjectMap:(TSNRESTObjectMap *)objectMap optionalKeys:(NSArray *)optionalKeys DEPRECATED_ATTRIBUTE;
-
-- (void)resetDataStore DEPRECATED_ATTRIBUTE;
+- (void)resetDataStore;
 
 @end
