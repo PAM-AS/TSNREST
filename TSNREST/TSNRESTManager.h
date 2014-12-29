@@ -68,9 +68,6 @@
 - (void)addRequestToAuthQueue:(NSDictionary *)request;
 - (void)runAutoAuthenticatingRequest:(NSURLRequest *)request completion:(void (^)(BOOL success, BOOL newData, BOOL retrying))completion DEPRECATED_ATTRIBUTE;
 
-- (void)dataTaskWithRequest:(NSURLRequest *)request completionHandler:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completion DEPRECATED_ATTRIBUTE;
-- (void)dataTaskWithRequest:(NSURLRequest *)request completionHandler:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completion session:(NSURLSession *)session DEPRECATED_ATTRIBUTE;
-
 - (void)flushQueuedRequests;
 
 // If no request dict is supplied, function will not retry after a potential reauthentication (401)

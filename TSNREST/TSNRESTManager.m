@@ -230,46 +230,10 @@
     };
     
     weakRequestCompletion = requestCompletion;
-    [self dataTaskWithRequest:request completionHandler:requestCompletion];
+    [NSURLSessionDataTask dataTaskWithRequest:request success:nil failure:nil finally:^(NSData *data, NSURLResponse *response, NSError *error) {
+        requestCompletion(data, response, error);
+    }];
 }
-
-- (void)dataTaskWithRequest:(NSURLRequest *)request completionHandler:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completion
-{
-    [self dataTaskWithRequest:request completionHandler:completion session:nil];
-}
-
-- (void)dataTaskWithRequest:(NSURLRequest *)request completionHandler:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completion session:(NSURLSession *)session
-{
-    NSLog(@"Requesting datatask for request %@", request.URL.absoluteString);
-    @synchronized([TSNRESTManager class]) {
-        if (self.isAuthenticating)
-        {
-            NSDictionary *dictionary = nil;
-            if (session)
-                dictionary = @{@"request":request,@"completion":completion,@"session":session};
-            else
-                dictionary = @{@"request":request,@"completion":completion};
-            @synchronized(self.requestQueue) {
-                [self.requestQueue addObject:dictionary];
-            }
-            
-            NSLog(@"Authentication is in progress. Datatask added to queue: %@", request.URL.absoluteString);
-            
-            return;
-        }
-    }
-    
-    NSURLSessionDataTask *task = nil;
-    if (!session)
-        task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:completion];
-    else
-        task = [session dataTaskWithRequest:request completionHandler:completion];
-    
-    NSLog(@"Running datatask for request %@ (%@)", request.URL.absoluteString, task);
-    
-    [task resume];
-}
-
 
 - (void)flushQueuedRequests
 {
