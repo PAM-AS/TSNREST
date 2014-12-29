@@ -38,9 +38,8 @@
 @property (nonatomic, strong, readonly) TSNRESTPoller *poller;
 
 @property (atomic) BOOL isAuthenticating;
-@property (nonatomic, strong) NSString *baseURL DEPRECATED_ATTRIBUTE;
 
-+ (id)sharedManager;
++ (TSNRESTManager *)sharedManager;
 
 - (void)addRequestToLoading:(NSURLRequest *)request;
 - (void)removeRequestFromLoading:(NSURLRequest *)request;
@@ -61,13 +60,6 @@
 // Passing nil as header or a settingskey where no setting exists, will remove the header.
 - (void)setGlobalHeader:(NSString *)header forKey:(NSString *)key;
 - (void)setGlobalHeaderFromSettingsKey:(NSString *)settingsKey forKey:(NSString *)key;
-
-- (void)deleteObjectFromServer:(id)object DEPRECATED_ATTRIBUTE;
-- (void)deleteObjectFromServer:(id)object completion:(void (^)(id object, BOOL success))completion DEPRECATED_ATTRIBUTE;
-
-// Common helpers for other TSNREST components
-- (NSURLRequest *)requestForObject:(id)object DEPRECATED_ATTRIBUTE;
-- (NSURLRequest *)requestForObject:(id)object optionalKeys:(NSArray *)optionalKeys DEPRECATED_ATTRIBUTE;
 
 /*
  Run a request that will automatically attempt to reauthenticate if it receives a 401 status.

@@ -76,7 +76,7 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
 {
     NSString *idKey = [(TSNRESTManagerConfiguration *)[[TSNRESTManager sharedManager] configuration] localIdName];
     TSNRESTObjectMap *map = [[TSNRESTManager sharedManager] objectMapForClass:self.class];
-    NSString *url = [[(NSString *)[[TSNRESTManager sharedManager] baseURL] stringByAppendingPathComponent:map.serverPath] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@", [self valueForKey:idKey]]];
+    NSString *url = [[[[[[TSNRESTManager sharedManager] configuration] baseURL] absoluteString] stringByAppendingPathComponent:map.serverPath] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@", [self valueForKey:idKey]]];
     
 #if DEBUG
     NSLog(@"Checking deletion for %@ (%@) at %@", NSStringFromClass(self.class), [self valueForKey:idKey], url);
@@ -115,7 +115,7 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
     NSLog(@"Refreshing %@ %@", NSStringFromClass(self.class), [self valueForKey:idKey]);
 #endif
     TSNRESTObjectMap *map = [[TSNRESTManager sharedManager] objectMapForClass:self.class];
-    NSString *url = [[(NSString *)[[TSNRESTManager sharedManager] baseURL] stringByAppendingPathComponent:map.serverPath] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@", [self valueForKey:idKey]]];
+    NSString *url = [[[[[[TSNRESTManager sharedManager] configuration] baseURL] absoluteString] stringByAppendingPathComponent:map.serverPath] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@", [self valueForKey:idKey]]];
     
 #if DEBUG
     NSLog(@"URL: %@", url);
@@ -170,7 +170,7 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
 #endif
         return;
     }
-    NSURL *url = [[NSURL URLWithString:[manager baseURL]] URLByAppendingPathComponent:[objectMap serverPath]];
+    NSURL *url = [[manager.configuration baseURL] URLByAppendingPathComponent:[objectMap serverPath]];
     if (objectMap.permanentQuery)
         url = [url URLByAppendingQueryString:objectMap.permanentQuery];
     
@@ -203,7 +203,7 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
     
     NSString *query = [NSString stringWithFormat:@"?%@=%@", webAttribute, value];
     
-    NSURL *url = [[[NSURL URLWithString:(NSString *)[[TSNRESTManager sharedManager] baseURL]] URLByAppendingPathComponent:[map serverPath]] URLByAppendingQueryString:query];
+    NSURL *url = [[[[[TSNRESTManager sharedManager] configuration] baseURL] URLByAppendingPathComponent:[map serverPath]] URLByAppendingQueryString:query];
     
     
     NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
@@ -249,7 +249,7 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
         [query appendString:[NSString stringWithFormat:@"%@[]=%@", pluralizedWebAttribute, value]];
     }
     
-    NSURL *url = [[[NSURL URLWithString:(NSString *)[[TSNRESTManager sharedManager] baseURL]] URLByAppendingPathComponent:[map serverPath]] URLByAppendingQueryString:query];
+    NSURL *url = [[[[[TSNRESTManager sharedManager] configuration] baseURL] URLByAppendingPathComponent:[map serverPath]] URLByAppendingQueryString:query];
     
     NSLog(@"Asking server for %@", url);
     

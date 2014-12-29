@@ -30,7 +30,7 @@
 
 @implementation TSNRESTManager
 
-+ (id)sharedManager
++ (TSNRESTManager *)sharedManager
 {
     // structure used to test whether the block has completed or not
     static dispatch_once_t p = 0;
@@ -118,14 +118,6 @@
     return _poller;
 }
 
-- (void)setBaseURL:(NSString *)baseURL {
-    [self.configuration setBaseURL:[NSURL URLWithString:baseURL]];
-}
-
-- (NSString *)baseURL {
-    return self.configuration.baseURL.absoluteString;
-}
-
 - (NSDictionary *)customHeaders {
     return [NSDictionary dictionaryWithDictionary:_customHeaders];
 }
@@ -192,18 +184,6 @@
     }
     
     return nil;
-}
-
-
-#pragma mark - Deletion
-- (void)deleteObjectFromServer:(id)object
-{
-    [self deleteObjectFromServer:object completion:nil];
-}
-
-- (void)deleteObjectFromServer:(id)object completion:(void (^)(id object, BOOL success))completion
-{
-    [object deleteFromServerWithCompletion:completion];
 }
 
 #pragma mark - Network helpers
@@ -478,16 +458,6 @@
 - (NSDictionary *)dictionaryFromObject:(id)object withObjectMap:(TSNRESTObjectMap *)objectMap optionalKeys:(NSArray *)optionalKeys
 {
     return [object dictionaryRepresentationWithOptionalKeys:optionalKeys excludingKeys:nil];
-}
-
-- (NSURLRequest *)requestForObject:(NSManagedObject *)object
-{
-    return [self requestForObject:object optionalKeys:nil];
-}
-
-- (NSURLRequest *)requestForObject:(NSManagedObject *)object optionalKeys:(NSArray *)optionalKeys
-{
-    return [NSURLRequest requestForObject:object optionalKeys:optionalKeys];
 }
 
 - (void)resetDataStore

@@ -59,7 +59,7 @@
         [request setHTTPBody:JSONData];
     }
     
-    NSURL *url = [NSURL URLWithString:manager.baseURL];
+    NSURL *url = [manager.configuration baseURL];
     if (objectMap.serverPath)
     url = [url URLByAppendingPathComponent:objectMap.serverPath];
     else

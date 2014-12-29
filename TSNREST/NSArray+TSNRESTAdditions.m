@@ -104,7 +104,7 @@
             return;
         }
         
-        NSString *url = [[(NSString *)[[TSNRESTManager sharedManager] baseURL] stringByAppendingPathComponent:map.serverPath] stringByAppendingString:ids];
+        NSString *url = [[[[[[TSNRESTManager sharedManager] configuration] baseURL] URLByAppendingPathComponent:map.serverPath] URLByAppendingPathComponent:ids] absoluteString];
         
         if (sideloads && sideloads.count > 0)
         {
