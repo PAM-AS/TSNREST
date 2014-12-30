@@ -24,6 +24,7 @@
 
 - (void)setUp {
     [super setUp];
+    [MagicalRecord setupCoreDataStackWithInMemoryStore];
     Product *product = [Product MR_createEntity];
     product.systemId = @42;
     product.name = @"Testproduct";
@@ -45,10 +46,7 @@
 }
 
 - (void)tearDown {
-    Product *product = self.testProduct;
-    [product MR_deleteEntity];
-    [product.shop MR_deleteEntity];
-    [product.brand MR_deleteEntity];
+    [MagicalRecord cleanUp];
     [super tearDown];
 }
 
