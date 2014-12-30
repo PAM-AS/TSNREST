@@ -41,7 +41,8 @@
     "inventory": 2,
     "brand_id": 7061,
     "shop_id": 2247,
-    "price_gross": 129900
+    "price_gross": 129900,
+    "image_ids":[7067, 7065, 7068, 7066]
   },
   {"id": 7319,
     "name": "Ekko",
