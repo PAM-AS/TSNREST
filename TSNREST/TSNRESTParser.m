@@ -33,7 +33,7 @@
 
     __block NSInteger objects = 0;
     
-    [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+    [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
         /*
          Strategy for not having to delete temporary objects: Always parse objects of type self first, and create the object that way.
          */
@@ -97,9 +97,8 @@
 #if DEBUG
         NSLog(@"Parsing %lu arrays (%li objects) took %f", (unsigned long)dict.count, (long)objects, [NSDate timeIntervalSinceReferenceDate] - start);
 #endif
-    } completion:^(BOOL contextDidSave, NSError *error) {
-        [self doneWithCompletion:completion dict:dict];
     }];
+    [self doneWithCompletion:completion dict:dict];
 }
 
 + (void)doneWithCompletion:(void (^)())completion dict:(NSDictionary *)dict
