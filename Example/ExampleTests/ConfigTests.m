@@ -49,14 +49,6 @@
     XCTAssertEqualObjects(url, manager.configuration.baseURL, @"URLs aren't alike: %@ != %@", url.absoluteString, manager.configuration.baseURL.absoluteString);
 }
 
-- (void)testLegacyBaseURLSettingAndGetting {
-    NSString *urlString = @"http://pam.no/api/v1";
-    TSNRESTManager *manager = [TSNRESTManager sharedManager];
-    [manager setBaseURL:urlString];
-    XCTAssertEqualObjects(urlString, manager.configuration.baseURL.absoluteString, @"URLs aren't alike: %@ != %@", urlString, manager.configuration.baseURL.absoluteString);
-    XCTAssertEqualObjects(urlString, manager.baseURL, @"URL strings aren't alike: %@ != %@", urlString, manager.baseURL);
-}
-
 - (void)testSettingAndGettingUserClass {
     TSNRESTManager *manager = [TSNRESTManager sharedManager];
     Class userClass = [NSDictionary class];
