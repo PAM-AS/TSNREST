@@ -15,8 +15,19 @@
 @implementation NSManagedObject (TSNRESTFetching)
 
 + (NSManagedObject *)findOrCreateBySystemId:(NSNumber *)systemid inContext:(NSManagedObjectContext *)context {
-    if (!context)
-        context = [NSManagedObjectContext MR_contextForCurrentThread];
+    if (!context) {
+        __block NSManagedObject *object = nil;
+        [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+            object = [self _findOrCreateBySystemId:systemid inContext:localContext];
+        }];
+        return object;
+    }
+    else {
+        return [self _findOrCreateBySystemId:systemid inContext:context];
+    }
+}
+
++ (NSManagedObject *)_findOrCreateBySystemId:(NSNumber *)systemid inContext:(NSManagedObjectContext *)context {
     NSString *idKey = [(TSNRESTManagerConfiguration *)[[TSNRESTManager sharedManager] configuration] localIdName];
     NSManagedObject *object = [self MR_findFirstByAttribute:idKey withValue:systemid inContext:context];
     if (!object) {

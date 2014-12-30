@@ -156,6 +156,36 @@
     }];
 }
 
+- (void)testThatDeserializerHandlesInvalidJSON {
+    NSURL *invalidDataUrl = [[NSURL alloc] initFileURLWithPath:[[NSBundle mainBundle] pathForResource:@"Fixtures/JSON/invalid" ofType:@"json"]];
+    NSURLRequest *invalidDataRequest = [NSURLRequest requestWithURL:invalidDataUrl];
+    
+    XCTestExpectation *invalidDataTaskExpectation = [self expectationWithDescription:@"Invalid data datatask complete"];
+    
+    NSURLSessionDataTask *invalidDataTask = [NSURLSessionDataTask dataTaskWithRequest:invalidDataRequest success:^(NSData *data, NSURLResponse *response, NSError *error) {
+
+    } failure:^(NSData *data, NSURLResponse *response, NSError *error, NSInteger statusCode) {
+        
+    } finally:^(NSData *data, NSURLResponse *response, NSError *error) {
+        [invalidDataTaskExpectation fulfill];
+    } parseResult:YES];
+    [invalidDataTask resume];
+    
+    [self waitForExpectationsWithTimeout:1 handler:^(NSError *error) {
+        XCTAssert([Image MR_countOfEntities] == 0, @"There are images in the store, there shouldn't be.");
+        XCTAssert([Brand MR_countOfEntities] == 0, @"There are brands in the store, there shouldn't be.");
+        XCTAssert([Product MR_countOfEntities] == 0, @"There are products in the store, there shouldn't be.");
+        
+    }];
+}
+
+- (void)testThatParserIgnoresObjectsWithoutId {
+    NSDictionary *testDict = @{@"name":@"No-id product"};
+    [TSNRESTParser parseAndPersistDictionary:testDict withCompletion:^{
+        XCTAssert([Product MR_countOfEntities] == 0, @"A product without id was added to the store by way of parsing.");
+    }];
+}
+
 //- (void)testPerformanceExample {
 //    // This is an example of a performance test case.
 //    [self measureBlock:^{
