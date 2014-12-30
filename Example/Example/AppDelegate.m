@@ -9,6 +9,7 @@
 #import "AppDelegate.h"
 #import "MagicalRecord.h"
 #import "MagicalRecord+Setup.h"
+#import "TSNRESTManager.h"
 
 @interface AppDelegate ()
 
@@ -19,6 +20,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [MagicalRecord setupAutoMigratingCoreDataStack];
+    [[TSNRESTManager sharedManager] resetDataStore];
     return YES;
 }
 
