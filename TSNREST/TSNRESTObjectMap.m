@@ -109,6 +109,11 @@
     NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:self.keyClasses];
     [dict setObject:classType forKey:key];
     self.keyClasses = [NSDictionary dictionaryWithDictionary:dict];
+    NSString *webKey = [[key singularizedString] stringByAppendingString:@"_ids"];
+#if DEBUG
+    NSLog(@"Mapping %@ to %@ because of adding class %@", key, webKey, NSStringFromClass(classType));
+#endif
+    [self mapObjectKey:key toWebKey:webKey];
 }
 
 static const char *getPropertyType(objc_property_t property) {
