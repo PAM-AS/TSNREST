@@ -197,6 +197,11 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
 
 + (void)findOnServerByAttribute:(NSString *)objectAttribute value:(id)value completion:(void (^)(NSArray *results))completion
 {
+    [self findOnServerByAttribute:objectAttribute value:value queryParameters:nil completion:completion];
+}
+
++ (void)findOnServerByAttribute:(NSString *)objectAttribute value:(id)value queryParameters:(NSDictionary *)queryParameters completion:(void (^)(NSArray *results))completion
+{
     TSNRESTObjectMap *map = [[TSNRESTManager sharedManager] objectMapForClass:[self class]];
     
     if (!map) {
@@ -222,6 +227,13 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
     }
     
     NSString *query = [NSString stringWithFormat:@"?%@=%@", webAttribute, queryValue];
+    if (queryParameters) {
+        NSMutableString *queryWithParameters = [NSMutableString stringWithString:query];
+        for (NSString *key in queryParameters) {
+            [queryWithParameters appendFormat:@"&%@=%@", key, [queryParameters valueForKey:key]];
+        }
+        query = [NSString stringWithString:queryWithParameters];
+    }
     
     NSURL *url = [[[[[TSNRESTManager sharedManager] configuration] baseURL] URLByAppendingPathComponent:[map serverPath]] URLByAppendingQueryString:query];
     
