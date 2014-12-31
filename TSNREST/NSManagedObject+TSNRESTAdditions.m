@@ -240,7 +240,13 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
     
     NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:url];
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
+    [request addValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    NSDictionary *customHeaders = [[TSNRESTManager sharedManager] customHeaders];
+    if (customHeaders)
+        [customHeaders enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+            [request addValue:obj forHTTPHeaderField:key];
+        }];
     
     NSLog(@"Fetching search from URL: %@", url);
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
