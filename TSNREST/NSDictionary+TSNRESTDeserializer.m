@@ -24,14 +24,27 @@
         NSLog(@"Adding %@ %@", NSStringFromClass([map classToMap]), [self objectForKey:@"id"]);
 #endif
     
-    if (optimize && object && [object respondsToSelector:NSSelectorFromString(@"updatedAt")] && (![object respondsToSelector:NSSelectorFromString(@"dirty")] || ![[object valueForKey:@"dirty"] isEqualToNumber:@2]))
+    TSNRESTManagerConfiguration *config = [[TSNRESTManager sharedManager] configuration];
+    if (optimize && object && config.shouldOptimizeBySkipping &&
+        [object respondsToSelector:NSSelectorFromString(config.optimizableKey)] &&
+        (![object respondsToSelector:NSSelectorFromString(@"dirty")] || ![[object valueForKey:@"dirty"] isEqualToNumber:@2]))
     {
-        NSDate *objectDate = [object valueForKey:@"updatedAt"];
-        NSDate *webDate = [[[TSNRESTManager sharedManager] ISO8601Formatter] dateFromString:[self objectForKey:[[map objectToWeb] valueForKey:@"updatedAt"]]];
-        if (webDate && [objectDate isKindOfClass:[NSDate class]] && [objectDate isEqualToDate:webDate])
+        id currentValue = [object valueForKey:config.optimizableKey];
+        if ([currentValue isKindOfClass:[NSDate class]])
         {
+            NSDate *objectDate = currentValue;
+            NSDate *webDate = [[[TSNRESTManager sharedManager] ISO8601Formatter] dateFromString:[self objectForKey:[[map objectToWeb] valueForKey:config.optimizableKey]]];
+            if (webDate && [objectDate isKindOfClass:[NSDate class]] && [objectDate isEqualToDate:webDate])
+            {
 #if DEBUG
-            NSLog(@"Skipping object that hasn't been updated since %@", webDate);
+                NSLog(@"Skipping object that hasn't been updated since %@", webDate);
+#endif
+                return object;
+            }
+        }
+        else if ([currentValue isEqual:[self objectForKey:[[map objectToWeb] valueForKey:config.optimizableKey]]]) {
+#if DEBUG
+            NSLog(@"Skipping object because %@ == %@", currentValue, [self objectForKey:[[map objectToWeb] valueForKey:config.optimizableKey]]);
 #endif
             return object;
         }
