@@ -28,7 +28,7 @@
 + (void)refresh;
 + (void)refreshWithCompletion:(void (^)())completion;
 
-+ (void)findOnServerByAttribute:(NSString *)objectAttribute value:(NSString *)value completion:(void (^)(NSArray *results))completion;
++ (void)findOnServerByAttribute:(NSString *)objectAttribute value:(id)value completion:(void (^)(NSArray *results))completion;
 + (void)findOnServerByAttribute:(NSString *)objectAttribute pluralizedWebAttribute:(NSString *)pluralizedWebAttribute values:(NSArray *)values completion:(void (^)(NSArray *results))completion;
 
 @end

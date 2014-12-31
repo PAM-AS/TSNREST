@@ -195,13 +195,33 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
     [task resume];
 }
 
-+ (void)findOnServerByAttribute:(NSString *)objectAttribute value:(NSString *)value completion:(void (^)(NSArray *results))completion
++ (void)findOnServerByAttribute:(NSString *)objectAttribute value:(id)value completion:(void (^)(NSArray *results))completion
 {
     TSNRESTObjectMap *map = [[TSNRESTManager sharedManager] objectMapForClass:[self class]];
     
+    if (!map) {
+#if DEBUG
+        NSLog(@"Warning: skipped loading for class %@ because of missing object map.", NSStringFromClass([self class]));
+#endif
+        return;
+    }
+    
     NSString *webAttribute = [[map objectToWeb] objectForKey:objectAttribute];
     
-    NSString *query = [NSString stringWithFormat:@"?%@=%@", webAttribute, value];
+    NSString *queryValue;
+    if ([value isKindOfClass:[NSString class]])
+        queryValue = (NSString *)value;
+    else if ([value isKindOfClass:[NSManagedObject class]])
+        queryValue = [value valueForKey:[[[TSNRESTManager sharedManager] configuration] localIdName]];
+    
+    if (!queryValue) {
+#if DEBUG
+        NSLog(@"Warning: Could not create valid query for %@ based on key: %@, value: %@", NSStringFromClass([self class]), objectAttribute, value);
+#endif
+        return;
+    }
+    
+    NSString *query = [NSString stringWithFormat:@"?%@=%@", webAttribute, queryValue];
     
     NSURL *url = [[[[[TSNRESTManager sharedManager] configuration] baseURL] URLByAppendingPathComponent:[map serverPath]] URLByAppendingQueryString:query];
     
