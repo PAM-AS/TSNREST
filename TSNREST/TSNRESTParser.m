@@ -93,6 +93,8 @@
                     NSLog(@"No object map found for %@. Bailing out.", dictKey);
                 }
 #endif
+                // Save these changes, so they are accessible to the next round of insertions.
+                [localContext MR_saveOnlySelfAndWait];
             }
             
 #if DEBUG
