@@ -105,6 +105,12 @@
     return _configuration;
 }
 
+- (TSNRESTSession *)session {
+    if (!_session)
+        _session = [[TSNRESTSession alloc] init];
+    return _session;
+}
+
 - (NJISO8601Formatter *)ISO8601Formatter
 {
     if (!_ISO8601Formatter)
@@ -125,10 +131,6 @@
 #pragma mark - Session
 - (NSURLSession *)URLSession {
     return [NSURLSession sharedSession]; // We currently use the shared session, but this is a convenient override point.
-}
-
-- (void)reAuthenticate {
-    [TSNRESTLogin loginWithDefaultRefreshTokenAndUserClass:[self.delegate userClass] url:[self.delegate authURL]];
 }
 
 #pragma mark - Functions

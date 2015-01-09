@@ -41,7 +41,7 @@
                     [dict setObject:finallyBlock forKey:@"finallyBlock"];
                 [manager addRequestToAuthQueue:[NSDictionary dictionaryWithDictionary:dict]];
             }
-            [manager reAuthenticate];
+            [manager.session loginWithDefaultInfo];
             [manager removeRequestFromLoading:request];
         }
         else if (statusCode < 200 || statusCode > 204) { // No success

@@ -11,29 +11,18 @@
 #import "TSNRESTObjectMap.h"
 #import "NSManagedObject+TSNRESTAdditions.h"
 #import "NSArray+TSNRESTAdditions.h"
-#import "TSNRESTLogin.h"
 #import "NSURL+TSNRESTAdditions.h"
 #import "NJISO8601Formatter.h"
 #import "NSManagedObject+TSNRESTDeletion.h"
 #import "TSNRESTPoller.h"
 #import "TSNRESTManagerConfiguration.h"
+#import "TSNRESTSession.h";
 
-@protocol TSNRESTManagerDelegate <NSObject>
-
-@required
-- (NSString *)authURL;
-
-@optional
-- (Class)userClass;
-- (void (^)(id object, BOOL success))loginCompleteBlock;
-
-@end
 
 @interface TSNRESTManager : NSObject
 
-@property (nonatomic, assign) id <TSNRESTManagerDelegate> delegate;
-
 @property (nonatomic, strong) TSNRESTManagerConfiguration *configuration;
+@property (nonatomic, strong) TSNRESTSession *session;
 @property (nonatomic, strong) NJISO8601Formatter *ISO8601Formatter;
 @property (nonatomic, strong, readonly) TSNRESTPoller *poller;
 
@@ -50,7 +39,6 @@
 
 - (NSURLSession *)URLSession;
 - (NSDictionary *)customHeaders;
-- (void)reAuthenticate;
 
 - (void)addObjectMap:(TSNRESTObjectMap *)objectMap;
 - (TSNRESTObjectMap *)objectMapForClass:(Class)classToFind;
