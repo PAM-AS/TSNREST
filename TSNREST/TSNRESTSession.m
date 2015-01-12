@@ -150,7 +150,18 @@ static NSString *expiryKey = @"expires_in";
         
         if ([(NSHTTPURLResponse *)response statusCode] < 200 || [(NSHTTPURLResponse *)response statusCode] > 204 || data.length == 0) {
             if (self.delegate) {
-                if (self.flowDelegate && [self.flowDelegate respondsToSelector:@selector(sessionGotResponseWithError:completion:)]) {
+                if ([(NSHTTPURLResponse *)response statusCode] == 401) {
+#if DEBUG
+                    NSLog(@"Server refused login (401)");
+#endif
+                    if (self.delegate && [self.delegate respondsToSelector:@selector(sessionLoginFailedWithError:)]) {
+                        [self.delegate sessionLoginFailedWithError:error];
+                    }
+                    if (self.delegate && [self.delegate respondsToSelector:@selector(sessionGotLoggedOut)]) {
+                        [self.delegate sessionGotLoggedOut];
+                    }
+                }
+                else if (self.flowDelegate && [self.flowDelegate respondsToSelector:@selector(sessionGotResponseWithError:completion:)]) {
                     [self.flowDelegate sessionGotResponseWithError:error completion:^{
                         [self.delegate sessionLoginFailedWithError:error];
                     }];
