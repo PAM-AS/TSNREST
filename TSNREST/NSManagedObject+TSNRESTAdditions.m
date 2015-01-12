@@ -248,8 +248,10 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
             [request addValue:obj forHTTPHeaderField:key];
         }];
     
+#if DEBUG
     NSLog(@"Fetching search from URL: %@", url);
     NSLog(@"URL was based on value: %@", value);
+#endif
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
         [TSNRESTParser parseAndPersistDictionary:dict withCompletion:^{
@@ -259,15 +261,13 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
             if ([[(NSObject *)self classOfPropertyNamed:objectAttribute] isSubclassOfClass:[NSManagedObject class]])
             {
                 NSString *idKey = [(TSNRESTManagerConfiguration *)[[TSNRESTManager sharedManager] configuration] localIdName];
-                referenceObject = [[(NSObject *)self classOfPropertyNamed:objectAttribute] MR_findFirstByAttribute:idKey withValue:[value valueForKey:idKey]];
+                referenceObject = [[(NSObject *)self classOfPropertyNamed:objectAttribute] MR_findFirstByAttribute:idKey withValue:queryValue];
                 predicate = [NSPredicate predicateWithFormat:@"%K = %@", objectAttribute, referenceObject];
             }
             else
             {
-                predicate = [NSPredicate predicateWithFormat:@"%K = %@", objectAttribute, value];
+                predicate = [NSPredicate predicateWithFormat:@"%K = %@", objectAttribute, queryValue];
             }
-            
-            NSLog(@"Predicate (from value %@): %@", value, predicate.predicateFormat);
             
             NSArray *objects = [[self class] MR_findAllWithPredicate:predicate];
             if (completion)
