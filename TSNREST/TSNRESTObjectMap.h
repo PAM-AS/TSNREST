@@ -49,6 +49,7 @@
 
 // Extras
 - (void)addBoolean:(NSString *)boolean; // Tells TSNREST to convert boolean to NSNumber for Core Data
+- (void)addBooleans:(NSArray *)booleans;
 - (void)addEnumMap:(NSDictionary *)enumMap forKey:(NSString *)key;
 - (void)addClass:(Class)classType forKey:(NSString *)key;
 /*

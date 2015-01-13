@@ -104,6 +104,12 @@
     self.booleans = [NSDictionary dictionaryWithDictionary:dict];
 }
 
+- (void)addBooleans:(NSArray *)booleans {
+    for (NSString *boolean in booleans) {
+        [self addBoolean:boolean];
+    }
+}
+
 -(void)addEnumMap:(NSDictionary *)enumMap forKey:(NSString *)key
 {
     NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:self.enumMaps];
