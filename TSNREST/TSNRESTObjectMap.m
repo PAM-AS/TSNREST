@@ -69,6 +69,12 @@
     self.objectToWeb = [NSDictionary dictionaryWithDictionary:dict];
 }
 
+- (void)removeMappingForKey:(NSString *)objectKey {
+    NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:_objectToWeb];
+    [dict removeObjectForKey:objectKey];
+    self.objectToWeb = [NSDictionary dictionaryWithDictionary:dict];
+}
+
 - (void)mapIdenticalKey:(NSString *)key
 {
     [self mapObjectKey:key toWebKey:key];
@@ -109,7 +115,7 @@
     NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:self.keyClasses];
     [dict setObject:classType forKey:key];
     self.keyClasses = [NSDictionary dictionaryWithDictionary:dict];
-    NSString *webKey = [[key singularizedString] stringByAppendingString:@"_ids"];
+    NSString *webKey = [[[key singularizedString] stringByConvertingCamelCaseToUnderscore] stringByAppendingString:@"_ids"];
 #if DEBUG
     NSLog(@"Mapping %@ to %@ because of adding class %@", key, webKey, NSStringFromClass(classType));
 #endif
@@ -159,9 +165,8 @@ static const char *getPropertyType(objc_property_t property) {
 #endif
                 [self mapCamelCasedObjectKeyToUnderscoreWebKey:propertyName];
             } else if ([NSClassFromString(propertyType) isSubclassOfClass:[NSManagedObject class]]) {
-                Class class = NSClassFromString(propertyType);
-                NSString *webKey = [[NSString stringWithFormat:@"%@_id", propertyType] decapitalizedString];
-                [self mapClass:class toWebKey:webKey];
+                NSString *webKey = [[NSString stringWithFormat:@"%@_id", [propertyName stringByConvertingCamelCaseToUnderscore]] decapitalizedString];
+                [self mapObjectKey:propertyName toWebKey:webKey];
             }
         }
     }

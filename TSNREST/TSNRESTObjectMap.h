@@ -38,6 +38,7 @@
 - (void)mapObjectKeys:(NSArray *)objectKeys toWebKeys:(NSArray *)webKeys;
 - (void)mapObjectKey:(NSString *)objectKey toWebKey:(NSString *)webKey;
 - (void)mapObjectKey:(NSString *)objectKey toWebKeys:(NSArray *)webKey;
+- (void)removeMappingForKey:(NSString *)objectKey;
 
 // Conveniences
 - (void)mapIdenticalKey:(NSString *)key;
