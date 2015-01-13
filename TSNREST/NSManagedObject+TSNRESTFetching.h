@@ -10,6 +10,7 @@
 
 @interface NSManagedObject (TSNRESTFetching)
 
-+ (NSManagedObject *)findOrCreateBySystemId:(NSNumber *)systemid inContext:(NSManagedObjectContext *)context;
++ (NSManagedObject *)findOrCreateBySystemId:(NSNumber *)systemId inContext:(NSManagedObjectContext *)context;
++ (void)findOnServerById:(NSNumber *)systemId completion:(void(^)(NSManagedObject *object))completion;
 
 @end
