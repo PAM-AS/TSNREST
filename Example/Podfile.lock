@@ -8,7 +8,7 @@ PODS:
   - Reachability (3.1.1)
   - RSSwizzle (0.1.0)
   - SAMCategories (0.4.1)
-  - TSNREST (0.4.1):
+  - TSNREST (0.6.0):
     - InflectorKit (~> 0.0.1)
     - MagicalRecord
     - NSTimer-Blocks (~> 0.0.1)
@@ -46,6 +46,6 @@ SPEC CHECKSUMS:
   Reachability: 8e9635e3cb4f98e7f825e51147f677ecc694d0e7
   RSSwizzle: ab39962b7ec56d19c2318ec1127e253797121363
   SAMCategories: e5e2371b9143d66c6fc76dfd6e7c687ffbccf1e7
-  TSNREST: fa19f659315d9e44d23f40709f83524d751c34e7
+  TSNREST: 0d05c8840d7d2f1cef5de6cf24b43cb072babfa5
 
 COCOAPODS: 0.35.0
