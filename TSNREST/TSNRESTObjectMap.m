@@ -175,6 +175,7 @@ static const char *getPropertyType(objc_property_t property) {
 
 - (void)logObjectMappings
 {
+    NSLog(@"Objectmappings for class %@ (server path: %@)", NSStringFromClass(self.class), self.serverPath);
     for (NSString *key in self.objectToWeb)
     {
         NSMutableString *logString = [NSMutableString stringWithFormat:@"Object: %@", key];
