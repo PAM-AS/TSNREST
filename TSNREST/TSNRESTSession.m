@@ -77,6 +77,8 @@ static NSString *expiryKey = @"expires_in";
 }
 
 - (NSDictionary *)addHeader:(NSString *)header forKey:(NSString *)key {
+    if (!header)
+        return self.headers;
     NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:self.headers];
     [dict setObject:header forKey:key];
     [self setHeaders:[NSDictionary dictionaryWithDictionary:dict]];
