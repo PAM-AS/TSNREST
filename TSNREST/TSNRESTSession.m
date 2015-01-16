@@ -146,6 +146,15 @@ static NSString *expiryKey = @"expires_in";
         NSLog(@"Login result: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
 #endif
         
+        if (error) {
+#if DEBUG
+            NSLog(@"Error re-authenticating. %@", error.localizedDescription);
+#endif
+            
+#warning Handle this error in a more graceful way. User alert? Retry after x seconds?
+            return;
+        }
+        
         NSAssert([response isKindOfClass:[NSHTTPURLResponse class]], @"Assuming that the response is a HTTPURLResponse. Other protocols are currently not supported in TSNRESTSession.");
         
         self.isAuthenticating = NO;

@@ -16,7 +16,7 @@
 #import "NSManagedObject+TSNRESTDeletion.h"
 #import "TSNRESTPoller.h"
 #import "TSNRESTManagerConfiguration.h"
-#import "TSNRESTSession.h";
+#import "TSNRESTSession.h"
 
 
 @interface TSNRESTManager : NSObject

@@ -10,6 +10,7 @@
 #import "TSNRESTObjectMap.h"
 #import "NSString+TSNRESTCasing.h"
 #import "NSString+InflectorKit.h"
+#import "NSString+TSNRESTContains.h"
 
 @interface TSNRESTObjectMap ()
 
@@ -146,9 +147,6 @@ static const char *getPropertyType(objc_property_t property) {
 }
 
 - (void)automapAllProperties {
-#if DEBUG
-    NSLog(@"Mapping properties of %@:", NSStringFromClass(self.classToMap));
-#endif
     unsigned int outCount, i;
     objc_property_t *properties = class_copyPropertyList(self.classToMap, &outCount);
     for (i = 0; i < outCount; i++) {
@@ -163,12 +161,9 @@ static const char *getPropertyType(objc_property_t property) {
             if ([propertyName isEqualToString:@"systemId"] || [propertyName isEqualToString:@"dirty"]) {
                 continue;
             }
-            else if ([propertyType isEqualToString:@"NSString"] ||
-                [propertyType isEqualToString:@"NSNumber"] ||
-                [propertyType isEqualToString:@"NSDate"]) {
-#if DEBUG
-                NSLog(@"Found and mapped property %@ of type %@", propertyName, propertyType);
-#endif
+            else if ([propertyType containsString:@"NSString"] ||
+                [propertyType containsString:@"NSNumber"] ||
+                [propertyType containsString:@"NSDate"]) {
                 [self mapCamelCasedObjectKeyToUnderscoreWebKey:propertyName];
             } else if ([NSClassFromString(propertyType) isSubclassOfClass:[NSManagedObject class]]) {
                 NSString *webKey = [[NSString stringWithFormat:@"%@_id", [propertyName stringByConvertingCamelCaseToUnderscore]] decapitalizedString];
@@ -178,11 +173,6 @@ static const char *getPropertyType(objc_property_t property) {
     }
 }
 
-/*
- Quickmap
- Check if class
- if(class_isMetaClass(object_getClass(obj)))
- */
 
 - (void)logObjectMappings
 {
