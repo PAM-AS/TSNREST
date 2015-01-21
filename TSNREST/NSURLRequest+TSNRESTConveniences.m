@@ -25,8 +25,6 @@
 {
     TSNRESTManager *manager = [TSNRESTManager sharedManager];
     
-    [[object managedObjectContext] refreshObject:object mergeChanges:NO];
-    
     if (!object) {
         return nil;
     }
@@ -45,6 +43,7 @@
     
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
     [request addValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    request.timeoutInterval = 15;
     NSDictionary *customHeaders = [manager customHeaders];
     if (customHeaders)
     [customHeaders enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
