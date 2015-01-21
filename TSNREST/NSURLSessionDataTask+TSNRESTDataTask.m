@@ -25,7 +25,7 @@
     TSNRESTManager *manager = [TSNRESTManager sharedManager];
     [manager addRequestToLoading:request];
     return [[manager URLSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        NSInteger statusCode = 200;
+        NSInteger statusCode = 0;
         if ([response isKindOfClass:[NSHTTPURLResponse class]])
             statusCode = [(NSHTTPURLResponse *)response statusCode];
         if (statusCode == 401) { // Not authenticated
