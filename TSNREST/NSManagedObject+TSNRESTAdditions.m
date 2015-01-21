@@ -57,6 +57,7 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
 
 - (void)faultIfNeededWithCompletion:(void (^)(id object, BOOL success))completion
 {
+    NSManagedObject *object = [self MR_inContext:[NSManagedObjectContext MR_contextForCurrentThread]];
     SEL dirtyIdSelector = sel_registerName("dirty");
     if ([self respondsToSelector:dirtyIdSelector] && [[self valueForKey:@"dirty"] isEqualToNumber:@2])
     {
@@ -89,7 +90,7 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
     } failure:^(NSData *data, NSURLResponse *response, NSError *error, NSInteger statusCode) {
         if (statusCode == 404) {
             [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
-                [self MR_deleteEntity];
+                [[self MR_inContext:localContext] MR_deleteEntity];
             } completion:^(BOOL contextDidSave, NSError *error) {
                 if (completion)
                     completion(YES);

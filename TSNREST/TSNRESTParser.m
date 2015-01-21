@@ -25,7 +25,7 @@
     [self parseAndPersistDictionary:dict withCompletion:completion forObject:nil];
 }
 
-+ (void)parseAndPersistDictionary:(NSDictionary *)dict withCompletion:(void (^)())completion forObject:(id)object
++ (void)parseAndPersistDictionary:(NSDictionary *)dict withCompletion:(void (^)())completion forObject:(id)inputObject
 {
 #if DEBUG
     __block NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
@@ -35,6 +35,7 @@
     
     @synchronized(self) { // Self is the class when using class methods
         [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+            NSManagedObject *object = [inputObject MR_inContext:localContext];
             /*
              Strategy for not having to delete temporary objects: Always parse objects of type self first, and create the object that way.
              */
