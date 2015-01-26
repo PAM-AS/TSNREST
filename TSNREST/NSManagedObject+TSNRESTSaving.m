@@ -89,6 +89,7 @@
     {
 #if DEBUG
         NSLog(@"Skipping object of type %@ because it's invalid.", NSStringFromClass([self class]));
+        NSLog(@"%@", self);
 #endif
         NSManagedObject *selfObject = self;
         if (failureBlock)
@@ -131,6 +132,12 @@
         }
         
 #if DEBUG
+        NSString *resultString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        NSLog(@"Saved data, got response: %@", resultString);
+        
+        NSLog(@"Status code: %li", [(NSHTTPURLResponse *)response statusCode]);
+#endif
+#if AIRWATCH
         NSString *resultString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
         NSLog(@"Saved data, got response: %@", resultString);
         
