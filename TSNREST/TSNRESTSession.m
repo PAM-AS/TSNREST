@@ -165,7 +165,12 @@ static NSString *expiryKey = @"expires_in";
 #if DEBUG
                     NSLog(@"Server refused login (401)");
 #endif
-                    if (self.delegate && [self.delegate respondsToSelector:@selector(sessionLoginFailedWithError:)]) {
+                    if (self.flowDelegate && [self.flowDelegate respondsToSelector:@selector(sessionGotResponseWithError:completion:)]) {
+                        [self.flowDelegate sessionGotResponseWithError:error completion:^{
+                            [self.delegate sessionLoginFailedWithError:error];
+                        }];
+                    }
+                    else if (self.delegate && [self.delegate respondsToSelector:@selector(sessionLoginFailedWithError:)]) {
                         [self.delegate sessionLoginFailedWithError:error];
                     }
                     if (self.delegate && [self.delegate respondsToSelector:@selector(sessionGotLoggedOut)]) {
@@ -177,7 +182,9 @@ static NSString *expiryKey = @"expires_in";
                         [self.delegate sessionLoginFailedWithError:error];
                     }];
                 } else {
-                    [self.delegate sessionLoginFailedWithError:error];
+                    if (self.delegate && [self.delegate respondsToSelector:@selector(sessionLoginFailedWithError:)]) {
+                        [self.delegate sessionLoginFailedWithError:error];
+                    }
                 }
             }
             
