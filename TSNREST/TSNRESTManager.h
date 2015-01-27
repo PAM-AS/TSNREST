@@ -33,8 +33,6 @@
 - (void)addRequestToLoading:(NSURLRequest *)request;
 - (void)removeRequestFromLoading:(NSURLRequest *)request;
 
-- (void)addSelfSavingObject:(NSManagedObject *)object;
-- (void)removeSelfSavingObject:(NSManagedObject *)object;
 - (BOOL)isLoading;
 
 - (NSURLSession *)URLSession;

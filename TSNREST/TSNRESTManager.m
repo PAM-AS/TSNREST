@@ -22,7 +22,6 @@
 
 @property (nonatomic, strong) NSMutableSet *requestQueue;
 @property (nonatomic, strong) NSMutableSet *currentRequests;
-@property (nonatomic, strong) NSMutableArray *selfSavingObjects;
 @property (nonatomic, strong) NSMutableDictionary *customHeaders;
 @property (nonatomic, strong) NSMutableDictionary *objectMaps;
 
@@ -43,7 +42,6 @@
         _sharedObject = [[self alloc] init];
         [(TSNRESTManager *)_sharedObject setRequestQueue:[[NSMutableSet alloc] init]];
         [(TSNRESTManager *)_sharedObject setCurrentRequests:[[NSMutableSet alloc] init]];
-        [(TSNRESTManager *)_sharedObject setSelfSavingObjects:[[NSMutableArray alloc] init]];
         [[NSNotificationCenter defaultCenter] addObserver:_sharedObject selector:@selector(loginSucceeded) name:@"LoginSucceeded" object:nil];
     });
     
@@ -74,22 +72,6 @@
                 [[NSNotificationCenter defaultCenter] postNotificationName:@"stopLoadingAnimation" object:nil];
             });
         }
-    }
-}
-
-- (void)addSelfSavingObject:(NSManagedObject *)object {
-    if (!object)
-        return;
-    @synchronized(self.selfSavingObjects) {
-        [self.selfSavingObjects addObject:object];
-    }
-}
-
-- (void)removeSelfSavingObject:(NSManagedObject *)object {
-    if (!object)
-        return;
-    @synchronized(self.selfSavingObjects) {
-        [self.selfSavingObjects removeObject:object];
     }
 }
 

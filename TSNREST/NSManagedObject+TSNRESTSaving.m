@@ -43,7 +43,6 @@
     NSManagedObjectContext *localContext = [NSManagedObjectContext MR_context];
     [localContext performBlock:^{
         NSManagedObject *object = [self MR_inContext:localContext];
-//        [[TSNRESTManager sharedManager] addSelfSavingObject:object];
         
         if (object.isDeleted) {
 #if DEBUG
@@ -53,7 +52,6 @@
                 failureBlock(nil);
             if (finallyBlock)
                 finallyBlock(nil);
-//            [[TSNRESTManager sharedManager] removeSelfSavingObject:self];
             return;
         }
         
@@ -71,7 +69,6 @@
                 if (finallyBlock)
                     finallyBlock(mainThreadObject);
             });
-//            [[TSNRESTManager sharedManager] removeSelfSavingObject:self];
             return;
         }
         
@@ -88,7 +85,6 @@
                 if (finallyBlock)
                     finallyBlock(mainThreadObject);
             });
-//            [[TSNRESTManager sharedManager] removeSelfSavingObject:self];
             return;
         }
         
