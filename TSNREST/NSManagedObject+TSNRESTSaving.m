@@ -37,6 +37,7 @@
     // Save any external changes
     [self.managedObjectContext MR_saveToPersistentStoreAndWait];
     
+    // Have a weak reference to self that we can use further on when we need to reference the original object, not the in-context copy
     NSManagedObject __weak *weakSelf = self;
     
     // Create a new context for the save operation
@@ -127,22 +128,26 @@
             NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
             NSLog(@"Firing parser from TSNRESTSaving");
             [TSNRESTParser parseAndPersistDictionary:jsonDict withCompletion:^{
-                if (successBlock)
-                    successBlock(weakSelf);
-                if (finallyBlock)
-                    finallyBlock(weakSelf);
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    NSManagedObject *mainThreadObject = [object MR_inContext:[NSManagedObjectContext MR_defaultContext]];
+                    if (successBlock)
+                        successBlock(mainThreadObject);
+                });
             } forObject:object];
         } failure:^(NSData *data, NSURLResponse *response, NSError *error, NSInteger statusCode) {
             if (statusCode == 404) {
                 [object deleteFromServer];
-                if (finallyBlock)
-                    finallyBlock(nil);
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (finallyBlock)
+                        finallyBlock(nil);
+                });
             }
             else {
-                if (failureBlock)
-                    failureBlock(weakSelf);
-                if (finallyBlock)
-                    finallyBlock(weakSelf);
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    NSManagedObject *mainThreadObject = [object MR_inContext:[NSManagedObjectContext MR_defaultContext]];
+                    if (failureBlock)
+                        failureBlock(mainThreadObject);
+                });
             }
             
 #if DEBUG
@@ -157,6 +162,11 @@
 #endif
             
         } finally:^(NSData *data, NSURLResponse *response, NSError *error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSManagedObject *mainThreadObject = [object MR_inContext:[NSManagedObjectContext MR_defaultContext]];
+                if (finallyBlock)
+                    finallyBlock(mainThreadObject);
+            });
             NSLog(@"No longer in flight.");
             weakSelf.inFlight = NO;
         } parseResult:NO]; // We trigger parsing ourselves so we can pass the object into the parser.
