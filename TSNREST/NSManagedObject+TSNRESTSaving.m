@@ -32,159 +32,141 @@
     [self saveAndPersistWithSuccess:successBlock failure:failureBlock finally:finallyBlock optionalKeys:nil];
 }
 
-- (void)saveAndPersistWithSuccess:(void (^)(id object))yayBlock failure:(void (^)(id object))failBlock finally:(void (^)(id object))doneBlock optionalKeys:(NSArray *)optionalKeys
+- (void)saveAndPersistWithSuccess:(void (^)(id object))successBlock failure:(void (^)(id object))failureBlock finally:(void (^)(id object))finallyBlock optionalKeys:(NSArray *)optionalKeys
 {
-    __block void(^successBlock)(id) = yayBlock;
-    __block void(^failureBlock)(id) = failBlock;
-    __block void(^finallyBlock)(id) = doneBlock;
+    // Save any external changes
+    [self.managedObjectContext MR_saveToPersistentStoreAndWait];
     
+    NSManagedObject __weak *weakSelf = self;
+    
+    // Create a new context for the save operation
     NSManagedObjectContext *localContext = [NSManagedObjectContext MR_context];
-    __block NSManagedObject *object = nil;
-    __block BOOL isDeleted = false;
-    [localContext performBlockAndWait:^{
-        object = [self MR_inContext:localContext];
-        isDeleted = object.isDeleted;
-    }];
-    
-    [[TSNRESTManager sharedManager] addSelfSavingObject:self];
-    [object.managedObjectContext MR_saveToPersistentStoreAndWait]; // Catch changes made externally
-    
-    if (isDeleted)
-    {
+    [localContext performBlock:^{
+        NSManagedObject *object = [self MR_inContext:localContext];
+//        [[TSNRESTManager sharedManager] addSelfSavingObject:object];
+        
+        if (object.isDeleted) {
 #if DEBUG
-        NSLog(@"Skipping saving of product, since it has been deleted.");
+            NSLog(@"Skipping saving of product, since it has been deleted.");
 #endif
-        if (failureBlock)
-            failureBlock(nil);
-        if (finallyBlock)
-            finallyBlock(nil);
-        [[TSNRESTManager sharedManager] removeSelfSavingObject:self];
-        return;
-    }
-    
-    
-    
-    if (object.inFlight)
-    {
-#if DEBUG
-        NSString *idKey = [(TSNRESTManagerConfiguration *)[[TSNRESTManager sharedManager] configuration] localIdName];
-        NSLog(@"Skipping save of %@ %@ because object already is in flight.", NSStringFromClass([self class]), [self valueForKey:idKey]);
-#endif
-        __block NSManagedObject *selfObject = self;
-#warning Find a way to not call the successBlock here. It's not technically correct.
-        if (successBlock)
-            successBlock(selfObject);
-        if (finallyBlock)
-            finallyBlock(selfObject);
-        [[TSNRESTManager sharedManager] removeSelfSavingObject:self];
-        return;
-    }
-    
-    __block BOOL isValid = YES;
-    [localContext performBlockAndWait:^{
-        isValid = object.isValid;
-    }];
-    
-    if (!isValid)
-    {
-#if DEBUG
-        NSLog(@"Skipping object of type %@ because it's invalid.", NSStringFromClass([self class]));
-        NSLog(@"%@", self);
-#endif
-        NSManagedObject *selfObject = self;
-        if (failureBlock)
-            failureBlock(selfObject);
-        if (finallyBlock)
-            finallyBlock(selfObject);
-        [[TSNRESTManager sharedManager] removeSelfSavingObject:self];
-        return;
-    }
-    
-    object.inFlight = YES;
-    
-    __block NSString *uuid = nil;
-    
-    if ([self respondsToSelector:NSSelectorFromString(@"uuid")])
-    {
-        [localContext performBlockAndWait:^{
-            uuid = [object valueForKey:@"uuid"];
-        }];
-        
-        if (!uuid)
-        {
-            __block NSManagedObject *object = self;
-            [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
-                [[object MR_inContext:localContext] setValue:[[NSUUID UUID] UUIDString] forKey:@"uuid"];
-            }];
-        }
-    }
-    
-    
-    __block NSManagedObject *selfObject = self;
-    __block NSURLRequest *request = nil;
-    [localContext performBlockAndWait:^{
-        request = [NSURLRequest requestForObject:object optionalKeys:optionalKeys];
-    }];
-    NSURLSessionDataTask *dataTask = [NSURLSessionDataTask dataTaskWithRequest:request success:^(NSData *data, NSURLResponse *response, NSError *error) {
-        if ([object respondsToSelector:NSSelectorFromString(@"dirty")]) {
-            [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
-                [[selfObject MR_inContext:localContext] setValue:@0 forKey:@"dirty"];
-            }];
-        }
-        
-#if DEBUG
-        NSString *resultString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-        NSLog(@"Saved data, got response: %@", resultString);
-        
-        NSLog(@"Status code: %li", [(NSHTTPURLResponse *)response statusCode]);
-#endif
-#if AIRWATCH
-        NSString *resultString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-        NSLog(@"Saved data, got response: %@", resultString);
-        
-        NSLog(@"Status code: %li", [(NSHTTPURLResponse *)response statusCode]);
-#endif
-        
-        NSError *jsonError = [[NSError alloc] init];
-        NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
-        NSLog(@"Firing parser from TSNRESTSaving");
-        [TSNRESTParser parseAndPersistDictionary:jsonDict withCompletion:^{
-            if (successBlock)
-                successBlock(selfObject);
-            if (finallyBlock)
-                finallyBlock(selfObject);
-        } forObject:object];
-    } failure:^(NSData *data, NSURLResponse *response, NSError *error, NSInteger statusCode) {
-        if (statusCode == 404) {
-            [object deleteFromServer];
+            if (failureBlock)
+                failureBlock(nil);
             if (finallyBlock)
                 finallyBlock(nil);
-        }
-        else {
-            if (failureBlock)
-                failureBlock(selfObject);
-            if (finallyBlock)
-                finallyBlock(selfObject);
+//            [[TSNRESTManager sharedManager] removeSelfSavingObject:self];
+            return;
         }
         
+        if (weakSelf.inFlight) {
 #if DEBUG
-        if (error)
-        {
-            NSString *dataString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-            NSLog(@"Data: %@", dataString);
-            dataString = nil;
-            NSLog(@"Response: %@", response);
-            NSLog(@"Error: %@", [error userInfo]);
-        }
+            NSString *idKey = [(TSNRESTManagerConfiguration *)[[TSNRESTManager sharedManager] configuration] localIdName];
+            NSLog(@"Skipping save of %@ %@ because object already is in flight.", NSStringFromClass([self class]), [self valueForKey:idKey]);
 #endif
+            
+#warning Find a way to not call the successBlock here. It's not technically correct. But some other part of TSNREST may currently need it
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSManagedObject *mainThreadObject = [object MR_inContext:[NSManagedObjectContext MR_defaultContext]];
+                if (successBlock)
+                    successBlock(mainThreadObject);
+                if (finallyBlock)
+                    finallyBlock(mainThreadObject);
+            });
+//            [[TSNRESTManager sharedManager] removeSelfSavingObject:self];
+            return;
+        }
         
-    } finally:^(NSData *data, NSURLResponse *response, NSError *error) {
-        NSLog(@"No longer in flight.");
-        selfObject.inFlight = NO;
-        [[TSNRESTManager sharedManager] removeSelfSavingObject:selfObject];
-    } parseResult:NO]; // We trigger parsing ourselves so we can pass the object.
-    
-    [dataTask resume];
+        if (!object.isValid) {
+#if DEBUG
+            NSLog(@"Skipping object of type %@ because it's invalid.", NSStringFromClass([object class]));
+            NSLog(@"%@", object);
+#endif
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSManagedObject *mainThreadObject = [object MR_inContext:[NSManagedObjectContext MR_defaultContext]];
+                if (failureBlock)
+                    failureBlock(mainThreadObject);
+                if (finallyBlock)
+                    finallyBlock(mainThreadObject);
+            });
+//            [[TSNRESTManager sharedManager] removeSelfSavingObject:self];
+            return;
+        }
+        
+        weakSelf.inFlight = YES;
+        
+        if ([object respondsToSelector:NSSelectorFromString(@"uuid")])
+        {
+            if (![object valueForKey:@"uuid"]) {
+                [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+                    [[object MR_inContext:localContext] setValue:[[NSUUID UUID] UUIDString] forKey:@"uuid"];
+                }];
+            }
+        }
+        
+        NSURLRequest *request = [NSURLRequest requestForObject:object optionalKeys:optionalKeys];
+       
+        NSURLSessionDataTask *dataTask = [NSURLSessionDataTask dataTaskWithRequest:request success:^(NSData *data, NSURLResponse *response, NSError *error) {
+            
+            // Reset any dirty value, we've got latest from the web
+            if ([object respondsToSelector:NSSelectorFromString(@"dirty")]) {
+                [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
+                    [[object MR_inContext:localContext] setValue:@0 forKey:@"dirty"];
+                }];
+            }
+            
+#if DEBUG
+            NSString *resultString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+            NSLog(@"Saved data, got response: %@", resultString);
+            
+            NSLog(@"Status code: %li", [(NSHTTPURLResponse *)response statusCode]);
+#endif
+#if AIRWATCH
+            NSString *resultString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+            NSLog(@"Saved data, got response: %@", resultString);
+            
+            NSLog(@"Status code: %li", [(NSHTTPURLResponse *)response statusCode]);
+#endif
+            
+            NSError *jsonError = [[NSError alloc] init];
+            NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
+            NSLog(@"Firing parser from TSNRESTSaving");
+            [TSNRESTParser parseAndPersistDictionary:jsonDict withCompletion:^{
+                if (successBlock)
+                    successBlock(weakSelf);
+                if (finallyBlock)
+                    finallyBlock(weakSelf);
+            } forObject:object];
+        } failure:^(NSData *data, NSURLResponse *response, NSError *error, NSInteger statusCode) {
+            if (statusCode == 404) {
+                [object deleteFromServer];
+                if (finallyBlock)
+                    finallyBlock(nil);
+            }
+            else {
+                if (failureBlock)
+                    failureBlock(weakSelf);
+                if (finallyBlock)
+                    finallyBlock(weakSelf);
+            }
+            
+#if DEBUG
+            if (error)
+            {
+                NSString *dataString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+                NSLog(@"Data: %@", dataString);
+                dataString = nil;
+                NSLog(@"Response: %@", response);
+                NSLog(@"Error: %@", [error userInfo]);
+            }
+#endif
+            
+        } finally:^(NSData *data, NSURLResponse *response, NSError *error) {
+            NSLog(@"No longer in flight.");
+            weakSelf.inFlight = NO;
+        } parseResult:NO]; // We trigger parsing ourselves so we can pass the object into the parser.
+        
+        [dataTask resume];
+    }];
 }
 
 @end
