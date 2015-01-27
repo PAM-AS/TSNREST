@@ -103,12 +103,13 @@
     object.inFlight = YES;
     
     __block NSString *uuid = nil;
-    [localContext performBlockAndWait:^{
-        uuid = [object valueForKey:@"uuid"];
-    }];
     
     if ([self respondsToSelector:NSSelectorFromString(@"uuid")])
     {
+        [localContext performBlockAndWait:^{
+            uuid = [object valueForKey:@"uuid"];
+        }];
+        
         if (!uuid)
         {
             __block NSManagedObject *object = self;
