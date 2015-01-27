@@ -74,7 +74,9 @@
     
     [request setURL:url];
     
+#if DEBUG
     NSLog(@"URL: %@", request.URL.absoluteString);
+#endif
     
     return request;
 }
