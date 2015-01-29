@@ -16,11 +16,7 @@
     return [self dataTaskWithRequest:request success:successBlock failure:failureBlock finally:finallyBlock parseResult:YES];
 }
 
-+ (NSURLSessionDataTask *)dataTaskWithRequest:(NSURLRequest *)request success:(void (^)(NSData *data, NSURLResponse *response, NSError *error))yayBlock failure:(void (^)(NSData *data, NSURLResponse *response, NSError *error, NSInteger statusCode))failBlock finally:(void (^)(NSData *data, NSURLResponse *response, NSError *error))doneBlock parseResult:(BOOL)parseResult {
-    
-    __block void(^successBlock)(NSData *, NSURLResponse *, NSError *) = yayBlock;
-    __block void(^failureBlock)(NSData *, NSURLResponse *, NSError *, NSInteger) = failBlock;
-    __block void(^finallyBlock)(NSData *, NSURLResponse *, NSError *) = doneBlock;
++ (NSURLSessionDataTask *)dataTaskWithRequest:(NSURLRequest *)request success:(void (^)(NSData *data, NSURLResponse *response, NSError *error))successBlock failure:(void (^)(NSData *data, NSURLResponse *response, NSError *error, NSInteger statusCode))failureBlock finally:(void (^)(NSData *data, NSURLResponse *response, NSError *error))finallyBlock parseResult:(BOOL)parseResult {
     
     TSNRESTManager *manager = [TSNRESTManager sharedManager];
     [manager addRequestToLoading:request];
