@@ -102,19 +102,32 @@
             NSLog(@"Parsing %lu arrays (%li objects) took %f", (unsigned long)dict.count, (long)objects, [NSDate timeIntervalSinceReferenceDate] - start);
 #endif
         }];
+        [[NSManagedObjectContext MR_rootSavingContext] MR_saveToPersistentStoreAndWait];
     }
     [self doneWithCompletion:completion dict:dict];
 }
 
 + (void)doneWithCompletion:(void (^)())completion dict:(NSDictionary *)dict
 {
+#if DEBUG
     NSLog(@"Done parsing");
+#endif
     dispatch_async(dispatch_get_main_queue(), ^{
+#if DEBUG
         NSLog(@"Handing back torch to main thread");
+#endif
         if (completion)
             completion();
-        if ([[dict allKeys] count] > 0)
+        if ([[dict allKeys] count] > 0) {
+            NSLog(@"Sending newData notification");
             [[NSNotificationCenter defaultCenter] postNotificationName:@"newData" object:[dict allKeys]];
+        }
+#if DEBUG
+        else {
+            NSLog(@"No new data, not sending newData (%@)", dict);
+        }
+#endif
+        
 #if DEBUG
         NSLog(@"Notifying everyone that new data is here, Praise TFSM");
 #endif
