@@ -36,8 +36,9 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
                 return nil;
             
             [self setInFlight:YES];
+            NSManagedObject __weak *weakSelf = self;
             [self refreshWithCompletion:^(id object, BOOL success) {
-                [self setInFlight:NO];
+                [weakSelf setInFlight:NO];
             }];
             return nil;
         }
@@ -57,7 +58,7 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
 
 - (void)faultIfNeededWithCompletion:(void (^)(id object, BOOL success))completion
 {
-    NSManagedObject *object = [self MR_inContext:[NSManagedObjectContext MR_contextForCurrentThread]];
+    
     SEL dirtyIdSelector = sel_registerName("dirty");
     if ([self respondsToSelector:dirtyIdSelector] && [[self valueForKey:@"dirty"] isEqualToNumber:@2])
     {
@@ -84,13 +85,14 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
 #endif
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+    NSManagedObject __weak *weakSelf = self;
     
     NSURLSessionDataTask *task = [NSURLSessionDataTask dataTaskWithRequest:request success:^(NSData *data, NSURLResponse *response, NSError *error) {
         completion(NO);
     } failure:^(NSData *data, NSURLResponse *response, NSError *error, NSInteger statusCode) {
         if (statusCode == 404) {
             [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
-                [[self MR_inContext:localContext] MR_deleteEntity];
+                [[weakSelf MR_inContext:localContext] MR_deleteEntity];
             } completion:^(BOOL contextDidSave, NSError *error) {
                 if (completion)
                     completion(YES);
@@ -123,17 +125,18 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
 #endif
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+    NSManagedObject __weak *weakSelf = self;
     
     NSURLSessionDataTask *task = [NSURLSessionDataTask dataTaskWithRequest:request success:^(NSData *data, NSURLResponse *response, NSError *error) {
         [MagicalRecord saveWithBlockAndWait:^(NSManagedObjectContext *localContext) {
-            if ([self respondsToSelector:NSSelectorFromString(@"dirty")])
-                [[self MR_inContext:localContext] setValue:@0 forKey:@"dirty"];
+            if ([weakSelf respondsToSelector:NSSelectorFromString(@"dirty")])
+                [[weakSelf MR_inContext:localContext] setValue:@0 forKey:@"dirty"];
         }];
         if (completion)
-            completion(self, YES);
+            completion(weakSelf, YES);
     } failure:^(NSData *data, NSURLResponse *response, NSError *error, NSInteger statusCode) {
         if (completion)
-            completion(self, NO);
+            completion(weakSelf, NO);
     } finally:nil];
     [task resume];
 }
