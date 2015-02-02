@@ -85,13 +85,16 @@
         
         NSString *idKey = [(TSNRESTManagerConfiguration *)[[TSNRESTManager sharedManager] configuration] localIdName];
         SEL systemidSelector = sel_registerName([idKey UTF8String]);
+        NSManagedObjectContext *context = [NSManagedObjectContext MR_context];
         for (id object in self)
         {
             if ([object respondsToSelector:systemidSelector])
             {
                 if (![[ids substringFromIndex:ids.length-1] isEqualToString:@"="])
                     [ids appendString:@","];
-                [ids appendString:[NSString stringWithFormat:@"%@", [object valueForKey:idKey]]];
+                [context performBlockAndWait:^{
+                    [ids appendString:[NSString stringWithFormat:@"%@", [[object MR_inContext:context] valueForKey:idKey]]];
+                }];
             }
         }
         
