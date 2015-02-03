@@ -24,6 +24,13 @@
         NSInteger statusCode = 0;
         if ([response isKindOfClass:[NSHTTPURLResponse class]])
             statusCode = [(NSHTTPURLResponse *)response statusCode];
+        else {
+            NSError *jsonError = [[NSError alloc] init];
+            NSDictionary *responseData = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
+            if ([responseData objectForKey:@"statusCode"]) {
+                statusCode = [[responseData objectForKey:@"statusCode"] integerValue];
+            }
+        }
         if (statusCode == 401) { // Not authenticated
             if (request)
             {
