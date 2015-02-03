@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		44363DBCC796DEB97F1584C8 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A96F95E680DC953D0C86581 /* libPods.a */; };
 		861907DE6D57575A412D13D0 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A96F95E680DC953D0C86581 /* libPods.a */; };
+		E91096F61A811516000498C5 /* URLRequestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E91096F51A811516000498C5 /* URLRequestTests.m */; };
 		E949A87C1A52B4C4000B2E09 /* Image.m in Sources */ = {isa = PBXBuildFile; fileRef = E949A87B1A52B4C4000B2E09 /* Image.m */; };
 		E949A87F1A52B4C5000B2E09 /* Product.m in Sources */ = {isa = PBXBuildFile; fileRef = E949A87E1A52B4C5000B2E09 /* Product.m */; };
 		E95D873D1A4980890098B7C5 /* ConfigTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E95D873C1A4980890098B7C5 /* ConfigTests.m */; };
@@ -43,6 +44,7 @@
 		04AAF7E687D184A70ED821F3 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		2A96F95E680DC953D0C86581 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		CDE6188E3DB7C4DDB55FB8D7 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
+		E91096F51A811516000498C5 /* URLRequestTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = URLRequestTests.m; sourceTree = "<group>"; };
 		E949A87A1A52B4C4000B2E09 /* Image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Image.h; sourceTree = "<group>"; };
 		E949A87B1A52B4C4000B2E09 /* Image.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Image.m; sourceTree = "<group>"; };
 		E949A87D1A52B4C5000B2E09 /* Product.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Product.h; sourceTree = "<group>"; };
@@ -167,6 +169,7 @@
 				E95D87401A49D6D50098B7C5 /* DeserializerTests.m */,
 				E95D87421A49D8BD0098B7C5 /* SerializerTests.m */,
 				E95D87461A4C465A0098B7C5 /* ObjectMapTests.m */,
+				E91096F51A811516000498C5 /* URLRequestTests.m */,
 			);
 			path = ExampleTests;
 			sourceTree = "<group>";
@@ -377,6 +380,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E91096F61A811516000498C5 /* URLRequestTests.m in Sources */,
 				E95D87411A49D6D50098B7C5 /* DeserializerTests.m in Sources */,
 				E9E5EC7E1A481DB800BEFF3A /* PollerTests.m in Sources */,
 				E95D87431A49D8BD0098B7C5 /* SerializerTests.m in Sources */,
