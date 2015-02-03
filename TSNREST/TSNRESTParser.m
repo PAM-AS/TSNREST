@@ -42,33 +42,35 @@
             
             NSString *idKey = [(TSNRESTManagerConfiguration *)[[TSNRESTManager sharedManager] configuration] localIdName];
             if (object && ![object isDeleted] && [object valueForKey:idKey] == nil) {
-                for (NSString *dictKey in dict)
-                {
-                    TSNRESTObjectMap *map = [[TSNRESTManager sharedManager] objectMapForServerPath:dictKey];
-                    if (map && [map classToMap] == [object class]) {
-                        NSArray *jsonData = [dict objectForKey:dictKey];
-                        if (jsonData.count == 1) {
-                            NSNumber *systemId = [[jsonData objectAtIndex:0] valueForKey:@"id"];
-                            if (systemId) {
-                                NSManagedObject *localObject = [object MR_inContext:localContext];
-                                [localObject setValue:systemId forKey:idKey];
-                                [localContext MR_saveOnlySelfAndWait];
-                                [[object managedObjectContext] refreshObject:object mergeChanges:NO];
+                @autoreleasepool {
+                    for (NSString *dictKey in dict)
+                    {
+                        TSNRESTObjectMap *map = [[TSNRESTManager sharedManager] objectMapForServerPath:dictKey];
+                        if (map && [map classToMap] == [object class]) {
+                            NSArray *jsonData = [dict objectForKey:dictKey];
+                            if (jsonData.count == 1) {
+                                NSNumber *systemId = [[jsonData objectAtIndex:0] valueForKey:@"id"];
+                                if (systemId) {
+                                    NSManagedObject *localObject = [object MR_inContext:localContext];
+                                    [localObject setValue:systemId forKey:idKey];
+                                    [localContext MR_saveOnlySelfAndWait];
+                                    [[object managedObjectContext] refreshObject:object mergeChanges:NO];
 #if DEBUG
-                                NSLog(@"Set id %@ to newly created object of class %@", [object valueForKey:idKey], NSStringFromClass([object class]));
+                                    NSLog(@"Set id %@ to newly created object of class %@", [object valueForKey:idKey], NSStringFromClass([object class]));
+#endif
+                                }
+#if DEBUG
+                                else {
+                                    NSLog(@"Returned object didn't have a valid ID, skipping updating the object.");
+                                }
 #endif
                             }
 #if DEBUG
                             else {
-                                NSLog(@"Returned object didn't have a valid ID, skipping updating the object.");
+                                NSLog(@"Got more than one object of the type we saved Can't know which, skipping updating saved object.");
                             }
 #endif
                         }
-#if DEBUG
-                        else {
-                            NSLog(@"Got more than one object of the type we saved Can't know which, skipping updating saved object.");
-                        }
-#endif
                     }
                 }
             }

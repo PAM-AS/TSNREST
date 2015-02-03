@@ -112,7 +112,9 @@
             }
         }
         
-        [jsonObject mapToObject:object withMap:map inContext:localContext optimize:optimize];
+        @autoreleasepool {
+            [jsonObject mapToObject:object withMap:map inContext:localContext optimize:optimize];
+        }
         jsonObject = [newEnumerator nextObject];
     }
     
