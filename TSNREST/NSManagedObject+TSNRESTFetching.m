@@ -48,9 +48,8 @@
         return;
     }
     NSURL *url = [[[[[TSNRESTManager sharedManager] configuration] baseURL] URLByAppendingPathComponent:[map serverPath]] URLByAppendingPathComponent:[NSString stringWithFormat:@"%@", systemId]];
-    
-    
-    NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+        
+    NSURLSession *session = [NSURLSession sharedSession];
     
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
     [request addValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
