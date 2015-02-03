@@ -84,9 +84,11 @@
                 TSNRESTObjectMap *map = [[TSNRESTManager sharedManager] objectMapForServerPath:dictKey];
                 if (map)
                 {
-                    NSArray *jsonData = [dict objectForKey:dictKey];
-                    objects += jsonData.count;
-                    [jsonData deserializeWithMap:map inContext:localContext optimize:objects > 100];
+                    @autoreleasepool {
+                        NSArray *jsonData = [dict objectForKey:dictKey];
+                        objects += jsonData.count;
+                        [jsonData deserializeWithMap:map inContext:localContext optimize:objects > 100];
+                    }
                 }
 #if DEBUG
                 else
