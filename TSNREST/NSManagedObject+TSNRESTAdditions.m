@@ -212,7 +212,7 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
     id value = inputValue;
     if ([inputValue isKindOfClass:[NSManagedObject class]]) {
         context = [NSManagedObjectContext MR_context];
-        value = [inputValue inContext:context];
+        value = [inputValue MR_inContext:context];
     }
     
     if (!map) {
