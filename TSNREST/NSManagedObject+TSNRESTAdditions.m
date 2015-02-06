@@ -209,10 +209,12 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
     TSNRESTObjectMap *map = [[TSNRESTManager sharedManager] objectMapForClass:[self class]];
     
     NSManagedObjectContext *context = nil;
-    id value = inputValue;
+    __block id value = inputValue;
     if ([inputValue isKindOfClass:[NSManagedObject class]]) {
         context = [NSManagedObjectContext MR_context];
-        value = [inputValue MR_inContext:context];
+        [context performBlockAndWait:^{
+            value = [inputValue MR_inContext:context];
+        }];
     }
     
     if (!map) {
@@ -264,7 +266,7 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
     
 #if DEBUG
     NSLog(@"Fetching search from URL: %@", url);
-    NSLog(@"URL was based on value: %@", value);
+    NSLog(@"URL was based on value: %@", queryValue);
 #endif
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
