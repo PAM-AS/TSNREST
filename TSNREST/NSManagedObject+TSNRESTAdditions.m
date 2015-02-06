@@ -204,9 +204,16 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
     [self findOnServerByAttribute:objectAttribute value:value queryParameters:nil completion:completion];
 }
 
-+ (void)findOnServerByAttribute:(NSString *)objectAttribute value:(id)value queryParameters:(NSDictionary *)queryParameters completion:(void (^)(NSArray *results))completion
++ (void)findOnServerByAttribute:(NSString *)objectAttribute value:(id)inputValue queryParameters:(NSDictionary *)queryParameters completion:(void (^)(NSArray *results))completion
 {
     TSNRESTObjectMap *map = [[TSNRESTManager sharedManager] objectMapForClass:[self class]];
+    
+    NSManagedObjectContext *context = nil;
+    id value = inputValue;
+    if ([inputValue isKindOfClass:[NSManagedObject class]]) {
+        context = [NSManagedObjectContext MR_context];
+        value = [inputValue inContext:context];
+    }
     
     if (!map) {
 #if DEBUG
@@ -217,11 +224,14 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
     
     NSString *webAttribute = [[map objectToWeb] objectForKey:objectAttribute];
     
-    NSString *queryValue;
+    __block NSString *queryValue;
     if ([value isKindOfClass:[NSString class]])
         queryValue = (NSString *)value;
-    else if ([value isKindOfClass:[NSManagedObject class]])
-        queryValue = [value valueForKey:[[[TSNRESTManager sharedManager] configuration] localIdName]];
+    else if ([value isKindOfClass:[NSManagedObject class]]) {
+        [context performBlockAndWait:^{
+            queryValue = [value valueForKey:[[[TSNRESTManager sharedManager] configuration] localIdName]];
+        }];
+    }
     
     if (!queryValue) {
 #if DEBUG
