@@ -95,8 +95,14 @@
         }
         
         // Hack to create bools
-        if ([objectMap.booleans objectForKey:key])
-            [dataDict setObject:[NSNumber numberWithBool:[[dataDict objectForKey:obj] boolValue]] forKey:obj];
+        if ([objectMap.booleans objectForKey:key]) {
+            if ([dataDict objectForKey:obj] == nil) {
+                [dataDict setObject:[NSNull null] forKey:obj];
+            } else {
+                [dataDict setObject:[NSNumber numberWithBool:[[dataDict objectForKey:obj] boolValue]] forKey:obj];
+            }
+        }
+        
     }];
     
 #if DEBUG
