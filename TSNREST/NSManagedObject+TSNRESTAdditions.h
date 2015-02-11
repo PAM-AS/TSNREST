@@ -22,6 +22,7 @@
 - (void)checkForDeletion:(void (^)(BOOL hasBeenDeleted))completion;
 - (void)refresh;
 - (void)refreshWithCompletion:(void (^)(id object, BOOL success))completion;
+- (void)refreshWithQueryParams:(NSDictionary *)queryParameters completion:(void (^)(id object, BOOL success))completion;
 
 + (NSArray *)propertyNames;
 

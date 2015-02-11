@@ -111,20 +111,33 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
     [self refreshWithCompletion:nil];
 }
 
-- (void)refreshWithCompletion:(void (^)(id object, BOOL success))completion
-{
+- (void)refreshWithCompletion:(void (^)(id object, BOOL success))completion {
+    [self refreshWithQueryParams:nil completion:completion];
+}
+
+- (void)refreshWithQueryParams:(NSDictionary *)queryParameters completion:(void (^)(id object, BOOL success))completion {
     NSString *idKey = [(TSNRESTManagerConfiguration *)[[TSNRESTManager sharedManager] configuration] localIdName];
 #if DEBUG
     NSLog(@"Refreshing %@ %@", NSStringFromClass(self.class), [self valueForKey:idKey]);
 #endif
     TSNRESTObjectMap *map = [[TSNRESTManager sharedManager] objectMapForClass:self.class];
-    NSString *url = [[[[[[TSNRESTManager sharedManager] configuration] baseURL] absoluteString] stringByAppendingPathComponent:map.serverPath] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@", [self valueForKey:idKey]]];
+    NSURL *url = [NSURL URLWithString:[[[[[[TSNRESTManager sharedManager] configuration] baseURL] absoluteString] stringByAppendingPathComponent:map.serverPath] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@", [self valueForKey:idKey]]]];
     
 #if DEBUG
     NSLog(@"URL: %@", url);
 #endif
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+    if (queryParameters) {
+        NSMutableString *queryString = [[NSMutableString alloc] initWithString:@"?"];
+        [queryParameters enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+            if (queryString.length > 1)
+                [queryString appendString:@"&"];
+            [queryString appendFormat:@"%@=%@", key, obj];
+        }];
+        url = [url URLByAppendingQueryString:queryString];
+    }
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:url];
     NSManagedObject __weak *weakSelf = self;
     
     NSURLSessionDataTask *task = [NSURLSessionDataTask dataTaskWithRequest:request success:^(NSData *data, NSURLResponse *response, NSError *error) {
