@@ -168,6 +168,8 @@
         else if ([self valueForKey:webKey] != [NSNull null] && [[self valueForKey:webKey] isKindOfClass:[object classOfPropertyNamed:key]])
         {
             [object setValue:[self objectForKey:webKey] forKey:key];
+        } else if ([self valueForKey:webKey] == [NSNull null]) { // Nullify value
+            [object setValue:nil forKey:key];
         }
     }
     
