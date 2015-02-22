@@ -43,7 +43,7 @@
 - (void)refreshWithQueryParams:(NSDictionary *)queryParameters completion:(void (^)(id object, BOOL success))completion;
 
 /**
- Returns the property names of the MOC
+ Returns the property names of the MO
  
  @return array of property names
  */
