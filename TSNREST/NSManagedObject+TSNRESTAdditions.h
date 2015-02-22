@@ -15,7 +15,7 @@
 
 @property (nonatomic) BOOL inFlight;
 
-- (id)get:(NSString *)propertyKey;
+//- (id)get:(NSString *)propertyKey;
 
 - (void)faultIfNeeded;
 - (void)faultIfNeededWithCompletion:(void (^)(id object, BOOL success))completion;
