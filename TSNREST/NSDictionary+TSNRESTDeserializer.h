@@ -20,6 +20,7 @@
  @param map The objectMap to use
  @param context The context to use
  @param optimize Set whether to skip this object if the optimizableKey (set in TSNRESTManagerConfiguration) hasn't changed
+ @returns The updated object
  */
 - (NSManagedObject *)mapToObject:(NSManagedObject *)object withMap:(TSNRESTObjectMap *)map inContext:(NSManagedObjectContext *)context optimize:(BOOL)optimize;
 
