@@ -12,6 +12,9 @@
 
 /*
  Synchronous method comparable to dataWithContentsOfURL:.
+ @param url The url you wish to fetch from.
+ @param authenticated Wether to add authentication headers or not.
+ @returns the data found at the specified URL
  */
 + (NSData *)dataWithContentsOfURL:(NSURL *)url authenticated:(BOOL)authenticated;
 
