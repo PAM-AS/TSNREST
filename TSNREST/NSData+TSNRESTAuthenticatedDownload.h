@@ -1,5 +1,5 @@
 //
-//  NSData+AuthenticatedDownload.h
+//  NSData+TSNRESTAuthenticatedDownload.h
 //  Pods
 //
 //  Created by Thomas Sunde Nielsen on 25.02.15.
@@ -11,10 +11,11 @@
 @interface NSData (TSNRESTAuthenticatedDownload)
 
 /**
- Synchronous method comparable to dataWithContentsOfURL:.
- @param url The url you wish to fetch from.
- @param authenticated Wether to add authentication headers or not.
- @returns the data found at the specified URL
+ Synchronous, authenticated data download.
+ 
+ @params url The URL where the data is located
+ @params authenticated Wether to authenticate using default headers
+ @returns The data found at the URL
  */
 + (NSData *)dataWithContentsOfURL:(NSURL *)url authenticated:(BOOL)authenticated;
 

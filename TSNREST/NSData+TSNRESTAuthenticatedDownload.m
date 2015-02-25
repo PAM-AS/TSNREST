@@ -1,12 +1,12 @@
 //
-//  NSData+AuthenticatedDownload.m
+//  NSData+TSNRESTAuthenticatedDownload.m
 //  Pods
 //
 //  Created by Thomas Sunde Nielsen on 25.02.15.
 //
 //
 
-#import "NSData+AuthenticatedDownload.h"
+#import "NSData+TSNRESTAuthenticatedDownload.h"
 #import "NSURLRequest+TSNRESTConveniences.h"
 
 @implementation NSData (TSNRESTAuthenticatedDownload)
