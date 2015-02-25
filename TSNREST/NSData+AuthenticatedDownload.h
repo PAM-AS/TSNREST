@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface NSData (AuthenticatedDownload)
+@interface NSData (TSNRESTAuthenticatedDownload)
 
 /**
  Synchronous method comparable to dataWithContentsOfURL:.

@@ -9,7 +9,7 @@
 #import "NSData+AuthenticatedDownload.h"
 #import "NSURLRequest+TSNRESTConveniences.h"
 
-@implementation NSData (AuthenticatedDownload)
+@implementation NSData (TSNRESTAuthenticatedDownload)
 
 + (NSData *)dataWithContentsOfURL:(NSURL *)url authenticated:(BOOL)authenticated {
     if (!authenticated)
