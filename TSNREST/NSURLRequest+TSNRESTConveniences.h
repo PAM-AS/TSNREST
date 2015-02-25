@@ -17,4 +17,6 @@
 + (NSURLRequest *)requestForClass:(Class)class ids:(NSArray *)ids;
 + (NSURLRequest *)requestForClass:(Class)class query:(NSString *)query;
 
++ (NSMutableURLRequest *)authenticatedRequest;
+
 @end
