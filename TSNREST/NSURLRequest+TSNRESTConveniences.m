@@ -117,4 +117,8 @@
     return request;
 }
 
++ (NSMutableURLRequest *)authenticatedRequest {
+    return [self _baseURLRequest];
+}
+
 @end
