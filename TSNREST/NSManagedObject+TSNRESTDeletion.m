@@ -42,15 +42,9 @@
     } failure:^(NSData *data, NSURLResponse *response, NSError *error, NSInteger statusCode) {
         if (statusCode == 404)
             [self deleteLocallyWithCompletion:completion];
-        else if (statusCode == 401) {
-            void(^successBlock)(NSData *, NSURLResponse *, NSError *) = ^(NSData *data, NSURLResponse *response, NSError *error) {
-                completion(self, YES);
-            };
-            void(^failureBlock)(NSData *, NSURLResponse *, NSError *, NSInteger) = ^(NSData *data, NSURLResponse *response, NSError *error, NSInteger statusCode) {
-                completion(self, NO);
-            };
-            [[TSNRESTManager sharedManager] addRequestToAuthQueue:@{@"request":request, @"successBlock":successBlock, @"failureBlock":failureBlock}];
-        }
+
+        // 401 was handled here before, but is now handled by the dataTaskWithRequest:success:failure:finally convenience method on NSURLSessionDataTask+TSNRESTDatatask
+        
         else if (completion)
             completion(self, NO);
     } finally:nil];
