@@ -32,6 +32,9 @@
             }
         }
         if (statusCode == 401) { // Not authenticated
+#if DEBUG
+            NSLog(@"Authorization error: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+#endif
             if (request)
             {
                 NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
