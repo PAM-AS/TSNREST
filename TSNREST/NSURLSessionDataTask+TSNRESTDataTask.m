@@ -17,7 +17,11 @@
 }
 
 + (NSURLSessionDataTask *)dataTaskWithRequest:(NSURLRequest *)request success:(void (^)(NSData *data, NSURLResponse *response, NSError *error))successBlock failure:(void (^)(NSData *data, NSURLResponse *response, NSError *error, NSInteger statusCode))failureBlock finally:(void (^)(NSData *data, NSURLResponse *response, NSError *error))finallyBlock parseResult:(BOOL)parseResult {
-    
+    return [self dataTaskWithRequest:request success:successBlock failure:failureBlock finally:finallyBlock parseResult:parseResult attempt:@0];
+}
+
+
++ (NSURLSessionDataTask *)dataTaskWithRequest:(NSURLRequest *)request success:(void (^)(NSData *data, NSURLResponse *response, NSError *error))successBlock failure:(void (^)(NSData *data, NSURLResponse *response, NSError *error, NSInteger statusCode))failureBlock finally:(void (^)(NSData *data, NSURLResponse *response, NSError *error))finallyBlock parseResult:(BOOL)parseResult attempt:(NSNumber *)attempt {
     TSNRESTManager *manager = [TSNRESTManager sharedManager];
     [manager addRequestToLoading:request];
     return [[manager URLSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
@@ -38,7 +42,10 @@
             if (request)
             {
                 NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
+                [dict setObject:[NSNumber numberWithInteger:attempt.integerValue+1] forKey:@"attempt"];
+                NSLog(@"Reauthing, attempt %@", [dict objectForKey:@"attempt"]);
                 [dict setObject:request forKey:@"request"];
+                [dict setObject:@(parseResult) forKey:@"parseResult"];
                 if (successBlock)
                     [dict setObject:successBlock forKey:@"successBlock"];
                 if (failureBlock)

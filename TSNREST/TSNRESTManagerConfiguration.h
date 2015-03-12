@@ -24,4 +24,6 @@
 @property (nonatomic) BOOL shouldOptimizeBySkipping;
 @property (nonatomic) NSString *optimizableKey;
 
+@property (nonatomic) NSNumber *retryLimit;
+
 @end

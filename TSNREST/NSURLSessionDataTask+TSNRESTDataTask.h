@@ -18,6 +18,14 @@
 + (NSURLSessionDataTask *)dataTaskWithRequest:(NSURLRequest *)request
                                       success:(void (^)(NSData *data, NSURLResponse *response, NSError *error))successBlock
                                       failure:(void (^)(NSData *data, NSURLResponse *response, NSError *error, NSInteger statusCode))failureBlock
-                                      finally:(void (^)(NSData *data, NSURLResponse *response, NSError *error))finallyBlock parseResult:(BOOL)parseResult;
+                                      finally:(void (^)(NSData *data, NSURLResponse *response, NSError *error))finallyBlock
+                                  parseResult:(BOOL)parseResult;
+
++ (NSURLSessionDataTask *)dataTaskWithRequest:(NSURLRequest *)request
+                                      success:(void (^)(NSData *data, NSURLResponse *response, NSError *error))successBlock
+                                      failure:(void (^)(NSData *data, NSURLResponse *response, NSError *error, NSInteger statusCode))failureBlock
+                                      finally:(void (^)(NSData *data, NSURLResponse *response, NSError *error))finallyBlock
+                                  parseResult:(BOOL)parseResult
+                                      attempt:(NSNumber *)attempt;
 
 @end

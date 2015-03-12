@@ -16,4 +16,10 @@
     return @"systemId";
 }
 
+- (NSNumber *)retryLimit {
+    if (_retryLimit)
+        return _retryLimit;
+    return @1;
+}
+
 @end

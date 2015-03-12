@@ -214,7 +214,7 @@
     
     for (NSDictionary *dictionary in requestQueue)
     {
-        if ([[dictionary objectForKey:@"request"] isKindOfClass:[NSMutableURLRequest class]])
+        if ([[dictionary objectForKey:@"request"] isKindOfClass:[NSMutableURLRequest class]] && [[dictionary objectForKey:@"attempt"] integerValue] <= self.configuration.retryLimit.integerValue)
         {   
             NSMutableURLRequest *request = [dictionary objectForKey:@"request"];
             
@@ -229,10 +229,11 @@
             }
             
             
-            NSURLSessionDataTask *task = [NSURLSessionDataTask dataTaskWithRequest:request success:[dictionary objectForKey:@"successBlock"] failure:[dictionary objectForKey:@"failureBlock"] finally:[dictionary objectForKey:@"finallyBlock"]];
+            NSURLSessionDataTask *task = [NSURLSessionDataTask dataTaskWithRequest:request success:[dictionary objectForKey:@"successBlock"] failure:[dictionary objectForKey:@"failureBlock"] finally:[dictionary objectForKey:@"finallyBlock"] parseResult:[[dictionary objectForKey:@"parseResult"] boolValue] attempt:[dictionary objectForKey:@"attempt"]];
             [task resume];
         }
     }
+    [self flushQueuedRequests];
 }
 
 #pragma mark - helpers
