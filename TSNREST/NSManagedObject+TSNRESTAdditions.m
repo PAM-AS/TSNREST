@@ -145,11 +145,17 @@ static void * InFlightPropertyKey = &InFlightPropertyKey;
             if ([weakSelf respondsToSelector:NSSelectorFromString(@"dirty")])
                 [[weakSelf MR_inContext:localContext] setValue:@0 forKey:@"dirty"];
         }];
-        if (completion)
-            completion(weakSelf, YES);
+        if (completion) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                completion(weakSelf, YES);
+            });
+        }
     } failure:^(NSData *data, NSURLResponse *response, NSError *error, NSInteger statusCode) {
-        if (completion)
-            completion(weakSelf, NO);
+        if (completion) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                completion(weakSelf, NO);
+            });
+        }
     } finally:nil];
     [task resume];
 }
