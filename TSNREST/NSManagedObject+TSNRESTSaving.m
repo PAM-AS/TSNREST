@@ -132,6 +132,8 @@
                     NSManagedObject *mainThreadObject = [object MR_inContext:[NSManagedObjectContext MR_defaultContext]];
                     if (successBlock)
                         successBlock(mainThreadObject);
+                    if (finallyBlock)
+                        finallyBlock(mainThreadObject);
                 });
             } forObject:object];
         } failure:^(NSData *data, NSURLResponse *response, NSError *error, NSInteger statusCode) {
@@ -147,6 +149,8 @@
                     NSManagedObject *mainThreadObject = [object MR_inContext:[NSManagedObjectContext MR_defaultContext]];
                     if (failureBlock)
                         failureBlock(mainThreadObject);
+                    if (finallyBlock)
+                        finallyBlock(mainThreadObject);
                 });
             }
             
@@ -162,12 +166,6 @@
 #endif
             
         } finally:^(NSData *data, NSURLResponse *response, NSError *error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                NSManagedObject *mainThreadObject = [object MR_inContext:[NSManagedObjectContext MR_defaultContext]];
-                if (finallyBlock)
-                    finallyBlock(mainThreadObject);
-            });
-            NSLog(@"No longer in flight.");
             weakSelf.inFlight = NO;
         } parseResult:NO]; // We trigger parsing ourselves so we can pass the object into the parser.
         
