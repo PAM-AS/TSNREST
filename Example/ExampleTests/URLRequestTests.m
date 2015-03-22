@@ -46,4 +46,24 @@
     XCTAssertEqualObjects(request.URL.absoluteString, [@"http://example.com/api/v1/products?ids[]=1&ids[]=2&ids[]=3&ids[]=4&ids[]=6&ids[]=10" stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding], @"URLs aren't equal.");
 }
 
+- (void)testThatURLRequestGetsCorrectHeaders {
+    NSDictionary *headers = @{@"X-TSNREST-TESTING":@"true",@"X-TSNREST-HEADER":@"not-so-secret"};
+    for (NSString *key in headers) {
+        [TSNRESTManager.sharedManager setGlobalHeader:headers[key] forKey:key];
+    }
+    
+    NSURLRequest *request = [NSURLRequest authenticatedRequest];
+    NSLog(@"Headers: %@", request.allHTTPHeaderFields);
+    
+    // Add +1 for the content header that gets set by authenticatedRequest
+    XCTAssert(request.allHTTPHeaderFields.count == headers.count+1, @"Wrong number of headers set. Expected %tu, got %tu", headers.count, request.allHTTPHeaderFields.count);
+    for (NSString *key in request.allHTTPHeaderFields) {
+        if ([key isEqualToString:@"Content-Type"]) {
+            XCTAssert([request.allHTTPHeaderFields[key] isEqualToString:@"application/json"]);
+        } else {
+            XCTAssertEqualObjects(request.allHTTPHeaderFields[key], headers[key], @"Header values not equal. Expected %@, got %@", headers[key], request.allHTTPHeaderFields[key]);
+        }
+    }
+}
+
 @end
